@@ -29,7 +29,7 @@
 	},
 	"d1_databases": [
 		{
-			"binding": "listen",
+			"binding": "DB",
 			"database_name": "listen",
 			"database_id": "8b3bfe83-4091-4dbb-b199-6d42b3babf71",
 			"remote": false

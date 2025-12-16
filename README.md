@@ -1,47 +1,35 @@
-# OpenNext Starter
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+相关文档:
 
-Read the documentation at https://opennext.js.org/cloudflare.
+部署
+npm run build 之后"upload" 会手动推到cf
 
-## Develop
+# 接入prisma到D1
+https://www.prisma.io/docs/guides/cloudflare-d1
 
-Run the Next.js development server:
+npx prisma migrate diff \
+--from-empty \
+--to-schema prisma/schema.prisma \
+--script > prisma/migrations/0001_init.sql
 
-```bash
-npm run dev
-# or similar package manager command
-```
+此命令会生成一个 SQL 文件，其中包含创建数据库表所需的语句。您可以在 . 中查看生成的 SQL prisma/migrations/0001_init.sql
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Apply to local database 将本地命令推送到本地D1数据库
+npx wrangler d1 execute listen --local --file=./prisma/migrations/0001_init.sql
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Apply to remote database  推送远程
+npx wrangler d1 execute listen --remote --file=./prisma/migrations/0001_init.sql
 
-## Preview
+对于未来的架构变更，您可以使用以下命令生成新的迁移文件：
+npx prisma migrate diff \
+--from-local-d1 \
+--to-schema prisma/schema.prisma \
+--script > migrations/0002_add_new_field.sql
 
-Preview the application locally on the Cloudflare runtime:
+wrangler d1 execute然后使用与上面所示相同的命令应用它们。
 
-```bash
-npm run preview
-# or similar package manager command
-```
+npx wrangler d1 execute listen --command "INSERT INTO \"User\" (\"email\", \"name\") VALUES ('jane@prisma.io', 'Jane Doe (Local)');" --local
 
-## Deploy
 
-Deploy the application to Cloudflare:
-
-```bash
-npm run deploy
-# or similar package manager command
-```
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+添加model之后需要重新生辰 npx prisma generate

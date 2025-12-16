@@ -1,7 +1,8 @@
-import { getCloudflareContext } from '@opennextjs/cloudflare'
+// import { getCloudflareContext } from '@opennextjs/cloudflare'
+import { fetch } from '../../../prisma/test'
 
 export default async function DBTest() {
-  // const a = await getCloudflareContext()
+  fetch()
   //
   // console.log(a)
   return <div>
