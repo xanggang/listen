@@ -29,7 +29,7 @@ npx prisma migrate diff \
 
 wrangler d1 execute然后使用与上面所示相同的命令应用它们。
 
-npx wrangler d1 execute listen --command "INSERT INTO \"User\" (\"email\", \"name\") VALUES ('jane@prisma.io', 'Jane Doe (Local)');" --local
+npx wrangler d1 execute listen --command "INSERT INTO \"User\" (\"email\", \"name\") VALUES ('naxi', 'naxi');" --local
 
 
 添加model之后需要重新生辰 npx prisma generate

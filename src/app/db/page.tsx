@@ -2,10 +2,16 @@
 import { fetch } from '../../../prisma/test'
 
 export default async function DBTest() {
-  fetch()
+  console.log('DBTest')
+  const res = await fetch()
+  const list = await res.json()
+  console.log(list)
   //
   // console.log(a)
   return <div>
-    z这里是dn
+    <div>zhelishiDc</div>
+    {
+      list.map(item => <p> { item.name }</p>)
+    }
   </div>
 }

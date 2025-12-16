@@ -8,15 +8,14 @@
 		"start": "next start",
 		"lint": "next lint",
 		"deploy": "opennextjs-cloudflare deploy",
-		"upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+		"deploy:cf": "next build && opennextjs-cloudflare build && opennextjs-cloudflare upload",
 		"preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
 		"cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts"
 	},
 	"dependencies": {
 		"@opennextjs/cloudflare": "^1.14.4",
-		"@prisma/adapter-d1": "^7.1.0",
-		"@prisma/client": "^7.1.0",
-		"@prisma/config": "^7.1.0",
+		"@prisma/adapter-d1": "6.19.0",
+		"@prisma/client": "6.19.0",
 		"dotenv": "^17.2.3",
 		"next": "15.5.9",
 		"react": "19.1.4",
@@ -31,7 +30,7 @@
 		"@types/react-dom": "^19",
 		"eslint": "^9",
 		"eslint-config-next": "15.4.6",
-		"prisma": "^7.1.0",
+		"prisma": "6.19.0",
 		"tailwindcss": "^4",
 		"typescript": "^5",
 		"wrangler": "^4.54.0"
