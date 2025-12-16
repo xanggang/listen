@@ -1,17 +1,28 @@
-// import { getCloudflareContext } from '@opennextjs/cloudflare'
-import { fetch } from '../../../prisma/test'
+import { getCloudflareContext } from '@opennextjs/cloudflare'
 
-export default async function DBTest() {
-  console.log('DBTest')
-  const res = await fetch()
-  const list = await res.json()
-  console.log(list)
-  //
-  // console.log(a)
-  return <div>
-    <div>zhelishiDc</div>
-    {
-      list.map(item => <p> { item.name }</p>)
-    }
-  </div>
+export default async function DBPage() {
+
+  const a = await getCloudflareContext({ async: true })
+  const DB = a.env.DB
+
+  const { results } = await DB.prepare("SELECT * FROM User").run()
+
+  console.log(results)
+
+  return (
+    <div className="p-8 font-sans">
+      <h1 className="text-2xl font-bold mb-6">用户列表 (User List)</h1>
+
+      {
+        results.map(item => {
+          return <div>{ JSON.stringify(item)}</div>
+        })
+      }
+
+
+      <div className="mt-8 text-sm text-gray-400">
+        <p>数据来源: Cloudflare D1 via Prisma</p>
+      </div>
+    </div>
+  )
 }
