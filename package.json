@@ -13,13 +13,16 @@
 		"cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts"
 	},
 	"dependencies": {
+		"@maptiler/sdk": "^3.9.0",
 		"@opennextjs/cloudflare": "^1.14.4",
+		"classnames": "^2.5.1",
 		"dotenv": "^17.2.3",
 		"next": "15.5.9",
 		"next-intl": "^4.6.1",
 		"react": "19.1.4",
 		"react-dom": "19.1.4",
 		"react-vant": "^3.3.5",
+		"sass": "^1.97.0",
 		"tsx": "^4.21.0"
 	},
 	"devDependencies": {

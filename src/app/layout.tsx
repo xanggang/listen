@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { getLocale, getMessages } from 'next-intl/server';
 import { NextIntlClientProvider } from 'next-intl';
+import BottomNavBar from '../components/BottomNavBar'
+import PlayerCard from '@/components/PlayerCard'
+import '../styles/global.scss';
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -33,9 +36,16 @@ export default async function RootLayout({
 				<link rel="icon" href="/favicon.svg" type="image/svg+xml"></link>
 			</head>
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-			<NextIntlClientProvider messages={messages}>
-				{children}
-			</NextIntlClientProvider>
+				<NextIntlClientProvider messages={messages}>
+					<div className="app-root">
+						<div className="app-center">
+							{ children }
+						</div>
+						<PlayerCard></PlayerCard>
+						<BottomNavBar></BottomNavBar>
+					</div>
+
+				</NextIntlClientProvider>
 			</body>
 		</html>
 	);
