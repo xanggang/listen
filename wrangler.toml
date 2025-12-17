@@ -1,5 +1,0 @@
-[[d1_databases]]
-binding = "DB"
-database_name = "listen"
-database_id = "8b3bfe83-4091-4dbb-b199-6d42b3babf71"  # Local mode does not require a real database_id
-migrations_dir = "migrations"

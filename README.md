@@ -33,3 +33,12 @@ npx wrangler d1 execute listen --command "INSERT INTO \"User\" (\"email\", \"nam
 
 
 添加model之后需要重新生辰 npx prisma generate
+
+
+连接远程需要代理
+
+export https_proxy=http://127.0.0.1:10808  && npm run dev
+
+export HTTP_PROXY=http://127.0.0.1:10808
+export HTTPS_PROXY=http://127.0.0.1:10808
+export ALL_PROXY=socks5://127.0.0.1:10808

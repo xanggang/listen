@@ -1,0 +1,37 @@
+{
+  "HomePage": {
+    "title": "你好，世界！",
+    "about": "前往关于页面"
+  },
+  "table": {
+    "date": "日期",
+    "name": "名称",
+    "address": "地址"
+  },
+  "menu": {},
+  "tabs": {
+    "map": "地图",
+    "search": "搜索",
+    "leaderboard": "排行榜",
+    "settings": "设置"
+  },
+  "nav": {
+    "player": "播放器",
+    "discover": "发现",
+    "leaderboard": "排行榜",
+    "settings": "设置"
+  },
+  "discover": {
+    "browseCategories": "浏览分类",
+    "byLanguage": "按语言",
+    "byGenre": "按流派",
+    "global": "全球",
+    "placeholder": "电台，国家，城市，语言，流派"
+  },
+  "settings": {
+    "setting": "设置",
+    "language": "语言",
+    "preferences": "偏好设置",
+    "nightMode": "夜间模式"
+  }
+}

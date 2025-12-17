@@ -5,6 +5,8 @@ export default async function DBPage() {
   const a = await getCloudflareContext({ async: true })
   const DB = a.env.DB
 
+  console.log(DB)
+
   const { results } = await DB.prepare("SELECT * FROM User").run()
 
   console.log(results)

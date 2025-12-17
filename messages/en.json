@@ -1,0 +1,37 @@
+{
+  "HomePage": {
+    "title": "Hello world!",
+    "about": "Go to about page"
+  },
+  "table": {
+    "date": "Date",
+    "name": "Name",
+    "address": "Address"
+  },
+  "menu": {},
+  "tabs": {
+    "map": "Map",
+    "search": "Search",
+    "leaderboard": "Leaderboard",
+    "settings": "Settings"
+  },
+  "nav": {
+    "player": "Player",
+    "discover": "Discover",
+    "leaderboard": "Charts",
+    "settings": "Settings"
+  },
+  "discover": {
+    "browseCategories": "Browse Categories",
+    "byLanguage": "By Language",
+    "byGenre": "By Genre",
+    "global": "Global",
+    "placeholder": "Stations, Country, City, Language, Genre"
+  },
+  "settings": {
+    "setting": "Setting",
+    "language": "Language",
+    "preferences": "Preferences",
+    "nightMode": "Night Mode"
+  }
+}
