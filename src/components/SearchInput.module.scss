@@ -1,0 +1,148 @@
+$input-bg: #fff;
+$rotate: 80deg;
+$gap: 2em;
+$height: 4rem;
+
+.searchForm {
+  --input-bg: #{$input-bg};
+  --padding: var(--gap);
+  --rotate: #{$rotate};
+  --gap: #{$gap};
+  --icon-change-color: var(--primary);
+  --height: #{$height};
+
+  width: 100%;
+  background: var(--input-bg);
+  position: relative;
+  border-radius: 4px;
+
+  .label {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: var(--height);
+    background: var(--bg-base);
+    padding-right: var(--text-size-base);
+  }
+
+  input {
+    width: 100%;
+    padding-inline-start: 3em;
+    outline: none;
+    background: none;
+    border: 0;
+    font-size: var(--text-size-xl);
+
+    // Focus state
+    &:focus ~ .icon {
+      transform: rotate(var(--rotate)) scale(1.3);
+
+      .iconSearch {
+        opacity: 1;
+        transform: rotate(-80deg);
+        visibility: visible;
+        color: var(--icon-change-color);
+      }
+
+      .iconArray {
+        opacity: 0;
+        visibility: visible;
+      }
+    }
+
+    // Valid state (using :not(:placeholder-shown) as a proxy for valid/has-value if needed,
+    // or relying on required+valid. Vue code used :valid.
+    // We will stick to :valid which works if the input has 'required' attribute or always if type is search?)
+    // Actually, :valid matches <input> elements that successfully validate.
+    // In the Vue component, it seemed to rely on this for showing the close button.
+    &:valid ~ .closeBtn {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+      transition: 0s;
+    }
+
+    &::placeholder {
+      color: var(--oc-gray-5);
+      opacity: 0.5;
+    }
+
+    /* Hide WebKit search cancel button */
+    &::-webkit-search-cancel-button {
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    /* Hide WebKit search decoration */
+    &::-webkit-search-decoration {
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    /* Hide Microsoft search clear button */
+    &::-ms-clear {
+      display: none;
+    }
+
+    /* Hide Microsoft search decoration */
+    &::-ms-reveal {
+      display: none;
+    }
+  }
+
+  /* style for both icons -- search,close */
+  svg {
+    color: #111;
+    transition: 0.3s cubic-bezier(.4, 0, .2, 1);
+    position: absolute;
+    height: 15px;
+  }
+
+  /* search icon container */
+  .icon {
+    position: absolute;
+    left: var(--padding);
+    transition: 0.3s cubic-bezier(.4, 0, .2, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* arrow-icon */
+  .iconSearch {
+    transform: rotate(-80deg);
+    opacity: 1;
+    visibility: hidden;
+  }
+
+  .iconArray {
+    // Default state matches Vue
+  }
+
+  /* close button */
+  .closeBtn {
+    background: none;
+    border: none;
+    right: calc(var(--padding) - var(--gap));
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #111;
+    padding: 0.1em;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transition: 0.3s;
+    opacity: 0;
+    transform: scale(0);
+    visibility: hidden;
+    cursor: pointer;
+  }
+
+  // .is-focus helper class if we needed to manually trigger styles,
+  // but the CSS relies mostly on input:focus ~ sibling.
+  // The Vue code had :class="{ 'is-focus': isFocus }" on .label but no styles used .is-focus directly?
+  // Checking Vue styles: NO, .is-focus is NOT used in the provided CSS.
+  // All animations are driven by input:focus.
+}
