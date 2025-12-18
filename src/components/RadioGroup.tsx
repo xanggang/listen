@@ -21,7 +21,7 @@ export default function RadioGroup( { options, onChange, value }: Props) {
             <div
               key={index}
               onClick={() => onChange(item.value)}
-              className={`radio-item ${value === item.value ? 'active' : ''}`}
+              className={`radio-item ${value === item.value ? 'active' : ''} dark:bg-gray-700 dark:text-white`}
             > { item.label } </div>
           )
         })
@@ -30,17 +30,17 @@ export default function RadioGroup( { options, onChange, value }: Props) {
       <style jsx>{`
           .radio-item {
               display: inline-block;
-              padding: var(--text-size-xs) var(--text-size-xs);
-              background: var(--bg-base);
+              padding: calc(var(--text-size-xs) / 2) calc(var(--text-size-xs));
+              background: var(--bg-base-1);
               color: var(--text-black);
               font-size: var(--text-size-base);
-              border-radius: calc(var(--text-size-xs) / 2);
+              border-radius: calc(var(--text-size-xs) / 4);
               font-weight: bold;
               flex-shrink: 0;
 
               &.active {
-                  background: var(--primary);
-                  color: var(--text-base-inv);
+                  background: var(--bg-surface);
+                  color: var(--text-black);
               }
           }
       `}</style>

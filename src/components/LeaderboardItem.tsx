@@ -20,7 +20,7 @@ const LeaderboardItem = ({ item }: { item: Station}) => {
   };
 
   return (
-    <div className="flex items-center p-3 bg-white border border-gray-100 rounded-2xl  cursor-pointer">
+    <div className="flex items-center p-3 bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 rounded-2xl cursor-pointer">
       {/* Station Logo */}
       <div className="w-16 h-16 rounded-xl mr-4 flex-shrink-0">
         {item.favicon && (
@@ -34,10 +34,10 @@ const LeaderboardItem = ({ item }: { item: Station}) => {
 
       {/* Station Info */}
       <div className="flex-grow min-w-0">
-        <h3 className="font-bold text-black leading-6 text-lg truncate text-left">
+        <h3 className="font-bold text-black dark:text-white leading-6 text-lg truncate text-left">
           {item.name}
         </h3>
-        <p className="text-sm text-gray-700 leading-5 text-left">
+        <p className="text-sm text-gray-700 dark:text-gray-300 leading-5 text-left">
           {item.country} / {item.language} /  { item.votes }
         </p>
       </div>
@@ -45,16 +45,16 @@ const LeaderboardItem = ({ item }: { item: Station}) => {
       {/* Votes and Action */}
       <div className="text-right flex items-center flex-shrink-0 gap-2">
         <div
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-50 active:scale-90 transition-transform"
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-50 dark:bg-gray-600 active:scale-90 transition-transform"
           onClick={handleFavorite}
         >
-          <span className="iconfont icon-dianzan-xiankuang text-xl text-black"></span>
+          <span className="iconfont icon-dianzan-xiankuang text-xl text-black dark:text-white"></span>
         </div>
         <div
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-50 active:scale-90 transition-transform"
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-50 dark:bg-gray-600 active:scale-90 transition-transform"
           onClick={handlePlay}
         >
-          <span className="iconfont icon-bofang text-2xl text-black"></span>
+          <span className="iconfont icon-bofang text-2xl text-black dark:text-white"></span>
         </div>
       </div>
     </div>

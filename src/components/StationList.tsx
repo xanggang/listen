@@ -46,12 +46,12 @@ const StationList: React.FC<StationListProps> = ({
           return <LeaderboardItem key={item.id} item={item} />;
         }
       })}
-      {loading && <div className="py-2 text-center text-gray-500">Loading...</div>}
+      {loading && <div className="py-2 text-center text-gray-500 dark:text-gray-400">Loading...</div>}
       {!hasMore && stations.length > 0 && (
-        <div className="py-2 text-center text-gray-500">No more stations</div>
+        <div className="py-2 text-center text-gray-500 dark:text-gray-400">No more stations</div>
       )}
       {!loading && stations.length === 0 && (
-        <div className="py-2 text-center text-gray-500">No stations found</div>
+        <div className="py-2 text-center text-gray-500 dark:text-gray-400">No stations found</div>
       )}
     </div>
   );

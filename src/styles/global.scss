@@ -1,4 +1,6 @@
-@use 'tailwindcss';
+
+@use "tailwindcss.css";
+
 @use "./font-icon";
 @use "colors";
 //@import "react-vant/es/styles";
@@ -68,6 +70,26 @@
 	// 反差的
 	--primary-3: #E1EEBC;
 
+	// Surface background (default white)
+	--bg-surface: var(--oc-white);
+}
+
+[data-theme='dark'] {
+	--text-black: var(--oc-gray-1);
+	--text-base: var(--oc-gray-3);
+	--text-sub: var(--oc-gray-5);
+	--text-disabled: var(--oc-gray-7);
+
+	--bg-base: var(--oc-gray-9);
+	--bg-base-1: var(--oc-gray-8);
+	--bg-surface: var(--oc-gray-7);
+
+	--bdc-base: var(--oc-gray-7);
+	--bdc-disabled: var(--oc-gray-8);
+
+	--bg-base-inv: var(--oc-gray-1);
+	--bd-base-inv: var(--oc-gray-3);
+	--text-base-inv: var(--oc-gray-9);
 }
 
 body {

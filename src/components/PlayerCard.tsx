@@ -93,8 +93,8 @@ export default function PlayerCard({
   }, [currentStation]);
 
   // Styles
-  const wrapperBaseClasses = "absolute bottom-24 right-[2%] shadow-[0_-4px_20px_rgba(0,0,0,0.1)] transition-all duration-400 ease-in-out z-40 overflow-hidden";
-  const expandedClasses = "w-[96%] h-24 bg-white rounded-xl";
+  const wrapperBaseClasses = "absolute bottom-20 right-[2%] shadow-[0_-4px_20px_rgba(0,0,0,0.1)] transition-all duration-400 ease-in-out z-40 overflow-hidden";
+  const expandedClasses = "w-[96%] h-24 bg-white dark:bg-gray-700 rounded-xl";
   // Fallback color added just in case variable is missing, but prefer variable
   const collapsedClasses = "w-12 h-12 rounded-full flex items-center justify-center";
 
@@ -113,10 +113,10 @@ export default function PlayerCard({
 
       {/* Info */}
       <div className="flex-1 min-w-0 mr-2">
-        <h3 className="font-medium text-black truncate text-lg leading-6">
+        <h3 className="font-medium text-black dark:text-white truncate text-lg leading-6">
           {currentStation.name}
         </h3>
-        <p className="text-sm text-gray-600 leading-6">
+        <p className="text-sm text-gray-600 dark:text-gray-400 leading-6">
           {currentStation.country} • {currentStation.language}
         </p>
       </div>
@@ -126,7 +126,7 @@ export default function PlayerCard({
         <div className="flex justify-center items-center space-x-2">
           {/* Favorite */}
           <button
-            className="flex items-center justify-center text-gray-500 bg-gray-100 text-xl w-8 h-8 rounded-full"
+            className="flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 text-xl w-8 h-8 rounded-full"
             onClick={handleToggleFavorite}
             aria-label="Favorite"
           >
@@ -139,7 +139,7 @@ export default function PlayerCard({
 
           {/* Volume */}
           <button
-            className="flex items-center justify-center text-gray-500 bg-gray-100 text-xl w-8 h-8 rounded-full"
+            className="flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 text-xl w-8 h-8 rounded-full"
             onClick={handleToggleVolume}
             aria-label="Volume"
           >
@@ -168,7 +168,7 @@ export default function PlayerCard({
 
           {/* More */}
           <button
-            className="flex items-center justify-center text-gray-500 bg-gray-100 text-xl w-8 h-8 rounded-full"
+            className="flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 text-xl w-8 h-8 rounded-full"
             onClick={handleShowMore}
             aria-label="More"
           >

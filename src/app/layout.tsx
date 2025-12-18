@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import BottomNavBar from '../components/BottomNavBar'
 import PlayerCard from '@/components/PlayerCard'
 import '../styles/global.scss';
+import { ThemeProvider } from 'next-themes'
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -37,14 +38,15 @@ export default async function RootLayout({
 			</head>
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<NextIntlClientProvider messages={messages}>
-					<div className="app-root">
-						<div className="app-center">
-							{ children }
+					<ThemeProvider>
+						<div className="app-root">
+							<div className="app-center">
+								{ children }
+							</div>
+							<PlayerCard></PlayerCard>
+							<BottomNavBar></BottomNavBar>
 						</div>
-						<PlayerCard></PlayerCard>
-						<BottomNavBar></BottomNavBar>
-					</div>
-
+					</ThemeProvider>
 				</NextIntlClientProvider>
 			</body>
 		</html>

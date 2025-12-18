@@ -11,6 +11,10 @@ $height: 4rem;
   --icon-change-color: var(--primary);
   --height: #{$height};
 
+  :global(.dark) & {
+    --input-bg: #374151; // gray-700
+  }
+
   width: 100%;
   background: var(--input-bg);
   position: relative;
@@ -23,6 +27,10 @@ $height: 4rem;
     height: var(--height);
     background: var(--bg-base);
     padding-right: var(--text-size-base);
+
+    :global(.dark) & {
+      background: #374151; // gray-700
+    }
   }
 
   input {
@@ -65,6 +73,14 @@ $height: 4rem;
     &::placeholder {
       color: var(--oc-gray-5);
       opacity: 0.5;
+
+      :global(.dark) & {
+        color: #9ca3af; // gray-400
+      }
+    }
+
+    :global(.dark) & {
+      color: white;
     }
 
     /* Hide WebKit search cancel button */
@@ -96,6 +112,10 @@ $height: 4rem;
     transition: 0.3s cubic-bezier(.4, 0, .2, 1);
     position: absolute;
     height: 15px;
+
+    :global(.dark) & {
+      color: #e5e7eb; // gray-200
+    }
   }
 
   /* search icon container */
@@ -132,6 +152,10 @@ $height: 4rem;
     padding: 0.1em;
     width: 20px;
     height: 20px;
+
+    :global(.dark) & {
+      color: #e5e7eb; // gray-200
+    }
     border-radius: 50%;
     transition: 0.3s;
     opacity: 0;

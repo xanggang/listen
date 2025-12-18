@@ -67,7 +67,7 @@ export default function DiscoverPage() {
   };
 
   return (
-    <div className="phone-container w-full h-full bg-white overflow-hidden relative">
+    <div className="phone-container w-full h-full bg-white dark:bg-gray-800 overflow-hidden relative">
       <div className="p-6 pt-12 space-y-8 h-full">
         {/* Title & Search Box */}
         <SearchInput
@@ -79,7 +79,7 @@ export default function DiscoverPage() {
 
         {/* Recommended Results List */}
         <div className="space-y-4 h-[calc(100%-5rem)]">
-          <h2 className="text-lg font-bold text-black">Trending Worldwide</h2>
+          <h2 className="text-lg font-bold text-black dark:text-white">Trending Worldwide</h2>
           <div className="h-[calc(100%-11.5rem)] overflow-y-auto">
             <StationList
               stations={stations}

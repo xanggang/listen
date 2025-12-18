@@ -92,9 +92,9 @@ export default function LeaderboardPage() {
 
 
   return (
-    <div className='p-6 w-full h-full bg-white overflow-hidden relative flex! flex-col'>
+    <div className='p-6 w-full h-full bg-white dark:bg-gray-800 overflow-hidden relative flex! flex-col'>
       <div className='mt-12 space-y-6 shrink-0'>
-        <h1 className="text-3xl font-extrabold text-black tracking-tight">Leaderboard</h1>
+        <h1 className="text-3xl font-extrabold text-black dark:text-white tracking-tight">Leaderboard</h1>
         <SlideRadioGroup value={type} options={typeOptions} onChange={v => setType(v)} />
         {
           type ===  FilterEnums.By_Genre && <RadioGroup value={tag} options={tagOptions} onChange={v => setTag(v)} />
@@ -105,7 +105,7 @@ export default function LeaderboardPage() {
 
 
       </div>
-      <div className="h-[calc(100%-16rem)] overflow-y-auto space-y-2">
+      <div className="h-[calc(100%-16rem)] overflow-y-auto space-y-2 mt-2">
         <StationList
           stations={stations}
           loading={loading}
