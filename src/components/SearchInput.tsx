@@ -72,8 +72,6 @@ export default function SearchInput({
           onBlur={onInputBlur}
           onFocus={onInputFocus}
           onKeyDown={handleKeyDown}
-          {...({ onSearch: handleNativeSearch } as any)}
-          // required attribute allows CSS :valid pseudo-class to detect "not empty"
           required
         />
         <div className={styles.icon}>

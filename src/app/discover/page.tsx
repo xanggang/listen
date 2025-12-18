@@ -18,7 +18,7 @@ export default function DiscoverPage() {
     {
       "id": 1,
       "url": "http://stream.gal.io/arrow",
-      "name": "\tArrow Classic Rock",
+      "name": "\tArrow Classic Rock tArrow Classic Rock tArrow Classic Rock tArrow Classic Rock",
       "geoLat": 52.07963259545092,
       "geoLong": 4.303894042968751,
       country: 'chinma',
@@ -54,7 +54,7 @@ export default function DiscoverPage() {
              <div className="text-gray-500 text-center py-4 space-y-4">
 
                {
-                 data.map(item => <LeaderboardItem item={item}></LeaderboardItem>)
+                 data.map((item, index) => <LeaderboardItem key={index} item={item}></LeaderboardItem>)
                }
              </div>
           </div>

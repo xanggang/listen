@@ -7,12 +7,16 @@ import type { Station } from '../types';
 
 const LeaderboardItem = ({ item }: { item: Station}) => {
   // const handlePlayerStation = usePlayerStore((state) => state.handlePlayerStation);
-  console.log(item)
-
   const handlePlay = (e: React.MouseEvent) => {
     // Stop propagation if clicking the button shouldn't trigger parent div events
     e.stopPropagation();
     // handlePlayerStation(item);
+  };
+
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Toggle favorite logic
+    console.log('Favorite toggled for', item.name);
   };
 
   return (
@@ -29,21 +33,29 @@ const LeaderboardItem = ({ item }: { item: Station}) => {
       </div>
 
       {/* Station Info */}
-      <div className="flex-grow">
-        <h3 className="font-bold text-black leading-6 text-xl break-words text-left">
+      <div className="flex-grow min-w-0">
+        <h3 className="font-bold text-black leading-6 text-lg truncate text-left">
           {item.name}
         </h3>
-        <p className="text-sm text-gray-700 leading-5 text-lg text-left">
-          {item.country} • {item.language}
+        <p className="text-sm text-gray-700 leading-5 text-left">
+          {item.country} / {item.language} /  { item.votes }
         </p>
       </div>
 
       {/* Votes and Action */}
-      <div className="text-right flex items-center flex-shrink-0">
-        <div className="font-bold text-black mr-3">
-          { item.votes }
+      <div className="text-right flex items-center flex-shrink-0 gap-2">
+        <div
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-50 active:scale-90 transition-transform"
+          onClick={handleFavorite}
+        >
+          <span className="iconfont icon-dianzan-xiankuang text-xl text-black"></span>
         </div>
-
+        <div
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-50 active:scale-90 transition-transform"
+          onClick={handlePlay}
+        >
+          <span className="iconfont icon-bofang text-2xl text-black"></span>
+        </div>
       </div>
     </div>
   );
