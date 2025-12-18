@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { FilterEnums, type Station } from '@/types/index'
 import { useTranslations } from 'next-intl'
 import StationList from '@/components/StationList'
+import { getStations, getTopTags, getTopLanguages } from '@/app/actions/actions'
 
 // Mock data generator
 const generateMockData = (startIndex: number, count: number): Station[] => {
@@ -34,19 +35,11 @@ export default function LeaderboardPage() {
 
   const [type, setType] = useState(FilterEnums.ALL)
 
-  const [tag, setTag] = useState('')
-  const [tagOptions, setTagOptions] = useState([
-    { label: t('global'), value: FilterEnums.ALL as string },
-    { label: t('byLanguage'), value: FilterEnums.By_Language as string },
-    { label: t('byGenre'), value: FilterEnums.By_Genre as string },
-  ])
+  const [tag, setTag] = useState<number>()
+  const [tagOptions, setTagOptions] = useState<{ label: string, value: number}[]>([])
 
-  const [languages, setLanguages] = useState('')
-  const [languageOptions, setLanguageOptions] = useState([
-    { label: t('global'), value: FilterEnums.ALL as string },
-    { label: t('byLanguage'), value: FilterEnums.By_Language as string },
-    { label: t('byGenre'), value: FilterEnums.By_Genre as string },
-  ])
+  const [languages, setLanguages] = useState<number>()
+  const [languageOptions, setLanguageOptions] = useState<{ label: string, value: number}[]>([])
 
   const [keyword, setKeyword] = useState('');
   const [stations, setStations] = useState<Station[]>([]);
@@ -60,20 +53,40 @@ export default function LeaderboardPage() {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // In a real app, you would fetch from your API here using pageNum and searchKeyword
-    const newStations = generateMockData((pageNum - 1) * 10, 10);
-
-    setStations(prev => {
-      if (pageNum === 1) return newStations;
-      return [...prev, ...newStations];
+    const newStations = await getStations({
+      page: (pageNum - 1) * 10,
+      pageSize: 10,
+      languagesId: languages,
+      tagsId: tag,
     });
-    setHasMore(newStations.length > 0 && pageNum < 5); // Mock limit 5 pages
+
+    console.log(newStations)
+    setStations(prev => {
+      if (pageNum === 1) return newStations.list;
+      return [...prev, ...newStations.list];
+    });
+    setHasMore(newStations.list.length > 0); // Mock limit 5 pages
     setLoading(false);
   };
 
   useEffect(() => {
+    getTopTags()
+      .then(res => {
+        console.log('getTopTags')
+        const options  = res.map(item => ({ label: item.name, value: item.id }))
+        setTagOptions(options)
+      })
+    getTopLanguages()
+      .then(res => {
+        const options  = res.map(item => ({ label: item.name, value: item.id }))
+        setLanguageOptions(options)
+      })
+  }, [])
+
+  useEffect(() => {
     setPage(1);
     fetchStations(1, keyword);
-  }, [keyword]);
+  }, [keyword, languages, tag]);
 
   useEffect(() => {
     if (page > 1) {

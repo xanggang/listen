@@ -32,7 +32,7 @@ export default async function RootLayout({
 	const messages = await getMessages()
 
 	return (
-		<html lang={locale}>
+		<html lang={locale} suppressHydrationWarning>
 			<head>
 				<link rel="icon" href="/favicon.svg" type="image/svg+xml"></link>
 			</head>

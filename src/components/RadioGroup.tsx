@@ -21,7 +21,7 @@ export default function RadioGroup( { options, onChange, value }: Props) {
             <div
               key={index}
               onClick={() => onChange(item.value)}
-              className={`radio-item ${value === item.value ? 'active' : ''} dark:bg-gray-700 dark:text-white`}
+              className={`radio-item ${value === item.value ? 'active' : ''} dark:bg-gray-700 dark:text-white!`}
             > { item.label } </div>
           )
         })
@@ -39,9 +39,10 @@ export default function RadioGroup( { options, onChange, value }: Props) {
               flex-shrink: 0;
 
               &.active {
-                  background: var(--bg-surface);
-                  color: var(--text-black);
+                  background: var(--primary);
+                  color: var(--bg-surface);
               }
+  
           }
       `}</style>
     </div>
