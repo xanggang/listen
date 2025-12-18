@@ -17,6 +17,7 @@
 		"@opennextjs/cloudflare": "^1.14.4",
 		"classnames": "^2.5.1",
 		"dotenv": "^17.2.3",
+		"mysql2": "^3.16.0",
 		"next": "15.5.9",
 		"next-intl": "^4.6.1",
 		"react": "19.1.4",

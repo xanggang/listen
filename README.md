@@ -16,8 +16,9 @@ npx prisma migrate diff \
 此命令会生成一个 SQL 文件，其中包含创建数据库表所需的语句。您可以在 . 中查看生成的 SQL prisma/migrations/0001_init.sql
 
 # Apply to local database 将本地命令推送到本地D1数据库
-npx wrangler d1 execute listen --local --file=./prisma/migrations/0001_init.sql
-
+npx wrangler d1 execute listen --local --file=./migrations/0001_init.sql
+npx wrangler d1 execute listen --local --file=./script/temp_batch.sql
+npx wrangler d1 execute listen --local --command
 # Apply to remote database  推送远程
 npx wrangler d1 execute listen --remote --file=./prisma/migrations/0001_init.sql
 
@@ -42,3 +43,14 @@ export https_proxy=http://127.0.0.1:10808  && npm run dev
 export HTTP_PROXY=http://127.0.0.1:10808
 export HTTPS_PROXY=http://127.0.0.1:10808
 export ALL_PROXY=socks5://127.0.0.1:10808
+
+
+### 数据库同步
+从script中, 使用node将sql数据同步到本地的D1数据库中,
+npx wrangler d1 execute DB --local --file=./script/temp_batch.sql
+npx wrangler d1 execute DB --local --file=./migrations/countries.sql
+npx wrangler d1 execute DB --local --file=./migrations/tags.sql
+// 运行命令 清空表
+npx wrangler d1 execute DB --remote --command="DELETE FROM station"
+npx wrangler d1 execute DB --remote --command="DELETE FROM sqlite_sequence WHERE name = 'station'"
+
