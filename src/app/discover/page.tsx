@@ -1,39 +1,70 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SearchInput from '@/components/SearchInput';
 import { useTranslations } from 'next-intl';
-import LeaderboardItem from '@/components/LeaderboardItem'
+import StationList from '@/components/StationList';
 import type { Station } from '@/types';
+
+// Mock data generator
+const generateMockData = (startIndex: number, count: number): Station[] => {
+  return Array.from({ length: count }).map((_, i) => ({
+    id: `station-${startIndex + i}`,
+    url: `http://example.com/station/${startIndex + i}`,
+    name: `Station ${startIndex + i}`,
+    geoLat: 0,
+    geoLong: 0,
+    country: 'Country',
+    language: 'Language',
+    votes: Math.floor(Math.random() * 1000),
+    favicon: '',
+    state: ''
+  }) as any as Station);
+};
 
 export default function DiscoverPage() {
   const t = useTranslations('discover');
   const [keyword, setKeyword] = useState('');
+  const [stations, setStations] = useState<Station[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const fetchStations = async (pageNum: number, searchKeyword: string) => {
+    setLoading(true);
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // In a real app, you would fetch from your API here using pageNum and searchKeyword
+    const newStations = generateMockData((pageNum - 1) * 10, 10);
+
+    setStations(prev => {
+        if (pageNum === 1) return newStations;
+        return [...prev, ...newStations];
+    });
+    setHasMore(newStations.length > 0 && pageNum < 5); // Mock limit 5 pages
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    setPage(1);
+    fetchStations(1, keyword);
+  }, [keyword]);
+
+  useEffect(() => {
+    if (page > 1) {
+      fetchStations(page, keyword);
+    }
+  }, [page]); // keyword dependency removed here to avoid double fetch on keyword change since page reset triggers fetch
 
   const handleSearch = (value: string) => {
     console.log('Search:', value);
+    // Keyword change is handled by useEffect
   };
 
-  const data: any[] = [
-    {
-      "id": 1,
-      "url": "http://stream.gal.io/arrow",
-      "name": "\tArrow Classic Rock tArrow Classic Rock tArrow Classic Rock tArrow Classic Rock",
-      "geoLat": 52.07963259545092,
-      "geoLong": 4.303894042968751,
-      country: 'chinma',
-      language: 'chinens',
-      votes: 996,
-      favicon: ''
-    },
-    {
-      "id": 4,
-      "url": "http://67.249.184.45:8015/listen.pls",
-      "name": "\tHard Rock Radio FM",
-      "geoLat": 43.064015622124,
-      "geoLong": -74.90702480077745
-    },
-  ]
+  const handleLoadMore = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
 
   return (
     <div className="phone-container w-full h-full bg-white overflow-hidden relative">
@@ -49,14 +80,14 @@ export default function DiscoverPage() {
         {/* Recommended Results List */}
         <div className="space-y-4 h-[calc(100%-5rem)]">
           <h2 className="text-lg font-bold text-black">Trending Worldwide</h2>
-          <div className="space-y-4 overflow-y-auto h-[calc(100%-11.5rem)]">
-             {/* StationSList equivalent would go here */}
-             <div className="text-gray-500 text-center py-4 space-y-4">
-
-               {
-                 data.map((item, index) => <LeaderboardItem key={index} item={item}></LeaderboardItem>)
-               }
-             </div>
+          <div className="h-[calc(100%-11.5rem)] overflow-y-auto">
+            <StationList
+              stations={stations}
+              loading={loading}
+              hasMore={hasMore}
+              onLoadMore={handleLoadMore}
+              className="py-4"
+            />
           </div>
         </div>
       </div>

@@ -1,0 +1,53 @@
+.slideRadioGroup {
+  display: flex;
+  position: relative;
+  border-radius: 8px;
+  background-color: var(--bg-base-1);
+  box-sizing: border-box;
+  height: 3rem;
+  padding: 0 0.2rem;
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .radioItem {
+    flex: 1;
+    height: 100%;
+    line-height: 3rem;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    transition: color 0.3s ease;
+    border-radius: 6px;
+
+    &.active {
+      color: var(--text-black);
+      font-weight: 500;
+    }
+
+    &:not(.active) {
+      color: var(--text-sub);
+    }
+  }
+
+  .activeSliderWrap {
+    width: calc(100% - 0.4rem);
+    height: 100%;
+    position: absolute;
+    left: 0.2rem;
+    top: 0;
+
+    .activeSlider {
+      position: absolute;
+      height: calc(3rem - 0.4rem);
+      top: 0.2rem;
+      border-radius: 6px;
+      z-index: 1;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: white;
+    }
+  }
+}

@@ -1,7 +1,7 @@
 // 'use client';
 import Map from '@/components/Map'
 
-export default function () {
+export default function PlayerPage() {
 
   return (
     <div className="w-full h-full">
