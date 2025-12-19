@@ -51,12 +51,12 @@ const LeaderboardItem = ({ item }: { item: Station}) => {
 
       {/* Votes and Action */}
       <div className="text-right flex items-center flex-shrink-0 gap-2">
-        <div
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-50 dark:bg-gray-600 active:scale-90 transition-transform"
-          onClick={handleFavorite}
-        >
-          <span className="iconfont icon-dianzan-xiankuang text-xl text-black dark:text-white"></span>
-        </div>
+        {/*<div*/}
+        {/*  className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-50 dark:bg-gray-600 active:scale-90 transition-transform"*/}
+        {/*  onClick={handleFavorite}*/}
+        {/*>*/}
+        {/*  <span className="iconfont icon-dianzan-xiankuang text-xl text-black dark:text-white"></span>*/}
+        {/*</div>*/}
         <div
           className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-50 dark:bg-gray-600 active:scale-90 transition-transform"
           onClick={handlePlay}

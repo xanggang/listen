@@ -106,58 +106,72 @@ export default function PlayerCard({
 
       {/* Controls */}
       <div className="space-y-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-        <div className="flex justify-center items-center space-x-2">
-          {/* Favorite */}
-          <button
-            className="flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 text-xl w-8 h-8 rounded-full"
-            onClick={handleToggleFavorite}
-            aria-label="Favorite"
-          >
-            {!isFavorite ? (
-              <span className="iconfont icon-dianzan-xiankuang"></span>
-            ) : (
-              <span className="iconfont icon-dianzan-shixin text-[var(--primary-1, #10b981)]"></span>
-            )}
-          </button>
 
-          {/* Volume */}
-          <button
-            className="flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 text-xl w-8 h-8 rounded-full"
-            onClick={handleToggleVolume}
-            aria-label="Volume"
-          >
-            {isVolumeOn ? (
-              <div className="iconfont icon-jingyin"></div>
-            ) : (
-              <div className="iconfont icon-yinliang"></div>
-            )}
-          </button>
-        </div>
+        <button
+          className="flex items-center justify-center text-white bg-[var(--primary-1, #10b981)] w-12 h-12 rounded-full"
+          style={{ backgroundColor: 'var(--primary-1, #10b981)' }}
+          onClick={handleTogglePlay}
+          aria-label="Play/Pause"
+        >
+          {isPlaying ? (
+            <div className="iconfont icon-zanting text-2xl"></div>
+          ) : (
+            <div className="iconfont icon-bofang text-2xl"></div>
+          )}
+        </button>
 
-        <div className="flex justify-center items-center space-x-2">
-          {/* Play/Pause */}
-          <button
-            className="flex items-center justify-center text-white bg-[var(--primary-1, #10b981)] w-8 h-8 rounded-full"
-            style={{ backgroundColor: 'var(--primary-1, #10b981)' }}
-            onClick={handleTogglePlay}
-            aria-label="Play/Pause"
-          >
-            {isPlaying ? (
-              <div className="iconfont icon-zanting text-xl"></div>
-            ) : (
-              <div className="iconfont icon-bofang text-xl"></div>
-            )}
-          </button>
+        {/*<div className="flex justify-center items-center space-x-2">*/}
+        {/*  /!* Favorite *!/*/}
+        {/*  <button*/}
+        {/*    className="flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 text-xl w-8 h-8 rounded-full"*/}
+        {/*    onClick={handleToggleFavorite}*/}
+        {/*    aria-label="Favorite"*/}
+        {/*  >*/}
+        {/*    {!isFavorite ? (*/}
+        {/*      <span className="iconfont icon-dianzan-xiankuang"></span>*/}
+        {/*    ) : (*/}
+        {/*      <span className="iconfont icon-dianzan-shixin text-[var(--primary-1, #10b981)]"></span>*/}
+        {/*    )}*/}
+        {/*  </button>*/}
 
-          {/* More */}
-          <button
-            className="flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 text-xl w-8 h-8 rounded-full"
-            onClick={handleShowMore}
-            aria-label="More"
-          >
-            <div className="iconfont icon-danmushezhi"></div>
-          </button>
-        </div>
+        {/*  /!* Volume *!/*/}
+        {/*  <button*/}
+        {/*    className="flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 text-xl w-8 h-8 rounded-full"*/}
+        {/*    onClick={handleToggleVolume}*/}
+        {/*    aria-label="Volume"*/}
+        {/*  >*/}
+        {/*    {isVolumeOn ? (*/}
+        {/*      <div className="iconfont icon-jingyin"></div>*/}
+        {/*    ) : (*/}
+        {/*      <div className="iconfont icon-yinliang"></div>*/}
+        {/*    )}*/}
+        {/*  </button>*/}
+        {/*</div>*/}
+
+        {/*<div className="flex justify-center items-center space-x-2">*/}
+        {/*  /!* Play/Pause *!/*/}
+        {/*  <button*/}
+        {/*    className="flex items-center justify-center text-white bg-[var(--primary-1, #10b981)] w-8 h-8 rounded-full"*/}
+        {/*    style={{ backgroundColor: 'var(--primary-1, #10b981)' }}*/}
+        {/*    onClick={handleTogglePlay}*/}
+        {/*    aria-label="Play/Pause"*/}
+        {/*  >*/}
+        {/*    {isPlaying ? (*/}
+        {/*      <div className="iconfont icon-zanting text-xl"></div>*/}
+        {/*    ) : (*/}
+        {/*      <div className="iconfont icon-bofang text-xl"></div>*/}
+        {/*    )}*/}
+        {/*  </button>*/}
+
+        {/*  /!* More *!/*/}
+        {/*  <button*/}
+        {/*    className="flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 text-xl w-8 h-8 rounded-full"*/}
+        {/*    onClick={handleShowMore}*/}
+        {/*    aria-label="More"*/}
+        {/*  >*/}
+        {/*    <div className="iconfont icon-danmushezhi"></div>*/}
+        {/*  </button>*/}
+        {/*</div>*/}
       </div>
     </div>
   );
