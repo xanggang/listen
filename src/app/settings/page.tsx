@@ -143,7 +143,7 @@ export default function SettingsPage() {
                 className="flex items-center justify-center p-5 cursor-pointer active:bg-gray-50 dark:active:bg-gray-600 text-black dark:text-white font-medium"
                 onClick={handleAboutClick}
               >
-                About GeoRadio v1.0
+                About WorldTuner v1.0
               </div>
             </div>
           </div>

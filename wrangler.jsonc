@@ -11,6 +11,7 @@
 	"name": "listen",
 	"main": ".open-next/worker.js",
 	"compatibility_date": "2025-12-01",
+	"keep_names": false,
 	"compatibility_flags": [
 		"nodejs_compat",
 		"global_fetch_strictly_public"

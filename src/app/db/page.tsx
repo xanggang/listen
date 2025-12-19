@@ -2,14 +2,14 @@ import { getCloudflareContext } from '@opennextjs/cloudflare'
 
 export default async function DBPage() {
 
-  const a = await getCloudflareContext({ async: true })
-  const DB = a.env.DB
+  // const a = await getCloudflareContext({ async: true })
+  // const DB = a.env.DB
 
-  console.log(DB)
+  // console.log(DB)
 
-  const { results } = await DB.prepare("SELECT * FROM User").run() as any
+  // const { results } = await DB.prepare("SELECT * FROM User").run() as any
 
-  console.log(results)
+  // console.log(results)
 
   return (
     <div className="p-8 font-sans">

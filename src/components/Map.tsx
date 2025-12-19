@@ -98,7 +98,9 @@ const MapComponent: React.FC<MapProps> = ({ onChange }) => {
         const coordinates = e.features[0].geometry.coordinates.slice();
         // @ts-ignore
         const description = e.features[0].properties.description;
+        console.log({ description })
         const json = JSON.parse(description);
+        console.log({ json })
 
         // 移动地图中心点到点击位置
         map.current.flyTo({
@@ -119,7 +121,7 @@ const MapComponent: React.FC<MapProps> = ({ onChange }) => {
 
         // Populate the popup and set its coordinates
         // based on the feature found.
-        popup.setLngLat(coordinates).setHTML(`<div>${json.name}</div>`).addTo(map.current);
+        popup.setLngLat(coordinates).setHTML(`<div>${json?.name}</div>`).addTo(map.current);
       });
 
       // Cursor pointer on hover

@@ -12,6 +12,7 @@ const PAGE_SIZE = 20;
 export default function DiscoverPage() {
   const t = useTranslations('discover');
   const [keyword, setKeyword] = useState('');
+  const [debouncedKeyword, setDebouncedKeyword] = useState('');
   const [stations, setStations] = useState<Station[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -39,15 +40,23 @@ export default function DiscoverPage() {
   };
 
   useEffect(() => {
-    setPage(1);
-    fetchStations(1, keyword);
+    const timer = setTimeout(() => {
+      setDebouncedKeyword(keyword);
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [keyword]);
 
   useEffect(() => {
+    setPage(1);
+    fetchStations(1, debouncedKeyword);
+  }, [debouncedKeyword]);
+
+  useEffect(() => {
     if (page > 1) {
-      fetchStations(page, keyword);
+      fetchStations(page, debouncedKeyword);
     }
-  }, [page]); // keyword dependency removed here to avoid double fetch on keyword change since page reset triggers fetch
+  }, [page]);
 
   const handleSearch = (value: string) => {
     console.log('Search:', value);
