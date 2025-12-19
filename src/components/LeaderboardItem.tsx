@@ -1,6 +1,7 @@
 import type { Station } from '../types';
 // import { formatNumber } from '@/utils/utils';
 import { useStationStore } from '@/app/store/useStationStore';
+// import Image from 'next/image'
 
 const LeaderboardItem = ({ item }: { item: Station}) => {
   const { setCurrentStation, setIsPlaying } = useStationStore();
@@ -31,13 +32,11 @@ const LeaderboardItem = ({ item }: { item: Station}) => {
     <div className="flex items-center p-3 bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 rounded-2xl cursor-pointer">
       {/* Station Logo */}
       <div className="w-16 h-16 rounded-xl mr-4 flex-shrink-0">
-        {item.favicon && (
-          <img
-            src={item.favicon}
-            alt={item.name}
-            className="w-full h-full object-cover rounded-full"
-          />
-        )}
+        <img
+          src={item.favicon || '/favicon.png'}
+          alt={item.name}
+          className="w-full h-full object-cover rounded-full"
+        />
       </div>
 
       {/* Station Info */}

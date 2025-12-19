@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function PlayerCard({
-  coverColor = 'var(--oc-green-4)',
+  coverColor = 'var(--oc-gray-1)',
   isFavorite = false,
   isExpanded = true,
   onToggleExpand
@@ -82,10 +82,16 @@ export default function PlayerCard({
     >
       {/* Cover */}
       <div
-        className="mr-4 rounded-xl flex-shrink-0"
+        className="mr-4 rounded-xl flex-shrink-0 overflow-hidden"
         style={{ backgroundColor: coverColor }}
       >
-        <div className="h-16 w-16"></div>
+        {currentStation?.favicon ? (
+          <img src={currentStation.favicon} alt={currentStation.name} className="h-16 w-16 object-cover" />
+        ) : (
+          <div className="h-16 w-16 flex items-center justify-center text-white">
+            <img src="/favicon.png" alt=""/>
+          </div>
+        )}
       </div>
 
       {/* Info */}

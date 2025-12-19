@@ -30,7 +30,7 @@ export default function DiscoverPage() {
         if (pageNum === 1) return list;
         return [...prev, ...list];
       });
-      setHasMore(list.length < PAGE_SIZE);
+      setHasMore(list.length <= PAGE_SIZE);
     } catch (error) {
       console.error(error);
     } finally {
