@@ -2,13 +2,13 @@
 
 interface Option {
   label: string
-  value: string
+  value: number
 }
 
 interface Props {
   options: Option[],
-  onChange: (o: string) => void
-  value: string
+  onChange: (o: number) => void
+  value?: number
 }
 
 export default function RadioGroup( { options, onChange, value }: Props) {

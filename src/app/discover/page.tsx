@@ -5,22 +5,9 @@ import SearchInput from '@/components/SearchInput';
 import { useTranslations } from 'next-intl';
 import StationList from '@/components/StationList';
 import type { Station } from '@/types';
+import { getStations } from '@/app/actions/actions';
 
-// Mock data generator
-const generateMockData = (startIndex: number, count: number): Station[] => {
-  return Array.from({ length: count }).map((_, i) => ({
-    id: `station-${startIndex + i}`,
-    url: `http://example.com/station/${startIndex + i}`,
-    name: `Station ${startIndex + i}`,
-    geoLat: 0,
-    geoLong: 0,
-    country: 'Country',
-    language: 'Language',
-    votes: Math.floor(Math.random() * 1000),
-    favicon: '',
-    state: ''
-  }) as any as Station);
-};
+const PAGE_SIZE = 20;
 
 export default function DiscoverPage() {
   const t = useTranslations('discover');
@@ -32,18 +19,23 @@ export default function DiscoverPage() {
 
   const fetchStations = async (pageNum: number, searchKeyword: string) => {
     setLoading(true);
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const { list } = await getStations({
+        page: pageNum,
+        pageSize: PAGE_SIZE,
+        keyword: searchKeyword
+      });
 
-    // In a real app, you would fetch from your API here using pageNum and searchKeyword
-    const newStations = generateMockData((pageNum - 1) * 10, 10);
-
-    setStations(prev => {
-        if (pageNum === 1) return newStations;
-        return [...prev, ...newStations];
-    });
-    setHasMore(newStations.length > 0 && pageNum < 5); // Mock limit 5 pages
-    setLoading(false);
+      setStations(prev => {
+        if (pageNum === 1) return list;
+        return [...prev, ...list];
+      });
+      setHasMore(list.length < PAGE_SIZE);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

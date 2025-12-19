@@ -1,16 +1,24 @@
 import type { Station } from '../types';
 // import { formatNumber } from '@/utils/utils';
-// import { Station } from '@/api';
-// Assuming you use a hook-based store like Zustand or Redux for player state
-// import { usePlayerStore } from '@/stores/playerStore';
-
+import { useStationStore } from '@/app/store/useStationStore';
 
 const LeaderboardItem = ({ item }: { item: Station}) => {
-  // const handlePlayerStation = usePlayerStore((state) => state.handlePlayerStation);
+  const { setCurrentStation, setIsPlaying } = useStationStore();
+
+  function formatNumber(number: number): string {
+    if (number >= 1000000) {
+      return (number / 1000000).toFixed(1) + 'M';
+    } else if (number >= 1000) {
+      return (number / 1000).toFixed(1) + 'K';
+    }
+    return number.toString();
+  }
+
   const handlePlay = (e: React.MouseEvent) => {
     // Stop propagation if clicking the button shouldn't trigger parent div events
     e.stopPropagation();
-    // handlePlayerStation(item);
+    setCurrentStation(item);
+    setIsPlaying(true);
   };
 
   const handleFavorite = (e: React.MouseEvent) => {
@@ -38,7 +46,7 @@ const LeaderboardItem = ({ item }: { item: Station}) => {
           {item.name}
         </h3>
         <p className="text-sm text-gray-700 dark:text-gray-300 leading-5 text-left">
-          {item.country} / {item.language} /  { item.votes }
+          {[item.country, item.language, formatNumber(item.votes)].filter(Boolean).join(' / ')}
         </p>
       </div>
 

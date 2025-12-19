@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Map, MapStyle, config, Popup } from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
+import mapData from '@/../public/data.json'
 
 interface MapProps {
   onChange?: (data: any) => void;
@@ -19,22 +20,7 @@ const MapComponent: React.FC<MapProps> = ({ onChange }) => {
 
     const initialState = { lng: 139.753, lat: 35.6844, zoom: 1 };
 
-    const res = [
-      {
-        "id": 1,
-        "url": "http://stream.gal.io/arrow",
-        "name": "\tArrow Classic Rock",
-        "geoLat": 52.07963259545092,
-        "geoLong": 4.303894042968751
-      },
-      {
-        "id": 2,
-        "url": "http://stream.gal.io/arrow",
-        "name": "\tArrow Classic Rock",
-        "geoLat": 52.07963259545092,
-        "geoLong": 4.303894042968751
-      },
-    ];
+    const res = mapData.data
 
     if (!mapContainer.current) return;
 
@@ -162,4 +148,4 @@ const MapComponent: React.FC<MapProps> = ({ onChange }) => {
   );
 }
 
-export default MapComponent;
+export default React.memo(MapComponent);

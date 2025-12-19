@@ -88,6 +88,7 @@ export interface StationQuery {
   country?: string;
   language?: string;
   tags?: string;
+  keyword?: string;
   page: number;
   pageSize: number;
 }

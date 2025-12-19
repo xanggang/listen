@@ -3,9 +3,15 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 import { Tags, Languages, Station, PageResult } from '@/types'
 
-export async function getLanguages() {
+async function getDb() {
   const { env } = await getCloudflareContext({ async: true })
   const DB = env.DB
+
+  return DB
+}
+
+export async function getLanguages() {
+  const DB = await getDb()
 
   const { results } = await DB.prepare("SELECT * FROM languages").run()
 
@@ -13,8 +19,7 @@ export async function getLanguages() {
 }
 
 export async function getTopLanguages() {
-  const { env } = await getCloudflareContext({ async: true })
-  const DB = env.DB
+  const DB = await getDb()
 
   const { results } = await DB.prepare("SELECT * FROM languages ORDER BY stationcount DESC LIMIT 30").run()
 
@@ -22,8 +27,7 @@ export async function getTopLanguages() {
 }
 
 export async function getTopTags() {
-  const { env } = await getCloudflareContext({ async: true })
-  const DB = env.DB
+  const DB = await getDb()
 
   const { results } = await DB.prepare("SELECT * FROM tags ORDER BY stationcount DESC LIMIT 30").run()
 
@@ -35,16 +39,17 @@ interface SearchType {
   pageSize: number
   languagesId?: number
   tagsId?: number
+  keyword?: string
 }
 
 export async function getStations({
                                     page,
                                     pageSize,
                                     languagesId,
-                                    tagsId
+                                    tagsId,
+                                    keyword
                                   }: SearchType) {
-  const { env } = await getCloudflareContext({ async: true })
-  const DB = env.DB
+  const DB = await getDb()
 
   const whereClauses: string[] = []
   const params: (string | number)[] = []
@@ -67,12 +72,19 @@ export async function getStations({
     }
   }
 
+  if (keyword) {
+    whereClauses.push("(name LIKE ? OR tags LIKE ? OR language LIKE ?)")
+    params.push(`%${keyword}%`)
+    params.push(`%${keyword}%`)
+    params.push(`%${keyword}%`)
+  }
+
   const whereSQL = whereClauses.length > 0 ? "WHERE " + whereClauses.join(" AND ") : ""
 
   // Get total count
-  const countResult = await DB.prepare(`SELECT count(*) as total
-                                        FROM station ${whereSQL}`).bind(...params).first() as { total: number }
-  const total = countResult.total
+  // const countResult = await DB.prepare(`SELECT count(*) as total
+  //                                       FROM station ${whereSQL}`).bind(...params).first() as { total: number }
+  // const total = countResult.total
 
   // Get paginated results
   const offset = (page - 1) * pageSize
@@ -80,14 +92,23 @@ export async function getStations({
   params.push(offset)
 
   const { results } = await DB.prepare(`SELECT *
-                                        FROM station ${whereSQL} LIMIT ?
+                                        FROM station ${whereSQL}  ORDER BY votes DESC LIMIT ?
                                         OFFSET ?`).bind(...params).run()
 
   const data = {
     list: results as unknown as Station[],
-    total,
+    // total,
     page,
     pageSize
   }
   return data
+}
+
+export async function getStationById(id: number) {
+  const DB = await getDb()
+
+  console.log(id)
+  const { results } = await DB.prepare("SELECT * FROM station WHERE id = ?").bind(id).run()
+
+  return results[0] || null
 }

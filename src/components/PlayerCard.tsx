@@ -1,68 +1,28 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-
-interface Station {
-  name: string;
-  country: string;
-  language: string;
-  url: string;
-}
+import { useStationStore } from '@/app/store/useStationStore';
 
 interface Props {
   coverColor?: string;
-  isPlaying?: boolean;
   isFavorite?: boolean;
   isExpanded?: boolean;
-  currentStation?: Station;
   onToggleExpand?: () => void;
 }
 
-const PlayingEnums = {
-  pause: 'pause',
-  stop: 'stop',
-  playing: 'playing',
-} as const;
-
-type PlayerState = typeof PlayingEnums[keyof typeof PlayingEnums];
-
 export default function PlayerCard({
   coverColor = 'var(--oc-green-4)',
-  isPlaying: propIsPlaying = false,
   isFavorite = false,
   isExpanded = true,
-  currentStation = { name: 'Station Name', country: 'Country', language: 'Language', url: '' },
   onToggleExpand
 }: Props) {
-
-  const [playerState, setPlayerState] = useState<PlayerState>(PlayingEnums.stop);
+  const { currentStation, isPlaying, setIsPlaying } = useStationStore();
   const [isVolumeOn, setIsVolumeOn] = useState(true);
-
   const audioRef = useRef<HTMLAudioElement>(null);
-
-  const handlePlayPause = () => {
-    audioRef.current?.pause();
-    setPlayerState(PlayingEnums.pause);
-  };
-
-  const handlePlay = () => {
-    if (!audioRef.current || !currentStation.url) return;
-    setPlayerState(PlayingEnums.playing);
-    // Only set src if changed to avoid reloading if handled externally,
-    // but here we assume this component drives the audio.
-    if (audioRef.current.src !== currentStation.url) {
-        audioRef.current.src = currentStation.url;
-    }
-    audioRef.current.play().catch(e => console.error("Play error:", e));
-  };
 
   const handleTogglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (playerState === PlayingEnums.playing) {
-      handlePlayPause();
-    } else {
-      handlePlay();
-    }
+    setIsPlaying(!isPlaying);
   };
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
@@ -87,10 +47,27 @@ export default function PlayerCard({
   };
 
   useEffect(() => {
-    if (currentStation.url) {
-        handlePlay();
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (currentStation?.url) {
+      if (audio.src !== currentStation.url) {
+        audio.src = currentStation.url;
+      }
+      console.log(isPlaying)
+      if (isPlaying) {
+        audio.play().catch(e => {
+          console.error("Play error:", e);
+          setIsPlaying(false);
+        });
+      } else {
+        audio.pause();
+      }
+    } else {
+      audio.pause();
+      audio.src = '';
     }
-  }, [currentStation]);
+  }, [currentStation, isPlaying, setIsPlaying]);
 
   // Styles
   const wrapperBaseClasses = "absolute bottom-20 right-[2%] shadow-[0_-4px_20px_rgba(0,0,0,0.1)] transition-all duration-400 ease-in-out z-40 overflow-hidden";
@@ -114,10 +91,10 @@ export default function PlayerCard({
       {/* Info */}
       <div className="flex-1 min-w-0 mr-2">
         <h3 className="font-medium text-black dark:text-white truncate text-lg leading-6">
-          {currentStation.name}
+          {currentStation?.name || 'No Station Selected'}
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400 leading-6">
-          {currentStation.country} • {currentStation.language}
+          {currentStation?.country || '--'} • {currentStation?.language || '--'}
         </p>
       </div>
 
@@ -159,7 +136,7 @@ export default function PlayerCard({
             onClick={handleTogglePlay}
             aria-label="Play/Pause"
           >
-            {playerState === PlayingEnums.playing ? (
+            {isPlaying ? (
               <div className="iconfont icon-zanting text-xl"></div>
             ) : (
               <div className="iconfont icon-bofang text-xl"></div>
@@ -187,10 +164,10 @@ export default function PlayerCard({
         onToggleExpand?.();
       }}
     >
-      {propIsPlaying ? (
-        <div className="iconfont icon-bofang text-xl"></div>
-      ) : (
+      {isPlaying ? (
         <div className="iconfont icon-zanting text-xl"></div>
+      ) : (
+        <div className="iconfont icon-bofang text-xl"></div>
       )}
     </div>
   );
