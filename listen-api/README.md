@@ -34,7 +34,7 @@ pnpm dev
 默认地址 `http://127.0.0.1:8787`。新建本地数据库为空。如需要现有电台数据，**仅在新的本地数据库**先导入快照，再应用迁移：
 
 ```bash
-pnpm exec wrangler d1 execute DB --local --file=../listen/script/listen-d1-export.sql > import-local.log
+pnpm exec wrangler d1 execute DB --local --file=./data/listen-d1-export.sql > import-local.log
 pnpm db:migrate:local
 ```
 
