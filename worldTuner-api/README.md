@@ -23,6 +23,8 @@
 
 ## 本地开发
 
+电台数据同步工具位于独立的 [`worldTuner-data/radio-browser`](../worldTuner-data/radio-browser/README.md)，业务表结构继续以本项目 `migrations/` 为准。
+
 需要 Node.js >= 22.18（测试使用 node:sqlite）及 pnpm。
 
 ```bash

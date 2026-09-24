@@ -1,0 +1,18 @@
+{
+  "name": "worldtuner-data",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "sync:radio-browser": "node radio-browser/src/sync.mjs",
+    "test:radio-browser": "node --test radio-browser/test/*.test.mjs",
+    "test": "node --test */test/*.test.mjs",
+    "fetch:radio-garden": "node radio-garden/src/fetch-places.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.63.0"
+  }
+}
