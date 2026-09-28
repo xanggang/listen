@@ -10,7 +10,10 @@
     "sync:radio-browser": "node radio-browser/src/sync.mjs",
     "test:radio-browser": "node --test radio-browser/test/*.test.mjs",
     "test": "node --test */test/*.test.mjs",
-    "fetch:radio-garden": "node radio-garden/src/fetch-places.mjs"
+    "fetch:radio-garden": "node radio-garden/src/fetch-places.mjs",
+    "fetch:radio-garden:pages": "node radio-garden/src/fetch-pages.mjs",
+    "sync:radio-garden": "node radio-garden/src/sync.mjs",
+    "sync:radio-garden:api": "node radio-garden/src/sync-api.mjs"
   },
   "dependencies": {
     "playwright": "^1.63.0"

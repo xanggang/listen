@@ -1,0 +1,449 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 680" width="1000" height="680" fill="none">
+  <!-- Definitions & Gradients -->
+  <defs>
+    <linearGradient id="cyan-glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00f2fe"/>
+      <stop offset="100%" stop-color="#4facfe"/>
+    </linearGradient>
+    <linearGradient id="gold-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FCD34D"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+    <filter id="subtle-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <style>
+    .title { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; font-weight: 700; font-size: 20px; }
+    .subtitle { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; font-weight: 500; font-size: 13px; }
+    .label { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; font-weight: 600; font-size: 12px; }
+    .sublabel { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; font-weight: 400; font-size: 11px; }
+  </style>
+
+  <!-- Background Canvas -->
+  <rect width="1000" height="680" fill="#0A0D14" rx="20"/>
+
+  <!-- Left: Dark Mode Preview Panel (460w) -->
+  <rect x="24" y="24" width="460" height="632" rx="16" fill="#11151F" stroke="#1E2638" stroke-width="1.5"/>
+  <!-- Dark Header -->
+  <circle cx="56" cy="56" r="6" fill="#00F2FE"/>
+  <text x="72" y="62" fill="#FFFFFF" class="title">深色模式 (Dark Mode)</text>
+  <text x="72" y="80" fill="#7E8B9F" class="subtitle">针对 Midnight &amp; Obsidian 深夜声学界面优化</text>
+
+  <!-- Right: Light Mode Preview Panel (460w) -->
+  <rect x="516" y="24" width="460" height="632" rx="16" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.5"/>
+  <!-- Light Header -->
+  <circle cx="548" cy="56" r="6" fill="#0284C7"/>
+  <text x="564" y="62" fill="#0F172A" class="title">浅色模式 (Light Mode)</text>
+  <text x="564" y="80" fill="#64748B" class="subtitle">清晰对比度，自然晨光与日常高辨识度</text>
+
+  <!-- ================= ROW 1: 核心导航 (Globe, Discover, Charts, Profile) ================= -->
+  <!-- DARK: Row 1 -->
+  <!-- 1. Globe -->
+  <g transform="translate(48, 110)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#00F2FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="18" r="16"/>
+      <ellipse cx="18" cy="18" rx="7.5" ry="16"/>
+      <path d="M2 18h32M4.5 10h27M4.5 26h27"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">Globe</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">地球探索</text>
+  </g>
+
+  <!-- 2. Discover / Radar -->
+  <g transform="translate(152, 110)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="18" r="16"/>
+      <polygon points="18,8 23,15 30,18 23,21 18,28 13,21 6,18 13,15" fill="#38BDF8" fill-opacity="0.2" stroke="#38BDF8"/>
+      <circle cx="18" cy="18" r="2.5" fill="#38BDF8"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">Discover</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">聚合发现</text>
+  </g>
+
+  <!-- 3. Charts / Rank -->
+  <g transform="translate(256, 110)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <rect x="3" y="16" width="6" height="15" rx="1.5" fill="#94A3B8" fill-opacity="0.3"/>
+      <rect x="15" y="6" width="6" height="25" rx="1.5" fill="#00F2FE" fill-opacity="0.4" stroke="#00F2FE"/>
+      <rect x="27" y="11" width="6" height="20" rx="1.5" fill="#94A3B8" fill-opacity="0.3"/>
+      <path d="M2 32h32"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">Charts</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">排行榜</text>
+  </g>
+
+  <!-- 4. Profile -->
+  <g transform="translate(360, 110)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="12" r="7"/>
+      <path d="M5 30c0-6.627 5.82-11 13-11s13 4.373 13 11"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">Profile</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">个人中心</text>
+  </g>
+
+
+  <!-- LIGHT: Row 1 -->
+  <!-- 1. Globe -->
+  <g transform="translate(540, 110)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#0284C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="18" r="16"/>
+      <ellipse cx="18" cy="18" rx="7.5" ry="16"/>
+      <path d="M2 18h32M4.5 10h27M4.5 26h27"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">Globe</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">地球探索</text>
+  </g>
+
+  <!-- 2. Discover -->
+  <g transform="translate(644, 110)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="18" r="16"/>
+      <polygon points="18,8 23,15 30,18 23,21 18,28 13,21 6,18 13,15" fill="#0284C7" fill-opacity="0.15" stroke="#0284C7"/>
+      <circle cx="18" cy="18" r="2.5" fill="#0284C7"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">Discover</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">聚合发现</text>
+  </g>
+
+  <!-- 3. Charts -->
+  <g transform="translate(748, 110)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <rect x="3" y="16" width="6" height="15" rx="1.5" fill="#CBD5E1"/>
+      <rect x="15" y="6" width="6" height="25" rx="1.5" fill="#0284C7" fill-opacity="0.25" stroke="#0284C7"/>
+      <rect x="27" y="11" width="6" height="20" rx="1.5" fill="#CBD5E1"/>
+      <path d="M2 32h32"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">Charts</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">排行榜</text>
+  </g>
+
+  <!-- 4. Profile -->
+  <g transform="translate(852, 110)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="12" r="7"/>
+      <path d="M5 30c0-6.627 5.82-11 13-11s13 4.373 13 11"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">Profile</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">个人中心</text>
+  </g>
+
+
+  <!-- ================= ROW 2: 播放与音频控制 (Radio FM, Waveform, Play, Favorite) ================= -->
+  <!-- DARK: Row 2 -->
+  <!-- 5. Radio Antenna -->
+  <g transform="translate(48, 250)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#00F2FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <rect x="3" y="10" width="30" height="20" rx="4"/>
+      <circle cx="12" cy="20" r="5" fill="#00F2FE" fill-opacity="0.3"/>
+      <line x1="22" y1="16" x2="28" y2="16"/>
+      <line x1="22" y1="22" x2="28" y2="22"/>
+      <line x1="7" y1="10" x2="18" y2="2"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">Radio FM</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">电台广播</text>
+  </g>
+
+  <!-- 6. Equalizer Wave -->
+  <g transform="translate(152, 250)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" fill="none">
+      <line x1="4" y1="13" x2="4" y2="23"/>
+      <line x1="11" y1="7" x2="11" y2="29"/>
+      <line x1="18" y1="2" x2="18" y2="34"/>
+      <line x1="25" y1="10" x2="25" y2="26"/>
+      <line x1="32" y1="14" x2="32" y2="22"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">Equalizer</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">实时声波</text>
+  </g>
+
+  <!-- 7. Player (Play / Pause Circle) -->
+  <g transform="translate(256, 250)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)">
+      <circle cx="18" cy="18" r="16" fill="url(#cyan-glow)"/>
+      <polygon points="15,11 26,18 15,25" fill="#0A0D14"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">Play Control</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">核心播放</text>
+  </g>
+
+  <!-- 8. Favorite Heart -->
+  <g transform="translate(360, 250)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#F43F5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="#F43F5E" fill-opacity="0.2">
+      <path d="M18 31.5s-12.5-7.5-12.5-16.5a7 7 0 0 1 12.5-4.2A7 7 0 0 1 30.5 15c0 9-12.5 16.5-12.5 16.5z"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">Favorites</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">电台收藏</text>
+  </g>
+
+
+  <!-- LIGHT: Row 2 -->
+  <!-- 5. Radio Antenna -->
+  <g transform="translate(540, 250)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#0284C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <rect x="3" y="10" width="30" height="20" rx="4"/>
+      <circle cx="12" cy="20" r="5" fill="#0284C7" fill-opacity="0.2"/>
+      <line x1="22" y1="16" x2="28" y2="16"/>
+      <line x1="22" y1="22" x2="28" y2="22"/>
+      <line x1="7" y1="10" x2="18" y2="2"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">Radio FM</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">电台广播</text>
+  </g>
+
+  <!-- 6. Equalizer Wave -->
+  <g transform="translate(644, 250)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" fill="none">
+      <line x1="4" y1="13" x2="4" y2="23"/>
+      <line x1="11" y1="7" x2="11" y2="29"/>
+      <line x1="18" y1="2" x2="18" y2="34"/>
+      <line x1="25" y1="10" x2="25" y2="26"/>
+      <line x1="32" y1="14" x2="32" y2="22"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">Equalizer</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">实时声波</text>
+  </g>
+
+  <!-- 7. Player -->
+  <g transform="translate(748, 250)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)">
+      <circle cx="18" cy="18" r="16" fill="#0284C7"/>
+      <polygon points="15,11 26,18 15,25" fill="#FFFFFF"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">Play Control</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">核心播放</text>
+  </g>
+
+  <!-- 8. Favorite Heart -->
+  <g transform="translate(852, 250)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#E11D48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="#FFE4E6">
+      <path d="M18 31.5s-12.5-7.5-12.5-16.5a7 7 0 0 1 12.5-4.2A7 7 0 0 1 30.5 15c0 9-12.5 16.5-12.5 16.5z"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">Favorites</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">电台收藏</text>
+  </g>
+
+
+  <!-- ================= ROW 3: VIP 特权专属 (VIP Crown/Badge, Lossless FLAC, Timeshift DVR, Record) ================= -->
+  <!-- DARK: Row 3 -->
+  <!-- 9. VIP Pass -->
+  <g transform="translate(48, 390)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="url(#gold-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="url(#gold-grad)" fill-opacity="0.15">
+      <polygon points="18,4 22,12 31,13 24,19 26,28 18,23 10,28 12,19 5,13 14,12"/>
+      <circle cx="18" cy="18" r="2.5" fill="#F59E0B"/>
+    </g>
+    <text x="44" y="106" fill="#FCD34D" text-anchor="middle" class="label">VIP Master</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">会员徽标</text>
+  </g>
+
+  <!-- 10. FLAC Hi-Res Audio -->
+  <g transform="translate(152, 390)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <rect x="3" y="6" width="30" height="24" rx="4"/>
+      <path d="M9 13v10M9 13h6M9 18h4"/>
+      <path d="M19 13v10h6"/>
+      <circle cx="28" cy="9" r="1.5" fill="#F59E0B"/>
+    </g>
+    <text x="44" y="106" fill="#FCD34D" text-anchor="middle" class="label">Hi-Res FLAC</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">无损串流</text>
+  </g>
+
+  <!-- 11. DVR Timeshift (Rewind) -->
+  <g transform="translate(256, 390)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#00F2FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="18" r="15"/>
+      <polyline points="18,10 18,18 12,18"/>
+      <path d="M7 11L4 14l5 2"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">Timeshift</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">时光回溯</text>
+  </g>
+
+  <!-- 12. Broadcast Record -->
+  <g transform="translate(360, 390)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#F43F5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="18" r="15"/>
+      <circle cx="18" cy="18" r="6" fill="#F43F5E"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">Recording</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">离线录制</text>
+  </g>
+
+
+  <!-- LIGHT: Row 3 -->
+  <!-- 9. VIP Pass -->
+  <g transform="translate(540, 390)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="#FEF3C7">
+      <polygon points="18,4 22,12 31,13 24,19 26,28 18,23 10,28 12,19 5,13 14,12"/>
+      <circle cx="18" cy="18" r="2.5" fill="#D97706"/>
+    </g>
+    <text x="44" y="106" fill="#B45309" text-anchor="middle" class="label">VIP Master</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">会员徽标</text>
+  </g>
+
+  <!-- 10. FLAC Hi-Res Audio -->
+  <g transform="translate(644, 390)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <rect x="3" y="6" width="30" height="24" rx="4"/>
+      <path d="M9 13v10M9 13h6M9 18h4"/>
+      <path d="M19 13v10h6"/>
+      <circle cx="28" cy="9" r="1.5" fill="#D97706"/>
+    </g>
+    <text x="44" y="106" fill="#B45309" text-anchor="middle" class="label">Hi-Res FLAC</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">无损串流</text>
+  </g>
+
+  <!-- 11. DVR Timeshift -->
+  <g transform="translate(748, 390)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#0284C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="18" r="15"/>
+      <polyline points="18,10 18,18 12,18"/>
+      <path d="M7 11L4 14l5 2"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">Timeshift</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">时光回溯</text>
+  </g>
+
+  <!-- 12. Broadcast Record -->
+  <g transform="translate(852, 390)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#E11D48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="18" r="15"/>
+      <circle cx="18" cy="18" r="6" fill="#E11D48"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">Recording</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">离线录制</text>
+  </g>
+
+
+  <!-- ================= ROW 4: 系统功能与状态 (Theme Mode, Cast/AirPlay, Sleep Timer, Multi-Lang) ================= -->
+  <!-- DARK: Row 4 -->
+  <!-- 13. Dark / Light Mode Switch -->
+  <g transform="translate(48, 526)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#00F2FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M28 18A12 12 0 1 1 15 5a10 10 0 0 0 13 13z" fill="#00F2FE" fill-opacity="0.25"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">Theme Mode</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">明暗主题</text>
+  </g>
+
+  <!-- 14. Cast / AirPlay -->
+  <g transform="translate(152, 526)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M3 13V8a3 3 0 0 1 3-3h24a3 3 0 0 1 3 3v16a3 3 0 0 1-3 3h-8"/>
+      <path d="M3 24a5 5 0 0 1 5 5"/>
+      <path d="M3 19a10 10 0 0 1 10 10"/>
+      <circle cx="3" cy="29" r="1.5" fill="#94A3B8"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">AirPlay/Cast</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">设备投音</text>
+  </g>
+
+  <!-- 15. Sleep Timer -->
+  <g transform="translate(256, 526)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="18" r="15"/>
+      <polyline points="18,9 18,18 23,21"/>
+      <path d="M29 6L33 10M7 6L3 10"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">Sleep Timer</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">定时休眠</text>
+  </g>
+
+  <!-- 16. Localization -->
+  <g transform="translate(360, 526)">
+    <rect width="88" height="88" rx="14" fill="#181F2E" stroke="#253046" stroke-width="1"/>
+    <g transform="translate(26, 26)" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="18" r="15"/>
+      <path d="M10 13h10M15 13v10M12 23h6"/>
+      <path d="M21 24l3-8 3 8M22 21h4"/>
+    </g>
+    <text x="44" y="106" fill="#E2E8F0" text-anchor="middle" class="label">Language</text>
+    <text x="44" y="120" fill="#64748B" text-anchor="middle" class="sublabel">多语言翻译</text>
+  </g>
+
+
+  <!-- LIGHT: Row 4 -->
+  <!-- 13. Sun (Light Mode active) -->
+  <g transform="translate(540, 526)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="#FEF3C7">
+      <circle cx="18" cy="18" r="7"/>
+      <line x1="18" y1="3" x2="18" y2="7"/>
+      <line x1="18" y1="29" x2="18" y2="33"/>
+      <line x1="3" y1="18" x2="7" y2="18"/>
+      <line x1="29" y1="18" x2="33" y2="18"/>
+      <line x1="7.4" y1="7.4" x2="10.2" y2="10.2"/>
+      <line x1="25.8" y1="25.8" x2="28.6" y2="28.6"/>
+      <line x1="7.4" y1="28.6" x2="10.2" y2="25.8"/>
+      <line x1="25.8" y1="10.2" x2="28.6" y2="7.4"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">Theme Mode</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">明暗主题</text>
+  </g>
+
+  <!-- 14. Cast / AirPlay -->
+  <g transform="translate(644, 526)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M3 13V8a3 3 0 0 1 3-3h24a3 3 0 0 1 3 3v16a3 3 0 0 1-3 3h-8"/>
+      <path d="M3 24a5 5 0 0 1 5 5"/>
+      <path d="M3 19a10 10 0 0 1 10 10"/>
+      <circle cx="3" cy="29" r="1.5" fill="#475569"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">AirPlay/Cast</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">设备投音</text>
+  </g>
+
+  <!-- 15. Sleep Timer -->
+  <g transform="translate(748, 526)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="18" r="15"/>
+      <polyline points="18,9 18,18 23,21"/>
+      <path d="M29 6L33 10M7 6L3 10"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">Sleep Timer</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">定时休眠</text>
+  </g>
+
+  <!-- 16. Localization -->
+  <g transform="translate(852, 526)">
+    <rect width="88" height="88" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#subtle-shadow)"/>
+    <g transform="translate(26, 26)" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <circle cx="18" cy="18" r="15"/>
+      <path d="M10 13h10M15 13v10M12 23h6"/>
+      <path d="M21 24l3-8 3 8M22 21h4"/>
+    </g>
+    <text x="44" y="106" fill="#1E293B" text-anchor="middle" class="label">Language</text>
+    <text x="44" y="120" fill="#94A3B8" text-anchor="middle" class="sublabel">多语言翻译</text>
+  </g>
+</svg>

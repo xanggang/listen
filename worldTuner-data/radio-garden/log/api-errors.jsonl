@@ -1,0 +1,45 @@
+{
+  "occurred_at": "2026-09-28T02:26:25.630Z",
+  "endpoint": "places_channels",
+  "entity_id": "MQfEnBji",
+  "http_status": null,
+  "error": "fetch failed"
+}
+{
+  "occurred_at": "2026-09-28T02:31:46.220Z",
+  "endpoint": "places_channels",
+  "entity_id": "MQfEnBji",
+  "http_status": null,
+  "error_name": "TypeError",
+  "request_url": "https://radio.garden/api/ara/content/page/MQfEnBji/channels?s=1&hl=zh-Hans",
+  "cloudflare_detected": false,
+  "diagnostics": {
+    "request_url": "https://radio.garden/api/ara/content/page/MQfEnBji/channels?s=1&hl=zh-Hans",
+    "error_name": "TypeError",
+    "cause": {
+      "name": "ConnectTimeoutError",
+      "message": "Connect Timeout Error (attempted address: radio.garden:443, timeout: 10000ms)",
+      "code": "UND_ERR_CONNECT_TIMEOUT"
+    }
+  },
+  "error": "fetch failed"
+}
+{
+  "occurred_at": "2026-09-28T02:32:25.752Z",
+  "endpoint": "places_channels",
+  "entity_id": "6lcXHtKK",
+  "http_status": null,
+  "error_name": "TypeError",
+  "request_url": "https://radio.garden/api/ara/content/page/6lcXHtKK/channels?s=1&hl=zh-Hans",
+  "cloudflare_detected": false,
+  "diagnostics": {
+    "request_url": "https://radio.garden/api/ara/content/page/6lcXHtKK/channels?s=1&hl=zh-Hans",
+    "error_name": "TypeError",
+    "cause": {
+      "name": "ConnectTimeoutError",
+      "message": "Connect Timeout Error (attempted address: radio.garden:443, timeout: 10000ms)",
+      "code": "UND_ERR_CONNECT_TIMEOUT"
+    }
+  },
+  "error": "fetch failed"
+}
