@@ -20,7 +20,7 @@ beforeEach(
     INSERT INTO tags(id,name,stationcount) VALUES(1,'pop',9),(2,'jazz',3);
     INSERT INTO countries(id,name,stationcount) VALUES(1,'China',2);`);
     const insert = db.prepare(
-      'INSERT INTO station(id,name,url,url_resolved,language,tags,votes,geo_lat,geo_long) VALUES(?,?,?,?,?,?,?,?,?)',
+      'INSERT INTO station(id,name,url,url_resolved,language,tags,votes,geo_lat,geo_long,country) VALUES(?,?,?,?,?,?,?,?,?,?)',
     );
     for (let i = 1; i <= 25; i++)
       insert.run(
@@ -33,6 +33,7 @@ beforeEach(
         100,
         30,
         120,
+        'China',
       );
     reads = 0;
     env = {
@@ -129,6 +130,9 @@ test('filter IDs, combined filters and literal wildcard searches' /** 验证：f
     [21, 23, 25],
   );
   assert.equal((await request('/stations?languagesId=999')).status, 400);
+  const country = await (await request('/stations?countriesId=1&pageSize=5')).json();
+  assert.equal(country.data.list.length, 5);
+  assert.equal((await request('/stations?countriesId=999')).status, 400);
   const literal = await (await request('/stations?keyword=%25')).json();
   assert.equal(literal.data.list.length, 1);
 });

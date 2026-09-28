@@ -78,7 +78,7 @@ async function fetchPage(page, id, db) {
 }
 
 /**
- * 仅测试原文件前五个地点，单并发、间隔两秒；每次成功即更新进度记录。
+ * 仅测试原文件前五个地点，单并发、间隔一秒；每次成功即更新进度记录。
  * 任何失败都会写入错误日志并关闭浏览器，不继续扩大采集范围。
  */
 async function main() {
@@ -114,7 +114,7 @@ async function main() {
         new URL('pages-fetch-result.json', dataDirectory),
         `${JSON.stringify({ requested_ids: ids, completed: results.length, results }, null, 2)}\n`,
       );
-      if (id !== ids.at(-1)) await delay(2000);
+      if (id !== ids.at(-1)) await delay(1000);
     }
     console.log(`测试完成：${results.length}/5 个接口响应已保存。`);
   } finally {

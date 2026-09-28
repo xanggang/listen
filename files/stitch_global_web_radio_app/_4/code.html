@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aether Radio - Global Charts</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-tint": "#0284c7",
+            "on-background": "#0f172a",
+            "background": "#f8fafc",
+            "surface": "#f8fafc",
+            "on-surface": "#0f172a",
+            "on-surface-variant": "#64748b",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f1f5f9",
+            "surface-container": "#e2e8f0",
+            "surface-container-high": "#cbd5e1",
+            "primary": "#0284c7",
+            "primary-container": "#0284c7",
+            "on-primary": "#ffffff",
+            "secondary": "#475569",
+            "tertiary": "#059669",
+            "outline": "#94a3b8",
+            "outline-variant": "#e2e8f0"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "body-md": ["Inter"],
+            "body-sm": ["Inter"],
+            "label-lg": ["Inter"],
+            "label-md": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-sm": ["Plus Jakarta Sans", "Inter"],
+            "headline-md": ["Plus Jakarta Sans", "Inter"],
+            "headline-lg": ["Plus Jakarta Sans", "Inter"],
+            "headline-lg-mobile": ["Plus Jakarta Sans", "Inter"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .custom-scroll-hide::-webkit-scrollbar {
+      display: none;
+    }
+    .custom-scroll-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-900 antialiased selection:bg-sky-100 selection:text-sky-900 min-h-screen relative flex flex-col font-body-md text-sm overflow-x-hidden">
+<!-- TOP APP BAR -->
+<header class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 h-14 w-full backdrop-blur-xl bg-white/85 border-b border-slate-200/60 shadow-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#0284c7] text-[26px]" data-icon="graphic_eq">graphic_eq</span>
+<h1 class="text-lg font-bold tracking-tight text-slate-900">Aether Radio</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full text-slate-600 hover:text-[#0284c7] hover:bg-slate-100 transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-[22px]" data-icon="cast">cast</span>
+</button>
+</div>
+</header>
+<!-- MAIN SCROLLABLE CONTENT CANVAS -->
+<main class="flex-1 w-full max-w-md mx-auto pt-16 pb-40 px-4 flex flex-col gap-4">
+<!-- HEADER TITLE & COUNTDOWN BANNER -->
+<div class="flex flex-col gap-1.5 pt-2">
+<div class="flex items-center justify-between">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-50 border border-sky-100">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-xs font-semibold text-sky-800">周更榜单 · WEEK 42</span>
+</div>
+<div class="flex items-center gap-1 text-slate-500 text-xs font-medium">
+<span class="material-symbols-outlined text-[15px] text-[#0284c7]" data-icon="timer">timer</span>
+<span>距结算 18:24:02</span>
+</div>
+</div>
+<h2 class="text-2xl text-slate-900 tracking-tight font-extrabold flex items-center gap-2">
+        全球电台排行榜
+      </h2>
+<p class="text-xs text-slate-500">基于 140+ 国家 320,000+ 活跃并发听众的真实频率热度汇总</p>
+</div>
+<!-- CATEGORY SEGMENT TABS -->
+<div class="flex items-center gap-2 overflow-x-auto custom-scroll-hide -mx-4 px-4 py-1">
+<button class="shrink-0 px-4 py-1.5 rounded-full bg-[#0f172a] text-white font-semibold text-xs shadow-sm">
+        全球总榜 (Global Top 50)
+      </button>
+<button class="shrink-0 px-4 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 hover:border-slate-300 hover:text-slate-900 transition-colors text-xs font-medium shadow-xs">
+        飙升热播 (Trending)
+      </button>
+<button class="shrink-0 px-4 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 hover:border-slate-300 hover:text-slate-900 transition-colors text-xs font-medium shadow-xs">
+        流派榜 (Genre Tops)
+      </button>
+<button class="shrink-0 px-4 py-1.5 rounded-full bg-white text-slate-600 border border-slate-200 hover:border-slate-300 hover:text-slate-900 transition-colors text-xs font-medium shadow-xs">
+        地区最佳 (Regional)
+      </button>
+</div>
+<!-- FILTER CHIPS -->
+<div class="flex items-center gap-2 overflow-x-auto custom-scroll-hide">
+<button class="flex items-center gap-1 px-3 py-1 rounded-full bg-sky-50 border border-[#0284c7]/40 text-[#0284c7] font-semibold text-xs shadow-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="sensors">sensors</span>
+<span>实时收听 (Live Now)</span>
+</button>
+<button class="flex items-center gap-1 px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-800 text-xs font-medium shadow-xs">
+<span class="material-symbols-outlined text-[14px] text-slate-400" data-icon="bookmark">bookmark</span>
+<span>本周收藏最多 (Most Saved)</span>
+</button>
+<button class="flex items-center gap-1 px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-slate-800 text-xs font-medium shadow-xs">
+<span class="material-symbols-outlined text-[14px] text-slate-400" data-icon="high_quality">high_quality</span>
+<span>最高清音质 (Hi-Fi Master)</span>
+</button>
+</div>
+<!-- PODIUM SPOTLIGHT (TOP 3 STATIONS) -->
+<div class="relative pt-3 pb-1">
+<!-- Gentle subtle daylight radial glow -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 h-36 bg-sky-100/60 blur-3xl pointer-events-none rounded-full"></div>
+<div class="grid grid-cols-3 gap-2.5 items-end relative z-10">
+<!-- #2 PODIUM: FIP RADIO -->
+<div class="flex flex-col items-center">
+<div class="relative mb-2">
+<!-- Rank Badge -->
+<div class="absolute -top-2 -right-1.5 z-20 w-6 h-6 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-md">
+<span class="text-[11px] font-bold text-slate-700">2</span>
+</div>
+<!-- Avatar -->
+<div class="w-16 h-16 rounded-full p-0.5 bg-gradient-to-b from-slate-300 to-slate-100 shadow-sm">
+<img class="w-full h-full object-cover rounded-full" data-alt="Nocturnal Parisian cityscape illuminated by warm street lamps and moody neon radio studio neon lights, reflecting deep cobalt blues and violet shadows, cinematic editorial style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1mOuk72BulK9cL-p__dMZ2BQNrykJ9MSan55KEdnTOnmVls0Hgb4S8GIqUkzr2W4rYCzY3RQR8k16ZDrHQOZ5xV9CFzsKDnHPS9DYi0jfTU8lk06ftSNO_EotJc3_bDZp4DHzzoE_I6FhcGjjzkj4BJ3VyZ5MuBSqvZ2cUKQuWCFBW4NQUuqJRQtJ3AB7uJF4Yp4XWxZ2lChwB1uBoKCuazVi3l6Qh_CUgouiSNupOAb-ut4FBXWbaQ"/>
+</div>
+</div>
+<!-- Info Card -->
+<div class="w-full bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-sm">
+<span class="material-symbols-outlined text-slate-400 text-[18px]" data-icon="military_tech">military_tech</span>
+<span class="text-xs text-slate-900 font-bold truncate max-w-[85px] mt-0.5">Fip Radio</span>
+<span class="text-[10px] text-slate-500 truncate">Paris · 法国</span>
+<div class="mt-1 flex items-center gap-0.5 text-[11px] font-bold text-emerald-600">
+<span class="material-symbols-outlined text-[13px]" data-icon="arrow_upward">arrow_upward</span>
+<span>+2</span>
+</div>
+<span class="text-[10px] text-slate-400 mt-0.5">98k 在线</span>
+</div>
+</div>
+<!-- #1 PODIUM: KEXP 90.3 FM (HERO HIGHLIGHT) -->
+<div class="flex flex-col items-center -mt-3">
+<div class="relative mb-2">
+<!-- Crown Badge -->
+<div class="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center">
+<span class="material-symbols-outlined text-[#d97706] text-[24px] drop-shadow-sm" data-icon="crown" data-weight="fill">crown</span>
+</div>
+<!-- Avatar with Azure Ring -->
+<div class="w-20 h-20 rounded-full p-1 bg-gradient-to-b from-[#0284c7] via-sky-300 to-sky-100 shadow-[0_4px_16px_-2px_rgba(2,132,199,0.35)]">
+<img class="w-full h-full object-cover rounded-full" data-alt="Sound recording mixing console with luminous glowing digital dials and acoustic soundproofing in a high-tech midnight radio broadcast studio bathed in electric cyan light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIGKbxMeXDuDz9B6ISDLD-3XgSFh0spE1GqhT24oirt3tRABs-myR5C1RBb1mBpMAHt01SN74_H5lDwbx4lMhGMv7S5J9-JF5u8Bv7aZrnezvCTk2ZM-XTm2GMxQ82XjBn3yE-xLlBkLFrvZxekvoWL_gI3-CR-0luvvz7Ahc6l4YQE5iXVt3mSltJzZZi1qlzpBabGAbrhIap3Qutq34pMbkwYVRP1HZArS-kgpOYyPAKyxtSEIsghw"/>
+</div>
+<!-- Rank Tag -->
+<div class="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#0284c7] text-white text-[10px] font-extrabold rounded-full shadow-sm whitespace-nowrap">
+              TOP 1
+            </div>
+</div>
+<!-- Info Card -->
+<div class="w-full bg-white backdrop-blur-xl border border-sky-200/90 rounded-2xl p-3 flex flex-col items-center text-center shadow-[0_8px_20px_-6px_rgba(2,132,199,0.15)]">
+<span class="text-sm text-slate-900 font-extrabold truncate max-w-[100px]">KEXP 90.3</span>
+<span class="text-[11px] text-[#0284c7] font-semibold truncate">Seattle · 美国</span>
+<div class="mt-1 flex items-center gap-0.5 text-[11px] font-medium text-slate-500">
+<span class="material-symbols-outlined text-[13px]" data-icon="horizontal_rule">horizontal_rule</span>
+<span>0 保持</span>
+</div>
+<div class="mt-1.5 flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-50 text-[#0284c7] font-semibold text-[10px] border border-sky-100">
+<span class="material-symbols-outlined text-[12px]" data-icon="hearing">hearing</span>
+<span>142k 收听</span>
+</div>
+</div>
+</div>
+<!-- #3 PODIUM: WORLDWIDE FM -->
+<div class="flex flex-col items-center">
+<div class="relative mb-2">
+<!-- Rank Badge -->
+<div class="absolute -top-2 -left-1.5 z-20 w-6 h-6 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-md">
+<span class="text-[11px] font-bold text-slate-700">3</span>
+</div>
+<!-- Avatar -->
+<div class="w-16 h-16 rounded-full p-0.5 bg-gradient-to-b from-amber-400 to-amber-100 shadow-sm">
+<img class="w-full h-full object-cover rounded-full" data-alt="London skyline at midnight framed through rainy studio window with ambient blue city lights and retro analog microphone glowing softly in foreground." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7iHytgeOhI51Dj7QOat9ZBaIufc4zhdEbRI8uYfudSnjR7dUfxgqeBiXaJQEgr6uP-woacat2-7Nr0RNRvzcZl44JMT71HYZdi7YELCv-j-LCnaZIgDLiNfnt7EMFVHF50x1khtXDRi5XAkLlAWIhhrmpFK75M4RfWsRW_071BfTXPOBEJPAy1Iy-wTmXvWAIZe0WopmoM5Hk0V9dio9xH0ZYYbssKiaGQTTriPX4zqDw_xfIzrMLGQ"/>
+</div>
+</div>
+<!-- Info Card -->
+<div class="w-full bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-2xl p-2.5 flex flex-col items-center text-center shadow-sm">
+<span class="material-symbols-outlined text-amber-600 text-[18px]" data-icon="military_tech">military_tech</span>
+<span class="text-xs text-slate-900 font-bold truncate max-w-[85px] mt-0.5">Worldwide</span>
+<span class="text-[10px] text-slate-500 truncate">London · 英国</span>
+<div class="mt-1 flex items-center gap-0.5 text-[11px] font-bold text-emerald-600">
+<span class="material-symbols-outlined text-[13px]" data-icon="arrow_upward">arrow_upward</span>
+<span>+1</span>
+</div>
+<span class="text-[10px] text-slate-400 mt-0.5">85k 在线</span>
+</div>
+</div>
+</div>
+</div>
+<!-- RANKED LIST HEADER -->
+<div class="flex items-center justify-between pt-2">
+<span class="text-base text-slate-900 font-bold">榜单正席 4 - 10</span>
+<span class="text-xs text-slate-500">每 5 分钟热度更新</span>
+</div>
+<!-- RANKED LIST ITEMS (RANKS 4 TO 10) -->
+<div class="flex flex-col gap-2.5">
+<!-- RANK 4 -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-100 shadow-xs hover:border-sky-200 transition-all">
+<div class="flex items-center gap-3 min-w-0">
+<!-- Rank & Trend -->
+<div class="flex flex-col items-center justify-center w-7 shrink-0">
+<span class="text-base font-extrabold text-[#1e293b]">04</span>
+<span class="flex items-center text-[10px] text-emerald-600 font-bold">
+<span class="material-symbols-outlined text-[12px]" data-icon="arrow_upward">arrow_upward</span>3
+</span>
+</div>
+<!-- Avatar -->
+<div class="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-200/80">
+<img class="w-full h-full object-cover" data-alt="Tokyo Shibuya midnight aerial perspective with futuristic neon skyscraper reflections and indigo atmosphere in cyberpunk realism tone." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDo-ZGUZMCOYx8gyEXHq9-F4ORGIgsKziuPw43LpVAOtlM1aVNb_9Q23BCH9IyfWW1K9A-He7jnkhaz2n1XuoiCvte2vU2Roj_m309Yb33gtmZVjp67NVISOnFXPa1I9T0jdJTcJuTKWpnHzRLF-0f4SRMjcWNrpq72ZsDvSgY40NDtbDxNlegqFBgxcTioFlMmBsoovSpjFSy48E9A2Y902qqAxDwzdx5C-DC57HohIers8VxElYDYDg"/>
+</div>
+<!-- Details -->
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-slate-900 truncate">J-Wave 81.3 FM</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">#Jazz</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-500">
+<span>Tokyo, JP</span>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<span class="flex items-center gap-1 text-slate-500">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span>73.4k 在线</span>
+</span>
+</div>
+</div>
+</div>
+<!-- Play Button -->
+<button class="relative w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</button>
+</div>
+<!-- RANK 5 -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-100 shadow-xs hover:border-sky-200 transition-all">
+<div class="flex items-center gap-3 min-w-0">
+<div class="flex flex-col items-center justify-center w-7 shrink-0">
+<span class="text-base font-extrabold text-[#1e293b]">05</span>
+<span class="flex items-center text-[10px] text-rose-500 font-bold">
+<span class="material-symbols-outlined text-[12px]" data-icon="arrow_downward">arrow_downward</span>1
+</span>
+</div>
+<div class="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-200/80">
+<img class="w-full h-full object-cover" data-alt="Underground Berlin nightclub sound booth with faint violet backlighting and retro electronic synthesizers in a dark cinematic space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBQ2crC6oij0iCLGHUHMP6Sx2Wk5D0MH5KVVZ0tdQqZOMESs2HGALfXW3cH6glbHt5pA3J0d-SFZLLSaPEpuprvo-VTpxKEO1xCX2SyyDlWngdBtZK7Ry6Zjqml7CpbuzZAmr2FhGKoLc9up86za0yyS5pX2WLu9ygILIZrfiTbWKjOzKdyHKWL4Ji7mrNtXlXqILeegO2ggeDJVxOrZV4SowADvDioc1IWNAeUQ8pWWj_0vm_yiFxug"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-slate-900 truncate">Radio Eins 95.8</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">#Electronic</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-500">
+<span>Berlin, DE</span>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<span class="flex items-center gap-1 text-slate-500">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span>68.1k 在线</span>
+</span>
+</div>
+</div>
+</div>
+<button class="relative w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</button>
+</div>
+<!-- RANK 6 -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-100 shadow-xs hover:border-sky-200 transition-all">
+<div class="flex items-center gap-3 min-w-0">
+<div class="flex flex-col items-center justify-center w-7 shrink-0">
+<span class="text-base font-extrabold text-[#1e293b]">06</span>
+<span class="flex items-center text-[10px] text-emerald-600 font-bold">
+<span class="material-symbols-outlined text-[12px]" data-icon="arrow_upward">arrow_upward</span>5
+</span>
+</div>
+<div class="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-200/80">
+<img class="w-full h-full object-cover" data-alt="Lo-fi cozy studio room at night with gentle rain on large window, warm desk lamp, vintage vinyl player, and teal shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJaV-uYoZMR4CVjx_9H8iB4Nvq6XREqi_ZEoBBSQV-KYS1An1OF-m23gvtejgZzl8d_86PFj7XJE_tHfVKH7ldhQ7LWov9_4z3N7s0rvFHMyQO4reKqgiRGoKy7YchM6GAQ4_iVZD0yIoNRYZOFW8KQ6Q72vwYAIXqmjT5N3X8BL6c2F-_OYdvLrmI7QO0iieXzqvV4AYnefEqQbldqKy4EDfA7S_oiNoPXc0IHChwfLBz7jHaFbLxUA"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-slate-900 truncate">Chillhop Cafe Live</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">#LoFi</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-500">
+<span>Amsterdam, NL</span>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<span class="flex items-center gap-1 text-slate-500">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span>61.9k 在线</span>
+</span>
+</div>
+</div>
+</div>
+<button class="relative w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</button>
+</div>
+<!-- RANK 7 -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-100 shadow-xs hover:border-sky-200 transition-all">
+<div class="flex items-center gap-3 min-w-0">
+<div class="flex flex-col items-center justify-center w-7 shrink-0">
+<span class="text-base font-extrabold text-[#1e293b]">07</span>
+<span class="flex items-center text-[10px] text-slate-400 font-bold">
+<span class="material-symbols-outlined text-[12px]" data-icon="horizontal_rule">horizontal_rule</span>0
+</span>
+</div>
+<div class="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-200/80">
+<img class="w-full h-full object-cover" data-alt="Reykjavik Iceland ambient aurora borealis glowing emerald green in arctic night sky above remote glass radio station cabin." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6e0FN3NcQBZVXzG64gXF1e1gR2AMdunFmLMkYrItv1g5I9GJybch66mBYOBiboFy-5nj48UJ1b8ds4wD2ZFIPEBRuGBDsWn_TISnGp-7MiE6xOB8UdCfWd9h0GFuhgm5fzpm-PvxOS7DJyF2V0kUDcz2o5nsoOwJ6EB7l9xLpa0qGLI5YaYzh9OtSzazDBZvQyodLbzz9J3AhqryvaVrLt-9-QrZ7D6sJJ-Nj6bQ-eRupbeHYQiSlGA"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-slate-900 truncate">RÚV Rás 1</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">#Ambient</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-500">
+<span>Reykjavik, IS</span>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<span class="flex items-center gap-1 text-slate-500">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span>54.2k 在线</span>
+</span>
+</div>
+</div>
+</div>
+<button class="relative w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</button>
+</div>
+<!-- RANK 8 -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-100 shadow-xs hover:border-sky-200 transition-all">
+<div class="flex items-center gap-3 min-w-0">
+<div class="flex flex-col items-center justify-center w-7 shrink-0">
+<span class="text-base font-extrabold text-[#1e293b]">08</span>
+<span class="flex items-center text-[10px] text-emerald-600 font-bold">
+<span class="material-symbols-outlined text-[12px]" data-icon="arrow_upward">arrow_upward</span>2
+</span>
+</div>
+<div class="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-200/80">
+<img class="w-full h-full object-cover" data-alt="Sunset skyline of Sydney harbor overlooking calm water with deep dusk twilight gradient and glowing illuminated radio tower antenna." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfj5zfo8DWRcCybTPijW00rMG4mVk3dOotiqmRxZoHTOHj7MnuvZ2gQixLdrRYMx3R9VHh1blYzNDa93bDibHinHSeMh73AlqF8ZCnIGElDeZsrAKpFmo65a23A4p7Hhsw4bTOHXYbEKPUMyCAk4NIAqj0wvqMSPOcDgFkHvUZvHlxkQfjouFcZa_jQO_YEzcn8kmAXIGesskd4UuzCJPkFYqN1GH9P2v9W2Pc1XlV6kXOo-OwlcODyg"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-slate-900 truncate">Triple J 105.7</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">#Indie</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-500">
+<span>Sydney, AU</span>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<span class="flex items-center gap-1 text-slate-500">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span>49.8k 在线</span>
+</span>
+</div>
+</div>
+</div>
+<button class="relative w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</button>
+</div>
+<!-- RANK 9 -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-100 shadow-xs hover:border-sky-200 transition-all">
+<div class="flex items-center gap-3 min-w-0">
+<div class="flex flex-col items-center justify-center w-7 shrink-0">
+<span class="text-base font-extrabold text-[#1e293b]">09</span>
+<span class="flex items-center text-[10px] text-rose-500 font-bold">
+<span class="material-symbols-outlined text-[12px]" data-icon="arrow_downward">arrow_downward</span>3
+</span>
+</div>
+<div class="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-200/80">
+<img class="w-full h-full object-cover" data-alt="Minimalist architectural loft in Copenhagen with dark oak wood acoustic diffusers and warm ambient LED strip illumination at twilight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSc6A51EyPbF0j08ZBzCoUwboCRECBVz5j79jImOvtnn8ehQltSvi7mfs1y0thjIodIWIOLtA_u2HW6ocJgTT1zVrJn2DNkgIUDBpFm4OxpfNlwiwJFtmgKZ4LQIkqgGKKXLSIRP4sZsEEcHpQggGYXCM-3CPUdDSObxaCuCqV-gLukBOxY4SLj5jwLxxahAURn2LjeXtCVob3heIFxJev0MRNMul3dlyOtIGSBqVohP3PN7ypY5L3rg"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-slate-900 truncate">DR P6 Beat</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">#Alternative</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-500">
+<span>Copenhagen, DK</span>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<span class="flex items-center gap-1 text-slate-500">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span>44.6k 在线</span>
+</span>
+</div>
+</div>
+</div>
+<button class="relative w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</button>
+</div>
+<!-- RANK 10 -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-100 shadow-xs hover:border-sky-200 transition-all">
+<div class="flex items-center gap-3 min-w-0">
+<div class="flex flex-col items-center justify-center w-7 shrink-0">
+<span class="text-base font-extrabold text-[#1e293b]">10</span>
+<span class="flex items-center text-[10px] text-emerald-600 font-bold">
+<span class="material-symbols-outlined text-[12px]" data-icon="arrow_upward">arrow_upward</span>4
+</span>
+</div>
+<div class="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-200/80">
+<img class="w-full h-full object-cover" data-alt="Rio de Janeiro night coastline with Christ the Redeemer faintly visible on mist-shrouded mountain and vibrant Brazilian coastal twilight glow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-Y4iicJGIVJL-IQ3Mnr37nGmJWBA5hTZ7zjp7cQ95ySTs4R4kuNsg9zK7xst-LrdVNfw0FnGVDbFJgwaAYAucSPCuOdrOl4vQonu0-pAKTdTL5VZkRuEIbFEY63Zn9scZ1HD8y034LSOQwWQ1swwenlkydQtQYc2dEfjf98Ok_Qz7KY86nQ_yrnsaRrgAvtAc69SG3tFjGD05u99VY3qW6weDc4vxBTsPVRZoODQx-6tWDAefuXy5lw"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-slate-900 truncate">Radio Nova Brasil</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">#BossaNova</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-slate-500">
+<span>Rio de Janeiro, BR</span>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<span class="flex items-center gap-1 text-slate-500">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span>41.0k 在线</span>
+</span>
+</div>
+</div>
+</div>
+<button class="relative w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</button>
+</div>
+</div>
+</main>
+<!-- PERSISTENT GLOBAL MINI RADIO PLAYER (Docked above BottomNavBar) -->
+<div class="fixed bottom-16 left-3 right-3 z-40 max-w-md mx-auto">
+<div class="relative h-16 rounded-full bg-white/95 backdrop-blur-2xl border border-slate-200/90 shadow-[0_10px_25px_-5px_rgba(15,23,42,0.12)] px-3 flex items-center justify-between overflow-hidden">
+<!-- Live Buffer Indicator Line at bottom edge -->
+<div class="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-100">
+<div class="h-full bg-[#0284c7] w-2/3 shadow-xs"></div>
+</div>
+<!-- Station Art & Title -->
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="relative w-11 h-11 rounded-full overflow-hidden shrink-0 border border-sky-300 shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Sound recording mixing console with luminous glowing digital dials and acoustic soundproofing in a high-tech midnight radio broadcast studio bathed in electric cyan light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKYnK4NeyZWdEExSWKNtJW42qjU34RYJvpCxuFkjwtdhhY6Sb0ZxqGl_of745Vn9Cv7SjP2MjetLqhhCLj0Wpe5PX1iZt5IZzOjQOfkJlvnZmaRAw-KCZtWMkB8oED4AWCURBzrd3prjxaD9Tb5c2N8I9JzILx6JEf3UlcWoyZ98v0po9h5nQVIpWnGb_UNxSN0I6M-ijKlgSEJnHYTcOtrLzcWMZmIAxOtrTdoTuiOYrBURvzmHVD2A"/>
+<!-- Live Indicator Ring -->
+<span class="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-emerald-500 ring-1 ring-white animate-ping"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="text-sm font-bold text-slate-900 truncate">KEXP 90.3 FM</span>
+<span class="inline-flex items-center px-1 rounded text-[9px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              LIVE
+            </span>
+</div>
+<div class="flex items-center gap-1.5 text-xs text-slate-500 truncate">
+<span class="truncate">The Midday Show · Cheryl Waters</span>
+</div>
+</div>
+</div>
+<!-- Animated Sound Wave Visualizer & Transport Controls -->
+<div class="flex items-center gap-2.5 shrink-0 pl-2">
+<!-- Soundwave Bars -->
+<div class="flex items-end gap-0.5 h-4">
+<span class="w-0.5 bg-[#0284c7] rounded-full animate-bounce h-3" style="animation-duration: 0.6s;"></span>
+<span class="w-0.5 bg-[#0284c7] rounded-full animate-bounce h-4" style="animation-duration: 0.4s;"></span>
+<span class="w-0.5 bg-[#0284c7] rounded-full animate-bounce h-2" style="animation-duration: 0.8s;"></span>
+<span class="w-0.5 bg-[#0284c7] rounded-full animate-bounce h-3.5" style="animation-duration: 0.5s;"></span>
+</div>
+<button class="p-1.5 text-slate-400 hover:text-rose-500 transition-colors active:scale-90">
+<span class="material-symbols-outlined text-[20px]" data-icon="favorite">favorite</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-[#0284c7] text-white flex items-center justify-center shadow-md active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[22px]" data-icon="pause" data-weight="fill">pause</span>
+</button>
+</div>
+</div>
+</div>
+<!-- BOTTOM NAVIGATION BAR -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 border-t border-slate-200/80 bg-white/95 backdrop-blur-xl">
+<!-- Item 1: Globe -->
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1 hover:text-slate-900 transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="public">public</span>
+<span class="text-[11px] font-medium mt-0.5 text-slate-500">Globe</span>
+</a>
+<!-- Item 2: Discover -->
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1 hover:text-slate-900 transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="explore">explore</span>
+<span class="text-[11px] font-medium mt-0.5 text-slate-500">Discover</span>
+</a>
+<!-- Item 3: Charts (ACTIVE STATE) -->
+<a class="flex flex-col items-center justify-center bg-sky-50 text-[#0284c7] rounded-full px-4 py-1 border border-sky-100 shadow-xs active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="leaderboard" data-weight="fill">leaderboard</span>
+<span class="text-[11px] font-bold mt-0.5 text-[#0284c7]">Charts</span>
+</a>
+<!-- Item 4: Profile -->
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1 hover:text-slate-900 transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="person">person</span>
+<span class="text-[11px] font-medium mt-0.5 text-slate-500">Profile</span>
+</a>
+</nav>
+</body></html>

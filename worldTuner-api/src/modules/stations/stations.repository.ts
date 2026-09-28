@@ -4,6 +4,7 @@ import type { StationQuery } from './stations.schema.ts';
 export interface StationFilters {
   language?: string;
   tag?: string;
+  country?: string;
 }
 /** 构造字面子串匹配模式，转义反斜线、百分号和下划线等 LIKE 元字符。 */
 function contains(value: string) {
@@ -29,6 +30,7 @@ export class StationRepository {
     for (const [column, value] of [
       ['language', filters.language],
       ['tags', filters.tag],
+      ['country', filters.country],
     ] as const) {
       if (value !== undefined) {
         where.push(`${column} LIKE ? ESCAPE '\\'`);

@@ -100,7 +100,7 @@ async function main() {
         new URL('browser-fetch-result.json', dataDirectory),
         `${JSON.stringify({ recorded_at: new Date().toISOString(), responses }, null, 2)}\n`,
       );
-      if (name !== endpoints.at(-1)) await delay(2000);
+      if (name !== endpoints.at(-1)) await delay(1000);
     }
     console.log('两个接口均已保存到 SQLite。');
   } finally {

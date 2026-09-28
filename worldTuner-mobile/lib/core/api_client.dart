@@ -69,6 +69,7 @@ class ApiClient {
     String? keyword,
     int? languageId,
     int? tagId,
+    int? countryId,
   }) async {
     final query = <String, String>{'page': '$page', 'pageSize': '$pageSize'};
     if (keyword != null && keyword.trim().isNotEmpty) {
@@ -76,6 +77,7 @@ class ApiClient {
     }
     if (languageId != null) query['languagesId'] = '$languageId';
     if (tagId != null) query['tagsId'] = '$tagId';
+    if (countryId != null) query['countriesId'] = '$countryId';
     return StationPage.fromJson(
       await _get('stations', query) as Map<String, dynamic>,
     );
@@ -87,7 +89,7 @@ class ApiClient {
 
   // 读取榜单语言或标签，kind 仅由客户端固定调用点提供。
   Future<List<CatalogItem>> catalog(String kind, {int limit = 30}) async {
-    if (kind != 'languages' && kind != 'tags') {
+    if (kind != 'languages' && kind != 'tags' && kind != 'countries') {
       throw const ApiException('Unsupported catalog');
     }
     final rows = await _get(kind, {'limit': '$limit'}) as List<dynamic>;

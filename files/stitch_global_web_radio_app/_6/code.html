@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aether Radio - Profile &amp; Settings</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#0284c7',
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+            }
+          },
+          fontFamily: {
+            body: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    body {
+      min-height: max(884px, 100dvh);
+    }
+    .custom-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .custom-scroll {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 antialiased selection:bg-sky-100 selection:text-sky-900 min-h-screen pb-[148px]">
+<!-- TopAppBar: Clean White Frosted Bar -->
+<header class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 h-14 w-full backdrop-blur-xl bg-white/85 border-b border-slate-200/80 shadow-xs">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center border border-sky-100">
+<span class="material-symbols-outlined text-[20px]" data-icon="graphic_eq">graphic_eq</span>
+</div>
+<span class="font-display text-lg font-bold tracking-tight text-slate-900">Aether Radio</span>
+</div>
+<div class="flex items-center gap-1.5">
+<button aria-label="Cast Stream" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-600 hover:text-sky-600 hover:bg-slate-100 transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-[20px]" data-icon="cast">cast</span>
+</button>
+<button aria-label="Settings Quick Action" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-600 hover:text-sky-600 hover:bg-slate-100 transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-[20px]" data-icon="tune">tune</span>
+</button>
+</div>
+</header>
+<!-- Main Scrollable Canvas -->
+<main class="pt-16 px-4 max-w-md mx-auto space-y-4">
+<!-- User Profile Card -->
+<section class="mt-2 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between relative z-10">
+<div class="flex items-center gap-3.5">
+<!-- Avatar with crisp ring and online status -->
+<div class="relative w-15 h-15 rounded-full p-0.5 bg-gradient-to-tr from-sky-500 via-sky-400 to-amber-300 shadow-sm shrink-0">
+<img class="w-14 h-14 object-cover rounded-full bg-slate-100" data-alt="Modern cyberpunk audio explorer portrait with subtle neon cyan lighting highlights against deep midnight blue shadows, sharp detailed photography with high-end tech aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ6ogjDxad0Imh6a3pZTwWX399BiL7flYLqJNshYoY-zp3roRp_g_g-eBnBmXkb-blwHDuCTBgzDiI2F6Qbz3sip5ZF_ajaiAYwm3t1n28pxO9ziO05aJ1gSUYyQ32ENYMVFixYMZAZnCWac7IdCtOEJuzUs9RyoJCOX8FRF0eciE-9DloG9e8JMKT9HAgyqvt4xoKU9v_2oYclFGtuSB9P07zSMh9LNFV0SgtcizO_4MxXc3o-hERnQ"/>
+<div class="absolute bottom-0 right-0 bg-white p-0.5 rounded-full ring-2 ring-white">
+<span class="w-3.5 h-3.5 rounded-full bg-emerald-500 block"></span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h1 class="font-display text-lg text-slate-900 font-bold tracking-tight">Alex Voyager</h1>
+</div>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-semibold tracking-wide">
+<span class="material-symbols-outlined text-[12px] text-amber-600" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+              AUDIO PIONEER
+            </span>
+<span class="px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 text-[11px] font-mono font-medium">
+              VIP Lv.4
+            </span>
+</div>
+</div>
+</div>
+<button aria-label="Edit Profile" class="w-9 h-9 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 hover:text-sky-600 hover:bg-sky-50 transition-colors active:scale-95 border border-slate-200">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+</button>
+</div>
+<!-- Audio Listening Statistics Banner -->
+<div class="grid grid-cols-3 gap-2 mt-5 pt-4 border-t border-slate-100 relative z-10">
+<div class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-slate-50/70 border border-slate-100 text-center">
+<span class="font-display text-xl text-sky-600 font-bold tracking-tight">328<span class="text-xs font-normal text-slate-400 ml-0.5">h</span></span>
+<span class="text-xs text-slate-500 font-medium mt-0.5">累计收听</span>
+</div>
+<div class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-slate-50/70 border border-slate-100 text-center">
+<span class="font-display text-xl text-slate-900 font-bold tracking-tight">42<span class="text-xs font-normal text-slate-400 ml-0.5">国</span></span>
+<span class="text-xs text-slate-500 font-medium mt-0.5">探索国家</span>
+</div>
+<div class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-slate-50/70 border border-slate-100 text-center">
+<span class="font-display text-xl text-slate-900 font-bold tracking-tight">86<span class="text-xs font-normal text-slate-400 ml-0.5">台</span></span>
+<span class="text-xs text-slate-500 font-medium mt-0.5">收藏电台</span>
+</div>
+</div>
+</section>
+<!-- My Stations Section (Favorites & Recent) -->
+<section class="space-y-2.5">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sky-600 text-[19px]" data-icon="radio">radio</span>
+<h2 class="text-sm font-bold text-slate-900 tracking-tight">电台收藏夹与历史</h2>
+</div>
+<button class="text-xs font-semibold text-sky-600 hover:text-sky-700 flex items-center">
+        查看全部
+        <span class="material-symbols-outlined text-sm ml-0.5" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<div class="flex gap-2.5 overflow-x-auto pb-1 custom-scroll -mx-4 px-4 snap-x">
+<!-- Station Chip 1: Tokyo Chill FM -->
+<div class="shrink-0 snap-start flex items-center gap-3 p-2 pr-4 rounded-full bg-white border border-sky-200/90 shadow-xs hover:border-sky-400 transition-all cursor-pointer">
+<div class="relative w-10 h-10 rounded-full overflow-hidden shrink-0 border border-slate-200">
+<img class="w-full h-full object-cover" data-alt="Lush neon city skyline radio station logo with soft ambient violet gradients and audio wave motifs" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3GRQbMKvanvCTGFIVClc50J0KZ8rZ48X7z34nBpqbA77iPdi-b2-kYet7GJvqQO7O5GyrAdYICR6YI9nLPOhkIbWTX_12_aJ9oNa5Ffy97iSXz2wNej9gGKO-jHZcwjkmLc9zxq3PyCMuTivsCcg-dRiTsrFEKsUo02PgGGNnRFNYKliR2flOhkQDPqDs5MgX9BaGVDs3BUtwRsPwiZHND3Mf3kAcajUrET43CN0XrXpJDV_HOPOyqg"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="text-xs font-semibold text-slate-900 truncate max-w-[110px]">Tokyo Chill FM</span>
+<span class="material-symbols-outlined text-sky-600 text-[13px]" data-icon="push_pin" style="font-variation-settings: 'FILL' 1;">push_pin</span>
+</div>
+<span class="text-[11px] text-slate-500 font-mono">89.7 MHz · Shibuya</span>
+</div>
+</div>
+<!-- Station Chip 2 -->
+<div class="shrink-0 snap-start flex items-center gap-3 p-2 pr-4 rounded-full bg-white border border-slate-200 shadow-xs hover:border-slate-300 transition-all cursor-pointer">
+<div class="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-slate-200">
+<img class="w-full h-full object-cover" data-alt="Atmospheric Nordic fjord minimalist radio artwork with clean icy blue and deep midnight navy geometric gradients" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDHDVcZt2Dakrn_yHTagy9JK4z0GOxhN4qKbeC1ofxj8TDZ8kd3MkR-blBQ3Qvb-hBDZZ6gmbwKy3IHORCM5W5_sTSph4YQr6fQwBXpTf1OkZn-_aV9rZlnF6wQAbp2pIdxvaTsJoQOYbu4_lzpeo7FM5NdUXxjN9RgCRBe7RepHe1LW27JIYmhmcr2kvYB6fzp28J0aOn78nJO5YKBQh4iEnSyvoUpjjVzW9SIqLM-6oPotkM4EFSyw"/>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-semibold text-slate-900 truncate max-w-[110px]">Nordic Ambient</span>
+<span class="text-[11px] text-slate-500 font-mono">94.2 MHz · Oslo</span>
+</div>
+</div>
+<!-- Station Chip 3 -->
+<div class="shrink-0 snap-start flex items-center gap-3 p-2 pr-4 rounded-full bg-white border border-slate-200 shadow-xs hover:border-slate-300 transition-all cursor-pointer">
+<div class="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-slate-200">
+<img class="w-full h-full object-cover" data-alt="Vintage tape reel and vinyl groove glowing with golden amber and dark indigo backlighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjBnfQWTPKmRg1NEM0UlgeTDDASmw-kUzoxbJDa-dENihC3l88islizn0nAuFWf1_N1yKL5kuDwRq4sxRlI9-vepOVKEJmDI1mKrYQJiH1qCvpIVki1FZ8ErtO6qNk0yq7jKG8FT78IONvGYo6d-PqDPpgxV8q1eOIFrtqLcsqsbn8O2t3vhvzKShbK8HcMbZ1k7TfDTH8fhAXs1U7jZG8yoeMc4ape07Y-VUN67ukAgTHWmpc-fMWjw"/>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-semibold text-slate-900 truncate max-w-[110px]">BBC World 4</span>
+<span class="text-[11px] text-slate-500 font-mono">102.5 MHz · London</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Settings Group 1: Appearance & Theme -->
+<section class="space-y-1.5">
+<div class="px-1 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-slate-400" data-icon="palette">palette</span>
+<h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Appearance &amp; Theme</h3>
+</div>
+<div class="rounded-2xl bg-white border border-slate-200/80 shadow-xs divide-y divide-slate-100 overflow-hidden">
+<!-- Toggle: Light Mode active (Sun Icon in amber) -->
+<div class="p-3.5 flex items-center justify-between hover:bg-slate-50/70 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200/70 flex items-center justify-center text-amber-600">
+<span class="material-symbols-outlined text-[20px]" data-icon="light_mode">light_mode</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-slate-900">日间模式 (Light Mode)</p>
+<p class="text-xs text-slate-500">清晰对比度，自然晨光与日常高辨识度</p>
+</div>
+</div>
+<!-- Toggle switch on -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white peer-checked:bg-sky-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all shadow-xs"></div>
+</label>
+</div>
+<!-- Toggle: Wave Effect -->
+<div class="p-3.5 flex items-center justify-between hover:bg-slate-50/70 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600">
+<span class="material-symbols-outlined text-[20px]" data-icon="waves">waves</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-slate-900">动态背景动效 (Atmospheric Wave)</p>
+<p class="text-xs text-slate-500">开启声波流体粒子环境交互</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white peer-checked:bg-sky-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all shadow-xs"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Settings Group 2: Audio & Streaming -->
+<section class="space-y-1.5">
+<div class="px-1 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-slate-400" data-icon="tune">tune</span>
+<h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Audio &amp; Streaming</h3>
+</div>
+<div class="rounded-2xl bg-white border border-slate-200/80 shadow-xs divide-y divide-slate-100 overflow-hidden">
+<!-- Quality -->
+<div class="p-3.5 flex items-center justify-between hover:bg-slate-50/70 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600">
+<span class="material-symbols-outlined text-[20px]" data-icon="equalizer">equalizer</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-slate-900">流媒体音质 (Stream Quality)</p>
+<p class="text-xs text-slate-500">无损音频优先缓冲策略</p>
+</div>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 font-semibold text-[11px] border border-sky-200">Lossless FLAC</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px]" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Sleep Timer -->
+<div class="p-3.5 flex items-center justify-between hover:bg-slate-50/70 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600">
+<span class="material-symbols-outlined text-[20px]" data-icon="bedtime">bedtime</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-slate-900">定时关闭 / 睡眠倒计时</p>
+<p class="text-xs text-slate-500">入睡伴随广播，自动柔和渐变淡出</p>
+</div>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="text-xs font-semibold text-slate-600 font-mono">30 分钟</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px]" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Settings Group 3: Localization -->
+<section class="space-y-1.5">
+<div class="px-1 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-slate-400" data-icon="translate">translate</span>
+<h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Localization</h3>
+</div>
+<div class="rounded-2xl bg-white border border-slate-200/80 shadow-xs divide-y divide-slate-100 overflow-hidden">
+<div class="p-3.5 flex items-center justify-between hover:bg-slate-50/70 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600">
+<span class="material-symbols-outlined text-[20px]" data-icon="language">language</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-slate-900">应用语言 (Language)</p>
+<p class="text-xs text-slate-500">界面与频段标签显示标准</p>
+</div>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="text-xs text-slate-600 font-medium">中文 (简体)</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px]" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<div class="p-3.5 flex items-center justify-between hover:bg-slate-50/70 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600">
+<span class="material-symbols-outlined text-[20px]" data-icon="subtitles">subtitles</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-slate-900">电台元数据自动翻译</p>
+<p class="text-xs text-slate-500">实时翻译海外电台歌曲及主播节目信息</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white peer-checked:bg-sky-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all shadow-xs"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Settings Group 4: Storage & App -->
+<section class="space-y-1.5">
+<div class="px-1 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-slate-400" data-icon="storage">storage</span>
+<h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Storage &amp; App</h3>
+</div>
+<div class="rounded-2xl bg-white border border-slate-200/80 shadow-xs divide-y divide-slate-100 overflow-hidden">
+<div class="p-3.5 flex items-center justify-between hover:bg-slate-50/70 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500">
+<span class="material-symbols-outlined text-[20px]" data-icon="cleaning_services">cleaning_services</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-slate-900">清理音频缓存</p>
+<p class="text-xs text-slate-500">释放本地流媒体预缓冲块</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-xs font-mono font-medium">240 MB</span>
+<button class="text-xs font-semibold text-sky-600 hover:text-sky-700">清理</button>
+</div>
+</div>
+<div class="p-3.5 flex items-center justify-between hover:bg-slate-50/70 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600">
+<span class="material-symbols-outlined text-[20px]" data-icon="info">info</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-slate-900">关于全球网络电台</p>
+<p class="text-xs text-slate-500">Aether Radio 纯粹音频探索框架</p>
+</div>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="text-xs text-slate-400 font-mono">v3.2.0</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px]" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Sign out / Switch Account button -->
+<div class="pt-2 pb-6 text-center">
+<button class="w-full py-3 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-rose-600 hover:border-rose-200 font-semibold text-sm transition-all shadow-xs active:scale-[0.99]">
+      退出当前登录
+    </button>
+<p class="text-[11px] text-slate-400 mt-3 font-mono">Connected to Global Relay Gateway · Node AP-East-2</p>
+</div>
+</main>
+<!-- Persistent Global Mini Audio Player: Clean Light Mode -->
+<aside class="fixed bottom-[68px] left-3 right-3 z-40 max-w-md mx-auto h-16 rounded-full bg-white/95 backdrop-blur-2xl border border-slate-200/90 shadow-lg flex items-center justify-between px-3.5 overflow-hidden">
+<!-- Progress Bar -->
+<div class="absolute bottom-0 left-0 right-0 h-[2.5px] bg-slate-100">
+<div class="h-full bg-sky-600 w-2/3"></div>
+</div>
+<!-- Station Info & Animated Art -->
+<div class="flex items-center gap-3 overflow-hidden cursor-pointer">
+<div class="relative w-11 h-11 rounded-full overflow-hidden shrink-0 border border-sky-200 p-[1.5px] bg-gradient-to-tr from-sky-500 to-sky-200 shadow-xs">
+<img class="w-full h-full object-cover rounded-full" data-alt="Deep blue neon glowing globe spinning with atmospheric radiowaves in dark midnight galaxy visual" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBH7jVB4_knWnQnFFXmvEeR2fZI8ctvQnGY-SgendS79LB6qW7AM9HoqGerGU8x6GyIq3ZP142wCIA9weuHMnl5R-OCUspgUrs0XA1vScKHMk-79vu56EZb2uOI_AjMC7tY4neRua3YeHufxKIkxDbZg2QZ94bFu3SR0z9fNw0G-geMRhT7t4YLrzXvNYvk3k8QGfxDHLhEvG3WQPw9DITBQ5Paf8mwEbf9xMFkqJnfijrc8RtVuS-VLA"/>
+<div class="absolute inset-0 bg-sky-600/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-sky-700 text-sm animate-pulse" data-icon="graphic_eq">graphic_eq</span>
+</div>
+</div>
+<div class="flex flex-col truncate">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
+<span class="text-xs font-bold text-slate-900 truncate">Intergalactic FM</span>
+</div>
+<p class="text-[11px] text-slate-500 truncate">The Hague, Netherlands · Synthwave Special</p>
+</div>
+</div>
+<!-- Mini Transport Controls -->
+<div class="flex items-center gap-1 shrink-0 pl-2">
+<button aria-label="Favorite Station" class="w-9 h-9 rounded-full flex items-center justify-center text-rose-500 hover:bg-rose-50 transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="favorite" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<!-- Play/Pause Disc in Azure Blue -->
+<button aria-label="Pause" class="w-10 h-10 rounded-full bg-sky-600 text-white flex items-center justify-center shadow-md shadow-sky-600/25 hover:bg-sky-500 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[22px]" data-icon="pause" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+</div>
+</aside>
+<!-- BottomNavBar: 4 Tabs with Active Profile in Azure Blue -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 border-t border-slate-200/90 bg-white/95 backdrop-blur-xl shadow-lg">
+<!-- Tab 1: Globe -->
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-800 px-3 py-1 transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="public">public</span>
+<span class="text-[10px] font-medium mt-0.5">Globe</span>
+</a>
+<!-- Tab 2: Discover -->
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-800 px-3 py-1 transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="explore">explore</span>
+<span class="text-[10px] font-medium mt-0.5">Discover</span>
+</a>
+<!-- Tab 3: Charts -->
+<a class="flex flex-col items-center justify-center text-slate-500 hover:text-slate-800 px-3 py-1 transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="leaderboard">leaderboard</span>
+<span class="text-[10px] font-medium mt-0.5">Charts</span>
+</a>
+<!-- Tab 4: Profile (ACTIVE) -->
+<a class="flex flex-col items-center justify-center bg-sky-50 text-sky-600 border border-sky-100 rounded-full px-4 py-1 transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-[10px] font-bold mt-0.5">Profile</span>
+</a>
+</nav>
+</body></html>

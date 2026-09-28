@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Aether Radio - Discover &amp; Aggregated Search</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary": "#0284c7",
+            "primary-container": "#0284c7",
+            "on-primary": "#ffffff",
+            "on-primary-container": "#ffffff",
+            "secondary": "#00677d",
+            "surface": "#f8fafc",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f1f5f9",
+            "surface-container": "#ffffff",
+            "surface-container-high": "#e2e8f0",
+            "surface-container-highest": "#cbd5e1",
+            "on-surface": "#0f172a",
+            "on-surface-variant": "#64748b",
+            "outline": "#94a3b8",
+            "outline-variant": "#e2e8f0",
+            "background": "#f8fafc",
+            "tertiary": "#059669",
+            "tertiary-container": "#10b981"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "body-md": ["Inter"],
+            "body-sm": ["Inter"],
+            "label-lg": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-md": ["Inter", "Plus Jakarta Sans"],
+            "display": ["Inter", "Plus Jakarta Sans"],
+            "label-md": ["Inter"],
+            "headline-sm": ["Inter", "Plus Jakarta Sans"],
+            "body-lg": ["Inter"]
+          },
+          "fontSize": {
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Hide scrollbars cleanly */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Waveform visualizer animation */
+    @keyframes soundwave {
+      0%, 100% { height: 4px; }
+      50% { height: 16px; }
+    }
+    .wave-bar-1 { animation: soundwave 0.8s ease-in-out infinite; }
+    .wave-bar-2 { animation: soundwave 1.1s ease-in-out 0.2s infinite; }
+    .wave-bar-3 { animation: soundwave 0.9s ease-in-out 0.4s infinite; }
+    .wave-bar-4 { animation: soundwave 1.2s ease-in-out 0.1s infinite; }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 antialiased selection:bg-sky-500 selection:text-white">
+<!-- Outer Mobile Container Context -->
+<div class="relative min-h-screen w-full max-w-md mx-auto bg-[#F8FAFC] flex flex-col shadow-2xl overflow-x-hidden pb-[144px]">
+<!-- Shared Component: TopAppBar -->
+<header class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 h-14 w-full backdrop-blur-md bg-white/90 border-b border-slate-200/80 max-w-md mx-auto">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#0284C7]" data-icon="graphic_eq">graphic_eq</span>
+<span class="text-headline-sm font-headline-sm font-bold tracking-tight text-slate-900">Aether Radio</span>
+</div>
+<div class="flex items-center gap-3">
+<button aria-label="Cast audio" class="p-2 rounded-full text-slate-600 hover:text-sky-600 hover:bg-slate-100 transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="cast">cast</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-4 pt-16 flex flex-col gap-6">
+<!-- Aggregated Search Bar Module -->
+<section class="mt-2">
+<div class="relative flex items-center w-full">
+<div class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined text-xl" data-icon="search">search</span>
+</div>
+<input class="w-full h-12 pl-11 pr-24 rounded-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-400 text-body-md font-body-md shadow-sm focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all" placeholder="搜索电台、国家、语言、流派..." type="text"/>
+<div class="absolute inset-y-0 right-2 flex items-center gap-1">
+<button aria-label="Voice search" class="p-1.5 rounded-full text-slate-500 hover:text-sky-600 hover:bg-slate-100 transition-colors active:scale-95">
+<span class="material-symbols-outlined text-lg" data-icon="mic">mic</span>
+</button>
+<div class="h-4 w-[1px] bg-slate-200 mx-0.5"></div>
+<button aria-label="Scan frequencies" class="p-1.5 rounded-full text-sky-600 hover:bg-sky-50 transition-colors active:scale-95 flex items-center">
+<span class="material-symbols-outlined text-lg" data-icon="tune">tune</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Category Filter Chips Row (Horizontal Scroll) -->
+<section class="-mx-4 px-4 overflow-x-auto no-scrollbar flex items-center gap-2">
+<!-- Active Filter Chip -->
+<button class="flex-shrink-0 px-4 py-2 rounded-full bg-[#0284C7] text-white text-label-md font-label-md shadow-sm transition-all">
+          全部 (All)
+        </button>
+<!-- Inactive Filter Chips -->
+<button class="flex-shrink-0 px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-600 text-label-md font-label-md hover:text-slate-900 hover:bg-slate-50 transition-colors active:scale-95 shadow-sm">
+          音乐流派 (Genres)
+        </button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-600 text-label-md font-label-md hover:text-slate-900 hover:bg-slate-50 transition-colors active:scale-95 shadow-sm">
+          国家/地区 (Countries)
+        </button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-600 text-label-md font-label-md hover:text-slate-900 hover:bg-slate-50 transition-colors active:scale-95 shadow-sm">
+          语言 (Languages)
+        </button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-600 text-label-md font-label-md hover:text-slate-900 hover:bg-slate-50 transition-colors active:scale-95 shadow-sm">
+          新闻播报 (News)
+        </button>
+<button class="flex-shrink-0 px-4 py-2 rounded-full border border-slate-200 bg-white text-slate-600 text-label-md font-label-md hover:text-slate-900 hover:bg-slate-50 transition-colors active:scale-95 shadow-sm">
+          播客精选 (Podcasts)
+        </button>
+</section>
+<!-- Featured Spotlight Hero Card -->
+<section class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[#0284C7] text-sm" data-icon="auto_awesome">auto_awesome</span>
+<span class="text-label-sm font-label-sm uppercase text-[#0284C7] tracking-wider font-semibold">Editor's Pick</span>
+</div>
+<span class="text-body-sm font-body-sm text-slate-500">每日 00:00 更新</span>
+</div>
+<div class="relative w-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white shadow-md group">
+<!-- Spotlight Cover Image with high-contrast text overlay -->
+<div class="h-52 w-full bg-cover bg-center relative" data-alt="Cinematic shot of Icelandic aurora borealis dancing across a starry midnight blue arctic sky over snowcapped mountains and a glowing radio antenna tower. Deep electric cyan and dark indigo hues reflect upon a tranquil glacial lagoon, emitting a mysterious and immersive late-night atmospheric mood with subtle neon tones." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDZ6BhdsfhXdMNzG7E7VMhPzlDloU4_zqTk_Z54J_MATB_AeBZX_kJ18dbvhiuIVjjjJfr1dv8QRSgxePKp-7I5ZHcPji4AfAD0P_VdmMRYyosYFOWIrLh6ZLzUDaky9XntgxBcAV40T0oYKPLKo-EyMmBR_oUQRw0A-ukSWvEZi1aGy8DOGBQ9XuQZSE-cjj5PLt0XCan4HPEMyRwf2Zhum9Qa3yQ9u7AypGIdMMR46XDLjgNqZpmqQQ')">
+<div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent"></div>
+<!-- Live Indicator Badge & Bitrate -->
+<div class="absolute top-3 left-3 flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 text-emerald-600 text-label-sm font-label-sm font-medium shadow-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+<span class="font-semibold">LIVE</span>
+</span>
+<span class="px-2 py-0.5 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 text-slate-700 text-[11px] font-body-sm shadow-sm font-medium">
+                98.4 MHz • 320k
+              </span>
+</div>
+<!-- Country Flag Badge -->
+<div class="absolute top-3 right-3 px-2 py-1 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center gap-1.5 text-body-sm font-body-sm text-slate-800 shadow-sm">
+<span>🇮🇸</span>
+<span class="text-[11px] font-medium text-slate-700">Reykjavík</span>
+</div>
+<!-- Spotlight Content Bottom Overlay -->
+<div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
+<div class="flex-1">
+<p class="text-label-sm font-label-sm text-sky-200 tracking-wide font-medium">冰岛雷克雅未克极光电台</p>
+<h3 class="text-headline-sm font-headline-sm font-bold text-white mt-0.5 drop-shadow-sm">
+                  Nordic Ambient FM
+                </h3>
+<p class="text-body-sm font-body-sm text-slate-200 truncate mt-0.5">
+                  正在播出: Sigur Rós - Valtari (Glacial Remaster)
+                </p>
+</div>
+<!-- Quick Play CTA -->
+<button aria-label="Listen now to Nordic Ambient FM" class="flex-shrink-0 w-12 h-12 rounded-full bg-[#0284C7] text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform hover:bg-sky-500">
+<span class="material-symbols-outlined text-2xl font-bold" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Multi-dimensional Matrix: Explore by Genre (按流派探索) -->
+<section class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<h2 class="text-headline-sm font-headline-sm font-semibold text-slate-900 flex items-center gap-2">
+<span>按流派探索</span>
+<span class="text-body-sm font-body-sm text-slate-500 font-normal">Genres</span>
+</h2>
+<button class="text-body-sm font-body-sm text-[#0284C7] hover:underline flex items-center font-medium">
+            全部流派 <span class="material-symbols-outlined text-sm ml-0.5" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- 2x3 Aesthetic Bento Grid -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Genre 1: Jazz & Blues -->
+<div class="relative overflow-hidden rounded-2xl p-3.5 bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between h-28 group hover:border-purple-300 hover:shadow-md transition-all">
+<div class="flex items-start justify-between">
+<span class="w-8 h-8 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-lg" data-icon="music_note">music_note</span>
+</span>
+<span class="text-label-sm font-label-sm text-slate-400">1,420+ 频率</span>
+</div>
+<div>
+<p class="text-label-lg font-label-lg text-slate-900 font-semibold">Jazz &amp; Blues</p>
+<p class="text-body-sm font-body-sm text-slate-500 text-xs">爵士萨克斯与布鲁斯</p>
+</div>
+</div>
+<!-- Genre 2: Synthwave & Electronic -->
+<div class="relative overflow-hidden rounded-2xl p-3.5 bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between h-28 group hover:border-sky-300 hover:shadow-md transition-all">
+<div class="flex items-start justify-between">
+<span class="w-8 h-8 rounded-full bg-sky-50 text-sky-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-lg" data-icon="electric_bolt">electric_bolt</span>
+</span>
+<span class="text-label-sm font-label-sm text-slate-400">2,880+ 频率</span>
+</div>
+<div>
+<p class="text-label-lg font-label-lg text-slate-900 font-semibold">Synth &amp; Electro</p>
+<p class="text-body-sm font-body-sm text-slate-500 text-xs">复古电子与合成浪潮</p>
+</div>
+</div>
+<!-- Genre 3: Classical & Opera -->
+<div class="relative overflow-hidden rounded-2xl p-3.5 bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between h-28 group hover:border-emerald-300 hover:shadow-md transition-all">
+<div class="flex items-start justify-between">
+<span class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-lg" data-icon="theater_comedy">theater_comedy</span>
+</span>
+<span class="text-label-sm font-label-sm text-slate-400">960+ 频率</span>
+</div>
+<div>
+<p class="text-label-lg font-label-lg text-slate-900 font-semibold">Classical &amp; Opera</p>
+<p class="text-body-sm font-body-sm text-slate-500 text-xs">世界交响与经典歌剧</p>
+</div>
+</div>
+<!-- Genre 4: Lo-Fi Chillhop -->
+<div class="relative overflow-hidden rounded-2xl p-3.5 bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between h-28 group hover:border-slate-300 hover:shadow-md transition-all">
+<div class="flex items-start justify-between">
+<span class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-lg" data-icon="headphones">headphones</span>
+</span>
+<span class="text-label-sm font-label-sm text-slate-400">3,140+ 频率</span>
+</div>
+<div>
+<p class="text-label-lg font-label-lg text-slate-900 font-semibold">Lo-Fi Chillhop</p>
+<p class="text-body-sm font-body-sm text-slate-500 text-xs">深夜自习与专注低音</p>
+</div>
+</div>
+<!-- Genre 5: Rock & Indie -->
+<div class="relative overflow-hidden rounded-2xl p-3.5 bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between h-28 group hover:border-rose-300 hover:shadow-md transition-all">
+<div class="flex items-start justify-between">
+<span class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-lg" data-icon="album">album</span>
+</span>
+<span class="text-label-sm font-label-sm text-slate-400">4,210+ 频率</span>
+</div>
+<div>
+<p class="text-label-lg font-label-lg text-slate-900 font-semibold">Rock &amp; Indie</p>
+<p class="text-body-sm font-body-sm text-slate-500 text-xs">车库摇滚与独立声响</p>
+</div>
+</div>
+<!-- Genre 6: World Folk -->
+<div class="relative overflow-hidden rounded-2xl p-3.5 bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between h-28 group hover:border-amber-300 hover:shadow-md transition-all">
+<div class="flex items-start justify-between">
+<span class="w-8 h-8 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-lg" data-icon="language">language</span>
+</span>
+<span class="text-label-sm font-label-sm text-slate-400">1,820+ 频率</span>
+</div>
+<div>
+<p class="text-label-lg font-label-lg text-slate-900 font-semibold">World Folk</p>
+<p class="text-body-sm font-body-sm text-slate-500 text-xs">原生民族与异域民谣</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Global Countries & Territories (全球国家与地区) -->
+<section class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<h2 class="text-headline-sm font-headline-sm font-semibold text-slate-900 flex items-center gap-2">
+<span>全球国家与地区</span>
+<span class="text-body-sm font-body-sm text-slate-500 font-normal">Countries</span>
+</h2>
+<span class="text-label-sm font-label-sm text-slate-500">195 个国家</span>
+</div>
+<!-- Horizontal Circular Avatar Pills with Flag & Station Counts -->
+<div class="-mx-4 px-4 overflow-x-auto no-scrollbar flex items-center gap-3">
+<!-- Japan -->
+<div class="flex-shrink-0 flex items-center gap-2.5 px-3 py-2 rounded-full bg-white border border-slate-200/90 hover:border-sky-400 transition-all cursor-pointer shadow-sm">
+<span class="text-2xl leading-none">🇯🇵</span>
+<div class="flex flex-col">
+<span class="text-label-md font-label-md text-slate-800 font-medium">日本</span>
+<span class="text-[11px] font-body-sm text-[#0284C7] font-medium">1,840 局</span>
+</div>
+</div>
+<!-- United Kingdom -->
+<div class="flex-shrink-0 flex items-center gap-2.5 px-3 py-2 rounded-full bg-white border border-slate-200/90 hover:border-sky-400 transition-all cursor-pointer shadow-sm">
+<span class="text-2xl leading-none">🇬🇧</span>
+<div class="flex flex-col">
+<span class="text-label-md font-label-md text-slate-800 font-medium">英国</span>
+<span class="text-[11px] font-body-sm text-[#0284C7] font-medium">2,910 局</span>
+</div>
+</div>
+<!-- France -->
+<div class="flex-shrink-0 flex items-center gap-2.5 px-3 py-2 rounded-full bg-white border border-slate-200/90 hover:border-sky-400 transition-all cursor-pointer shadow-sm">
+<span class="text-2xl leading-none">🇫🇷</span>
+<div class="flex flex-col">
+<span class="text-label-md font-label-md text-slate-800 font-medium">法国</span>
+<span class="text-[11px] font-body-sm text-[#0284C7] font-medium">1,620 局</span>
+</div>
+</div>
+<!-- United States -->
+<div class="flex-shrink-0 flex items-center gap-2.5 px-3 py-2 rounded-full bg-white border border-slate-200/90 hover:border-sky-400 transition-all cursor-pointer shadow-sm">
+<span class="text-2xl leading-none">🇺🇸</span>
+<div class="flex flex-col">
+<span class="text-label-md font-label-md text-slate-800 font-medium">美国</span>
+<span class="text-[11px] font-body-sm text-[#0284C7] font-medium">8,450 局</span>
+</div>
+</div>
+<!-- Germany -->
+<div class="flex-shrink-0 flex items-center gap-2.5 px-3 py-2 rounded-full bg-white border border-slate-200/90 hover:border-sky-400 transition-all cursor-pointer shadow-sm">
+<span class="text-2xl leading-none">🇩🇪</span>
+<div class="flex flex-col">
+<span class="text-label-md font-label-md text-slate-800 font-medium">德国</span>
+<span class="text-[11px] font-body-sm text-[#0284C7] font-medium">2,100 局</span>
+</div>
+</div>
+<!-- Brazil -->
+<div class="flex-shrink-0 flex items-center gap-2.5 px-3 py-2 rounded-full bg-white border border-slate-200/90 hover:border-sky-400 transition-all cursor-pointer shadow-sm">
+<span class="text-2xl leading-none">🇧🇷</span>
+<div class="flex flex-col">
+<span class="text-label-md font-label-md text-slate-800 font-medium">巴西</span>
+<span class="text-[11px] font-body-sm text-[#0284C7] font-medium">1,480 局</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Multi-language Channels Tag Cloud (多语言频道) -->
+<section class="flex flex-col gap-2.5">
+<h2 class="text-headline-sm font-headline-sm font-semibold text-slate-900 flex items-center gap-2">
+<span>多语言频道</span>
+<span class="text-body-sm font-body-sm text-slate-500 font-normal">Languages</span>
+</h2>
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-label-md font-label-md hover:border-sky-400 cursor-pointer transition-colors shadow-sm">
+<span>English</span>
+<span class="text-[11px] font-body-sm px-1.5 py-0.5 rounded-full bg-slate-100 text-[#0284C7] font-medium">12.4k</span>
+</span>
+<span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-label-md font-label-md hover:border-sky-400 cursor-pointer transition-colors shadow-sm">
+<span>Español</span>
+<span class="text-[11px] font-body-sm px-1.5 py-0.5 rounded-full bg-slate-100 text-[#0284C7] font-medium">8.9k</span>
+</span>
+<span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-label-md font-label-md hover:border-sky-400 cursor-pointer transition-colors shadow-sm">
+<span>中文</span>
+<span class="text-[11px] font-body-sm px-1.5 py-0.5 rounded-full bg-slate-100 text-[#0284C7] font-medium">5.2k</span>
+</span>
+<span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-label-md font-label-md hover:border-sky-400 cursor-pointer transition-colors shadow-sm">
+<span>Français</span>
+<span class="text-[11px] font-body-sm px-1.5 py-0.5 rounded-full bg-slate-100 text-[#0284C7] font-medium">4.1k</span>
+</span>
+<span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-label-md font-label-md hover:border-sky-400 cursor-pointer transition-colors shadow-sm">
+<span>Deutsch</span>
+<span class="text-[11px] font-body-sm px-1.5 py-0.5 rounded-full bg-slate-100 text-[#0284C7] font-medium">3.8k</span>
+</span>
+<span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-label-md font-label-md hover:border-sky-400 cursor-pointer transition-colors shadow-sm">
+<span>日本語</span>
+<span class="text-[11px] font-body-sm px-1.5 py-0.5 rounded-full bg-slate-100 text-[#0284C7] font-medium">3.2k</span>
+</span>
+</div>
+</section>
+<!-- Trending Stations List (热门趋势电台) -->
+<section class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<h2 class="text-headline-sm font-headline-sm font-semibold text-slate-900 flex items-center gap-2">
+<span>实时热门电台</span>
+<span class="text-body-sm font-body-sm text-slate-500 font-normal">Trending</span>
+</h2>
+<span class="text-label-sm font-label-sm text-[#0284C7] flex items-center gap-1 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            实时在线
+          </span>
+</div>
+<div class="flex flex-col gap-2.5">
+<!-- Station 1 -->
+<div class="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:border-sky-300 hover:shadow transition-all group">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative w-11 h-11 rounded-xl overflow-hidden flex-shrink-0 bg-slate-100">
+<img class="w-full h-full object-cover" data-alt="Stylized neon vinyl record album art with deep midnight violet circular rings and electric teal audio sound wave lines in a dark nocturnal atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7w9wnp2kQy7YLt12tE3h224AbaA5jp1U1NgsJuj68CVSd9cjdT6fOjzWzUu6lTzidofmgb-1GhIZO-LQGo0-G2CEQC-JGSNDO7Tg44AuWQAoUHAZzfE3T_CbAbcNG5GOcQj5vqAg7xlmuGWrcbb-cy0-S5bQQ70MDCif3LcgJ6SyFHROmvXHEIIAz0TfbmvF_1c8k1_C3w5Ncb7mFifKhqsIsxIZ84UgDGvb_GBFn5kB40TQhpKzW4A"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white"></div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-label-lg font-label-lg text-slate-900 truncate font-semibold">BBC Radio 6 Music</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 font-medium">320k AAC</span>
+</div>
+<p class="text-body-sm font-body-sm text-slate-500 truncate">
+                  伦敦, 英国 • Alternative &amp; Indie
+                </p>
+</div>
+</div>
+<button aria-label="Play BBC Radio 6 Music" class="flex-shrink-0 w-9 h-9 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-[#0284C7] hover:text-white hover:border-transparent transition-colors active:scale-95 ml-2">
+<span class="material-symbols-outlined text-lg" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<!-- Station 2 -->
+<div class="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:border-sky-300 hover:shadow transition-all group">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative w-11 h-11 rounded-xl overflow-hidden flex-shrink-0 bg-slate-100">
+<img class="w-full h-full object-cover" data-alt="Tokyo Shibuya night street photograph bathed in rainy reflections with glowing neon signs in electric cyan and magenta, capturing an ambient city soundscape." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2hYt2OYg2u-sAykt_aof8XA6Z3uncWO-uS_wE-4RvYBU6l-cM_NxyEgp8YC4ZiYP_U9D4XfxLeDdoxBhe8ORUqN62QxcdTegUHGD3ZkLIb1O82y20a4kPpesUPWjj7bm2gR8rnXukAkaOZ_C6WKV4QfARgP5UI7i0jbs7vriAcMc42jimlJWyjjPiHASQHb1is6GE9Wc6vBepS1oxSirRMqqvH_DVCtSJ_XiN6kDCYSEDW6XL36ymtQ"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white"></div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-label-lg font-label-lg text-slate-900 truncate font-semibold">J-Wave 81.3 FM</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 font-medium">320k AAC</span>
+</div>
+<p class="text-body-sm font-body-sm text-slate-500 truncate">
+                  东京, 日本 • J-Pop &amp; City Pop
+                </p>
+</div>
+</div>
+<button aria-label="Play J-Wave 81.3 FM" class="flex-shrink-0 w-9 h-9 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-[#0284C7] hover:text-white hover:border-transparent transition-colors active:scale-95 ml-2">
+<span class="material-symbols-outlined text-lg" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<!-- Station 3 -->
+<div class="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:border-sky-300 hover:shadow transition-all group">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative w-11 h-11 rounded-xl overflow-hidden flex-shrink-0 bg-slate-100">
+<img class="w-full h-full object-cover" data-alt="Minimalist architectural silhouette of Paris at dusk under a deep midnight violet sky with luminous electric radio signal wave lines radiating over the city rooftops." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBevf6sLe3fxQh2QACDfYi8j0Te473d6GVAmLZLq3ArsGa_StE2gt3FGoKmU0qNq2_skSamGAzzwngL_Nv5TEUYmdXjk-m2Wv3ZOVmCVPPoWH5rrhIX5XkIdXT-IclgLoKCmgrmzuk8pgiwf7v_dK-1BVXy5RggehglglEs-L0HeNDkOF1RtApenT1GLqAEYQvgZpEfpAhvEa8QTZT3rNREqnrAcyoSSw4u4a3M63HSmpFTgR4tJ3VtGg"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white"></div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-label-lg font-label-lg text-slate-900 truncate font-semibold">FIP Radio Paris</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 font-medium">320k AAC</span>
+</div>
+<p class="text-body-sm font-body-sm text-slate-500 truncate">
+                  巴黎, 法国 • Eclectic &amp; Jazz
+                </p>
+</div>
+</div>
+<button aria-label="Play FIP Radio Paris" class="flex-shrink-0 w-9 h-9 rounded-full bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-[#0284C7] hover:text-white hover:border-transparent transition-colors active:scale-95 ml-2">
+<span class="material-symbols-outlined text-lg" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Persistent Global Mini Audio Player (Docked 12px above bottom bar) -->
+<aside class="fixed bottom-[68px] left-4 right-4 z-40 max-w-[calc(100vw-2rem)] md:max-w-[416px] mx-auto rounded-2xl bg-white/95 backdrop-blur-xl border border-slate-200/90 shadow-[0_12px_28px_-6px_rgba(15,23,42,0.12)] overflow-hidden">
+<!-- Continuous Playback Buffer Scrubber Line -->
+<div class="w-full h-[2px] bg-slate-100">
+<div class="w-2/3 h-full bg-[#0284C7]"></div>
+</div>
+<div class="px-3.5 py-2.5 flex items-center justify-between gap-3">
+<!-- Station Thumbnail + Live Aura -->
+<div class="flex items-center gap-3 min-w-0 flex-1">
+<div class="relative w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 border border-slate-200">
+<img class="w-full h-full object-cover" data-alt="Album art featuring an abstract cosmic sonic sphere radiating fluorescent teal and deep purple nebula particles against deep midnight space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfe7g3UpnlFwOyHMIYAaZySEou-Z0_z9NQPyN3Czhlf7OVt2Bl1YmKrJ6hcczRH64PTAEvevOgEKCDBFbsjPLmn8skBac22pvFgNfHKBZf4EiLouNaWEcjvZdcp33xkHkChqt6fRrD_CtaMDE1wwxi11sVuDRMF-rBzBbs3A-mrExpnvkR4tEECVoQ8IGJGtmJjmHvXcR2wPPgIMDG7WDnbH8wFtXoNRF1P5VepzCWjqWIDCys0LyePA"/>
+<!-- Animated Equalizer Overlay -->
+<div class="absolute inset-0 bg-slate-900/30 flex items-center justify-center gap-0.5">
+<span class="w-[2px] bg-white wave-bar-1"></span>
+<span class="w-[2px] bg-white wave-bar-2"></span>
+<span class="w-[2px] bg-white wave-bar-3"></span>
+<span class="w-[2px] bg-white wave-bar-4"></span>
+</div>
+</div>
+<!-- Metadata with autoscroll intent -->
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="text-label-md font-label-md text-slate-900 font-semibold truncate">
+                Nordic Ambient FM
+              </span>
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+</div>
+<p class="text-body-sm font-body-sm text-[#0284C7] text-xs truncate font-medium">
+              Sigur Rós - Valtari (Glacial Remaster)
+            </p>
+</div>
+</div>
+<!-- Controls Cluster -->
+<div class="flex items-center gap-1.5 flex-shrink-0">
+<button aria-label="Favorite station" class="p-2 text-slate-400 hover:text-rose-500 transition-colors">
+<span class="material-symbols-outlined text-xl" data-icon="favorite">favorite</span>
+</button>
+<!-- Play / Pause Hero Transport Button -->
+<button aria-label="Pause playback" class="w-10 h-10 rounded-full bg-[#0284C7] text-white flex items-center justify-center shadow-md active:scale-90 transition-transform hover:bg-sky-500">
+<span class="material-symbols-outlined text-xl" data-icon="pause" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Shared Component: BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 border-t border-slate-200/80 pb-safe bg-white/95 backdrop-blur-xl shadow-lg max-w-md mx-auto">
+<!-- Tab 0: Globe (Inactive) -->
+<a class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:text-slate-800 transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="public">public</span>
+<span class="text-label-sm font-label-sm mt-0.5">Globe</span>
+</a>
+<!-- Tab 1: Discover (Active - exact match & style_active_navigation applied) -->
+<a class="flex flex-col items-center justify-center bg-sky-50 text-[#0284C7] rounded-full px-4 py-1.5 transition-all shadow-sm active:scale-95" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="explore" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="text-label-sm font-label-sm mt-0.5 font-semibold">Discover</span>
+</a>
+<!-- Tab 2: Charts (Inactive) -->
+<a class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:text-slate-800 transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="leaderboard">leaderboard</span>
+<span class="text-label-sm font-label-sm mt-0.5">Charts</span>
+</a>
+<!-- Tab 3: Profile (Inactive) -->
+<a class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:text-slate-800 transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="person">person</span>
+<span class="text-label-sm font-label-sm mt-0.5">Profile</span>
+</a>
+</nav>
+</div>
+</body></html>

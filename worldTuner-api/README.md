@@ -60,7 +60,7 @@ LISTEN_API_BASE_URL=http://127.0.0.1:8787 pnpm dev
 | GET 路径 | 参数 / 返回 |
 |---|---|
 | `/health` | 服务存活状态；不探测 D1 |
-| `/stations` | page 默认 1，pageSize 默认 20/最大 100；keyword 最长 100；languagesId、tagsId 可同时筛选 |
+| `/stations` | page 默认 1，pageSize 默认 20/最大 100；keyword 最长 100；languagesId、tagsId、countriesId 可同时筛选 |
 | `/stations/{id}` | 现有数值 id，保留地图兼容性；不存在 404 |
 | `/languages` | limit 默认 1000，最大 1000 |
 | `/tags` | limit 默认 30，最大 1000 |

@@ -1,5 +1,6 @@
 // 来自 API 的电台详情，只保留移动界面和播放器使用的字段。
 class Station {
+  // 保存播放、列表和本地收藏共同需要的电台信息。
   const Station({
     required this.id,
     required this.name,
@@ -47,10 +48,26 @@ class Station {
       geoLong: (json['geoLong'] as num?)?.toDouble(),
     );
   }
+
+  // 将本地收藏需要的字段序列化，避免保存完整 API 响应。
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'url': url,
+    'urlResolved': urlResolved,
+    'favicon': favicon,
+    'country': country,
+    'language': language,
+    'codec': codec,
+    'votes': votes,
+    'geoLat': geoLat,
+    'geoLong': geoLong,
+  };
 }
 
 // 一页电台及 API 提供的后续页信息。
 class StationPage {
+  // 保存一页结果及后续分页游标。
   const StationPage({required this.list, required this.hasMore, this.nextPage});
 
   final List<Station> list;
@@ -72,6 +89,7 @@ class StationPage {
 
 // 榜单筛选器的语言或标签选项。
 class CatalogItem {
+  // 保存筛选字典的标识、名称与可选电台数。
   const CatalogItem({required this.id, required this.name, this.stationCount});
 
   final int id;

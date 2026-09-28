@@ -10,11 +10,13 @@ void main() {
   test('stations builds v1 request and reads pagination', () async {
     final client = ApiClient(
       origin: Uri.parse('https://api.example.com'),
+      // 使用受控响应检查移动端与 Worker 的查询参数契约。
       client: MockClient((request) async {
         expect(request.url.path, '/api/v1/stations');
         expect(request.url.queryParameters['page'], '2');
         expect(request.url.queryParameters['keyword'], 'jazz');
         expect(request.url.queryParameters['languagesId'], '3');
+        expect(request.url.queryParameters['countriesId'], '55');
         return http.Response(
           jsonEncode({
             'data': {
@@ -38,6 +40,7 @@ void main() {
       page: 2,
       keyword: ' jazz ',
       languageId: 3,
+      countryId: 55,
     );
     expect(page.list.single.id, 8);
     expect(page.nextPage, 3);
@@ -47,6 +50,7 @@ void main() {
     final client = ApiClient(
       origin: Uri.parse('https://api.example.com'),
       client: MockClient(
+        // 模拟电台详情不存在时的 Worker 错误响应。
         (request) async => http.Response(
           jsonEncode({
             'error': {'message': 'Station not found'},
@@ -59,6 +63,7 @@ void main() {
     expect(
       () => client.stationById(42),
       throwsA(
+        // 断言 HTTP 状态码被保留，供页面区分错误。
         isA<ApiException>().having((error) => error.statusCode, 'status', 404),
       ),
     );

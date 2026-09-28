@@ -3,17 +3,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // 本地保存语言和主题，无需首版用户体系。
 class SettingsController extends ChangeNotifier {
+  // 注入平台偏好以加载并保存本机语言和外观选择。
   SettingsController(this._prefs);
 
   final SharedPreferencesAsync _prefs;
-  String language = 'en';
+  String language = 'zh';
   ThemeMode themeMode = ThemeMode.system;
 
   // 从平台偏好设置恢复语言与主题。
   Future<void> load() async {
     final savedLanguage = await _prefs.getString('language');
     final savedTheme = await _prefs.getString('theme');
-    language = savedLanguage == 'zh' ? 'zh' : 'en';
+    language = savedLanguage == 'en' ? 'en' : 'zh';
     themeMode = switch (savedTheme) {
       'light' => ThemeMode.light,
       'dark' => ThemeMode.dark,

@@ -42,7 +42,7 @@ async function main() {
   if (!Object.hasOwn(endpoints, phase))
     throw new Error('--phase 必须为 places、details 或 streams。');
   const limit = values.limit === undefined ? Number.MAX_SAFE_INTEGER : Number(values.limit);
-  const delayMs = values['delay-ms'] === undefined ? 2000 : Number(values['delay-ms']);
+  const delayMs = values['delay-ms'] === undefined ? 1000 : Number(values['delay-ms']);
   if (
     !Number.isSafeInteger(limit) ||
     limit < 1 ||

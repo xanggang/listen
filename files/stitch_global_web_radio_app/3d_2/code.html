@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en" style="width: 390px; height: 821px; overflow: hidden; position: relative;"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aether Radio - Global Map &amp; 3D Globe Radio Search</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "primary-fixed-dim": "#93ccff",
+          "tertiary": "#8d4b00",
+          "on-tertiary": "#ffffff",
+          "surface-tint": "#006398",
+          "on-background": "#0b1c30",
+          "on-error": "#ffffff",
+          "background": "#f8f9ff",
+          "on-secondary-container": "#005e73",
+          "primary-container": "#0284c7",
+          "tertiary-container": "#b15f00",
+          "on-error-container": "#93000a",
+          "on-surface": "#0f172a",
+          "inverse-surface": "#213145",
+          "primary-fixed": "#cce5ff",
+          "inverse-primary": "#93ccff",
+          "secondary": "#00677d",
+          "surface-container": "#f1f5f9",
+          "on-tertiary-fixed-variant": "#6e3900",
+          "error": "#ba1a1a",
+          "surface-container-low": "#f8fafc",
+          "secondary-container": "#63dbfe",
+          "on-surface-variant": "#64748b",
+          "error-container": "#ffdad6",
+          "surface-dim": "#cbdbf5",
+          "surface-container-lowest": "#ffffff",
+          "surface-bright": "#f8f9ff",
+          "outline": "#94a3b8",
+          "secondary-fixed": "#b3ebff",
+          "primary": "#0284c7",
+          "on-primary-fixed-variant": "#004b73",
+          "on-primary-container": "#fdfcff",
+          "on-secondary-fixed": "#001f27",
+          "tertiary-fixed": "#ffdcc3",
+          "on-primary-fixed": "#001d31",
+          "surface-container-highest": "#e2e8f0",
+          "tertiary-fixed-dim": "#ffb77d",
+          "on-tertiary-fixed": "#2f1500",
+          "surface": "#f8fafc",
+          "on-primary": "#ffffff",
+          "surface-variant": "#e2e8f0",
+          "on-secondary": "#ffffff",
+          "inverse-on-surface": "#eaf1ff",
+          "surface-container-high": "#e2e8f0",
+          "on-tertiary-container": "#fffbff",
+          "outline-variant": "#cbd5e1",
+          "on-secondary-fixed-variant": "#004e5f",
+          "secondary-fixed-dim": "#5cd5f8"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "margin-mobile": "1rem",
+          "gutter-mobile": "0.75rem",
+          "gutter": "1.25rem",
+          "margin": "2rem",
+          "space-md": "1rem",
+          "space-lg": "1.5rem",
+          "space-sm": "0.5rem",
+          "space-xs": "0.25rem",
+          "space-xl": "2rem"
+        },
+        "fontFamily": {
+          "body-md": ["Inter"],
+          "headline-lg": ["Inter"],
+          "label-lg": ["Inter"],
+          "headline-sm": ["Plus Jakarta Sans"],
+          "display-lg-mobile": ["Plus Jakarta Sans"],
+          "label-md": ["Inter"],
+          "body-lg": ["Inter"],
+          "label-sm": ["Inter"],
+          "headline-md": ["Plus Jakarta Sans"],
+          "display-lg": ["Plus Jakarta Sans"],
+          "body-sm": ["Inter"]
+        },
+        "fontSize": {
+          "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+          "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+          "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+          "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+          "display-lg-mobile": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+          "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+          "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }],
+          "label-sm": ["10px", { "lineHeight": "12px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+          "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+          "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+          "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }]
+        }
+      },
+    },
+  }
+</script>
+<style>
+    /* Equalizer Pulse Animation */
+    @keyframes eq-bounce-1 {
+      0%, 100% { height: 4px; }
+      50% { height: 18px; }
+    }
+    @keyframes eq-bounce-2 {
+      0%, 100% { height: 16px; }
+      50% { height: 6px; }
+    }
+    @keyframes eq-bounce-3 {
+      0%, 100% { height: 8px; }
+      50% { height: 22px; }
+    }
+    @keyframes eq-bounce-4 {
+      0%, 100% { height: 19px; }
+      50% { height: 7px; }
+    }
+    .eq-bar-1 { animation: eq-bounce-1 1s infinite ease-in-out; }
+    .eq-bar-2 { animation: eq-bounce-2 0.85s infinite ease-in-out; }
+    .eq-bar-3 { animation: eq-bounce-3 1.15s infinite ease-in-out; }
+    .eq-bar-4 { animation: eq-bounce-4 0.9s infinite ease-in-out; }
+
+    /* Radar scanline animation */
+    @keyframes scanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(1000%); }
+    }
+    .radar-beam {
+      animation: scanline 8s linear infinite;
+    }
+
+    /* Station Ping Pulse */
+    @keyframes ping-glow {
+      0% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(2.4); opacity: 0; }
+      100% { transform: scale(1); opacity: 0; }
+    }
+    .station-ping {
+      animation: ping-glow 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased overflow-x-hidden selection:bg-sky-100 selection:text-sky-900">
+<!-- Main Mobile Frame Container: 393px width centered for mobile canvas demonstration -->
+<div class="relative w-full max-w-[412px] mx-auto min-h-screen bg-slate-50 flex flex-col justify-between overflow-hidden border-x border-slate-200">
+<!-- TOP APP BAR (Shared Component Anchor) -->
+<header class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 h-14 w-full max-w-[412px] mx-auto bg-white/85 backdrop-blur-md border-b border-slate-200/80">
+<div class="flex items-center gap-2">
+<button class="flex items-center justify-center w-8 h-8 rounded-full text-sky-600 hover:bg-slate-100 transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-[20px]" data-icon="graphic_eq">graphic_eq</span>
+</button>
+<span class="text-headline-sm font-headline-sm font-bold tracking-tight text-slate-900">Aether Radio</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-50 border border-sky-200/70 text-sky-700 text-label-sm font-label-sm font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse"></span>
+<span>FM 96.3</span>
+</div>
+<button class="flex items-center justify-center w-8 h-8 rounded-full text-slate-500 hover:text-sky-600 hover:bg-slate-100 transition-colors active:scale-95 duration-150" title="Cast Audio">
+<span class="material-symbols-outlined text-[20px]" data-icon="cast">cast</span>
+</button>
+</div>
+</header>
+<!-- CONTENT CANVAS -->
+<main class="relative flex-1 w-full pt-14 pb-[144px] overflow-hidden flex flex-col">
+<!-- 3D DIGITAL HOLOGRAPHIC GLOBE VIEWPORT (LIGHT MODE) -->
+<div class="relative w-full flex-1 min-h-[380px] flex items-center justify-center select-none overflow-hidden my-auto">
+<!-- Soft Daylight Oceanic & Atmospheric Radial Glow -->
+<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(186,230,253,0.35)_0%,rgba(224,242,254,0.15)_45%,transparent_75%)] pointer-events-none"></div>
+<!-- Globe Outer Delicate Coordinate Ring -->
+<div class="relative w-[310px] h-[310px] rounded-full border border-sky-200/80 flex items-center justify-center shadow-[inset_0_0_40px_rgba(56,189,248,0.08),0_10px_30px_-10px_rgba(2,132,199,0.12)]">
+<!-- Outer Equatorial Gyroscope Ring -->
+<div class="absolute inset-[-14px] rounded-full border border-dashed border-sky-300/40 pointer-events-none animate-spin" style="animation-duration: 48s;"></div>
+<div class="absolute inset-[-28px] rounded-full border border-slate-200/60 pointer-events-none"></div>
+<!-- Globe Sphere Surface with Light Mode Oceanic Gradient & Clean Coordinate Grids -->
+<div class="relative w-[280px] h-[280px] rounded-full bg-gradient-to-b from-[#e0f2fe] via-[#f0f9ff] to-[#e2e8f0] overflow-hidden border border-sky-300/70 shadow-inner">
+<!-- Longitude Lines -->
+<div class="absolute inset-0 rounded-full border-x border-sky-400/30 scale-x-50"></div>
+<div class="absolute inset-0 rounded-full border-x border-sky-400/25 scale-x-75"></div>
+<div class="absolute inset-0 rounded-full border-x border-sky-400/35"></div>
+<!-- Latitude Lines -->
+<div class="absolute inset-0 rounded-full border-y border-sky-400/25 scale-y-50"></div>
+<div class="absolute inset-0 rounded-full border-y border-sky-400/25 scale-y-75"></div>
+<div class="absolute top-1/2 left-0 right-0 h-[1px] bg-sky-400/40"></div>
+<!-- Daylight Atmospheric Map Texture Overlay -->
+<div class="absolute inset-0 bg-cover bg-center opacity-25 mix-blend-multiply pointer-events-none" data-alt="A clean light daytime Earth map texture showing illuminated city frequencies and continent outlines glowing softly against an azure sky and pearl background." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC3wbnYG1hd_4GzGOJ1DpR2zseU2cjrAdI1q5Ow-U9jcw6efe6re5GDCWhLWAS5t74-aEJhlu-rXZ0MK-FkcVI-Ng32tfpkkvoPSa4Z_bndOWDQU3Cc6L-tLsrMhdyb2DO_2yy5F9HmiaMc1xQgOCFj51IomEN0B9-rwoJleST3RksOP7iIP_oDBf_BmpjZkyNy0N4Y_WMKi2Xzi60ale_nJcjnvxI5IM9AqxfulkZHRoJWO6HtrhB8PQ')"></div>
+<!-- Light Radar Beam Effect -->
+<div class="absolute inset-x-0 h-16 bg-gradient-to-b from-sky-400/0 via-sky-400/15 to-sky-400/0 radar-beam pointer-events-none"></div>
+<!-- GLOWING DAYTIME STATION NODES -->
+<!-- Tokyo Dot -->
+<div class="absolute top-[38%] right-[16%] flex items-center justify-center cursor-pointer group">
+<span class="absolute w-5 h-5 rounded-full bg-sky-400/25 station-ping"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-sky-500 shadow-[0_0_6px_rgba(2,132,199,0.5)]"></span>
+<div class="absolute left-4 top-[-6px] px-1.5 py-0.5 rounded bg-white/95 border border-slate-200 text-[9px] font-label-sm text-sky-700 whitespace-nowrap hidden group-hover:block backdrop-blur-md shadow-sm">
+                Tokyo (81.3 FM)
+              </div>
+</div>
+<!-- Berlin Dot -->
+<div class="absolute top-[28%] left-[44%] flex items-center justify-center cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_4px_rgba(99,102,241,0.5)]"></span>
+</div>
+<!-- London Station (CURRENT LOCKED TARGET) -->
+<div class="absolute top-[26%] left-[34%] flex items-center justify-center cursor-pointer z-20">
+<span class="absolute w-8 h-8 rounded-full bg-sky-400/35 station-ping"></span>
+<span class="w-3.5 h-3.5 rounded-full bg-sky-600 border-2 border-white shadow-[0_2px_8px_rgba(2,132,199,0.45)]"></span>
+<!-- Targeted Coordinate Reticle HUD (Light Card) -->
+<div class="absolute -top-7 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/95 border border-sky-400 text-sky-700 font-label-sm text-[9px] shadow-[0_2px_8px_rgba(2,132,199,0.18)] whitespace-nowrap backdrop-blur-md">
+<span class="material-symbols-outlined text-[10px] text-sky-600" data-icon="my_location">my_location</span>
+<span class="font-semibold">LON 96.3 MHz</span>
+</div>
+</div>
+<!-- New York Dot -->
+<div class="absolute top-[36%] left-[18%] flex items-center justify-center cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-sky-500 shadow-[0_0_4px_rgba(2,132,199,0.4)]"></span>
+</div>
+<!-- Reykjavik Dot -->
+<div class="absolute top-[17%] left-[30%] flex items-center justify-center cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+</div>
+<!-- Rio de Janeiro Dot -->
+<div class="absolute bottom-[28%] left-[28%] flex items-center justify-center cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+</div>
+<!-- Sydney Dot -->
+<div class="absolute bottom-[24%] right-[22%] flex items-center justify-center cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-sky-600"></span>
+</div>
+</div>
+<!-- Compass Telemetry Markings -->
+<div class="absolute top-1 font-label-sm text-[9px] text-sky-600/70 tracking-widest font-semibold">360° N</div>
+<div class="absolute bottom-1 font-label-sm text-[9px] text-sky-600/70 tracking-widest font-semibold">180° S</div>
+<div class="absolute left-1.5 font-label-sm text-[9px] text-sky-600/70 tracking-widest font-semibold">W</div>
+<div class="absolute right-1.5 font-label-sm text-[9px] text-sky-600/70 tracking-widest font-semibold">E</div>
+</div>
+<!-- Floating Telemetry Indicator overlay (Translucent White Pill) -->
+<div class="absolute top-2 right-4 flex flex-col items-end gap-1 pointer-events-none">
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/85 border border-slate-200 shadow-sm text-[10px] font-label-sm text-slate-700 backdrop-blur-md">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="font-medium">LAT 51.5074° N</span>
+</div>
+<span class="text-[10px] font-label-sm text-slate-500 font-medium">FREQ STABILITY: 99.8%</span>
+</div>
+</div>
+<!-- FLOATING INTERACTIVE ACTIVE STATION CARD (LOWER THIRD - LIGHT MODE) -->
+<section class="relative z-30 px-4 mt-auto">
+<div class="w-full bg-white rounded-2xl p-3.5 border border-slate-200/80 shadow-[0_10px_25px_-5px_rgba(15,23,42,0.06),0_4px_10px_-2px_rgba(15,23,42,0.04)] transition-all">
+<!-- Top Row: Badge, Listeners & Equalizer -->
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100">
+<!-- LIVE broadcast tag -->
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-label-sm text-[10px] font-semibold tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                LIVE BROADCAST
+              </span>
+<span class="text-[11px] font-label-md text-slate-500 flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-[13px] text-slate-400" data-icon="headphones">headphones</span>
+                24.8k listening
+              </span>
+</div>
+<!-- Live Animated Audio Equalizer Bars (Azure Cyan) -->
+<div class="flex items-end gap-0.5 h-5 px-2 py-0.5 rounded bg-slate-50 border border-slate-100">
+<div class="w-1 bg-sky-600 rounded-full eq-bar-1"></div>
+<div class="w-1 bg-sky-400 rounded-full eq-bar-2"></div>
+<div class="w-1 bg-sky-600 rounded-full eq-bar-3"></div>
+<div class="w-1 bg-sky-400 rounded-full eq-bar-4"></div>
+</div>
+</div>
+<!-- Station Identity & Info -->
+<div class="flex items-center gap-3">
+<!-- Station Logo / Artwork -->
+<div class="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-200 bg-slate-50 shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Modern geometric broadcast studio graphic icon with vibrant electric cyan neon soundwave symbols on deep indigo background for an alternative digital radio broadcast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2bg7TqLTPh5ocK9GJyeu6C8_Xa4LaSPcE_C50VUF0-ARKwriyF3FQlAFu5R_r8HGCgFGqxsLHZ9xi5mRiZ6MppzSQN6NHgFezPEI3EKGeI6mjhkX_VwJX0cGYPpbf9_tE8PD_aVnlTwGBg9y2qy0sjNZn8LfP1IcUGb8d5w9zsN7lk4TrXvB6tp8EUJVNZRjP9BGx0cZn2jSXlxTVnIWXwThr4iF12AvcBmK1whkAxi2UOddaO-UjAw"/>
+<div class="absolute bottom-0 right-0 px-1 rounded-tl bg-white/95 text-[8px] font-label-sm text-sky-700 font-bold border-l border-t border-slate-200">
+                UK
+              </div>
+</div>
+<!-- Title & Genres -->
+<div class="flex-1 min-w-0">
+<h2 class="text-headline-sm font-headline-sm text-slate-900 truncate tracking-tight font-bold">
+                BBC Radio 6 Music
+              </h2>
+<p class="text-body-sm font-body-sm text-slate-500 truncate mt-0.5">
+                London, UK • <span class="text-sky-600 font-semibold">96.3 FM</span> • 320 kbps
+              </p>
+<div class="flex items-center gap-1.5 mt-1.5">
+<span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-label-sm font-medium">#Indie</span>
+<span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-label-sm font-medium">#Alternative</span>
+<span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-label-sm font-medium">#PostPunk</span>
+</div>
+</div>
+<!-- Action Controls Group -->
+<div class="flex items-center gap-1.5 shrink-0">
+<!-- Heart Button -->
+<button class="w-9 h-9 rounded-full flex items-center justify-center text-slate-500 hover:text-rose-500 hover:bg-slate-100 transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="favorite">favorite</span>
+</button>
+<!-- Share Button -->
+<button class="w-9 h-9 rounded-full flex items-center justify-center text-slate-500 hover:text-sky-600 hover:bg-slate-100 transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="share">share</span>
+</button>
+<!-- Hero Circular Play Button (Vibrant Azure #0284C7) -->
+<button class="w-11 h-11 rounded-full bg-sky-600 text-white flex items-center justify-center shadow-[0_4px_14px_rgba(2,132,199,0.35)] hover:bg-sky-500 hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[24px]" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- PERSISTENT GLOBAL MINI RADIO PLAYER (Crisp White Floating Dock) -->
+<div class="fixed bottom-[62px] left-0 right-0 z-40 px-3 w-full max-w-[412px] mx-auto pointer-events-auto">
+<div class="relative w-full h-14 bg-white/95 backdrop-blur-xl rounded-full border border-slate-200/80 px-3 flex items-center justify-between shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+<!-- Bottom Edge Visual Stream Scrubber Line -->
+<div class="absolute bottom-0 left-6 right-6 h-[2px] bg-slate-100 rounded-full overflow-hidden">
+<div class="w-3/4 h-full bg-sky-500"></div>
+</div>
+<!-- Left: Rotating thumbnail artwork & playing broadcast ring -->
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="relative w-9 h-9 rounded-full overflow-hidden shrink-0 border border-sky-400/50 p-0.5">
+<img class="w-full h-full object-cover rounded-full animate-spin" data-alt="Vibrant neon Tokyo night city street sign reflected in rain puddle with purple and cyan cyber aesthetic, perfectly suited for Shibuya FM radio stream thumbnail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlmh1a9_Hy36BHLuFczK546OVJPPJOua9z10j3E2Htx7RG4Mda2_ugGTxWANzId4lWrFopOmEgvVyFP0779vHiCKLrZ8WdgjRRJ3ip0CradkQ8SemRWYsDZJZZ7_XLQ7CU12Asmf9UXxilOge3tT3cCv25eFhbdtYAC8JKRYrNbYejQFoUzuvokbEoVz9uhwhaKjeIcaZP53IbsUcglATFlobPoTp5bUtDc6OmSVEXprqwTihYNeLwDQ" style="animation-duration: 20s;"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white"></span>
+</div>
+<!-- Center: Marquee / Current Track details -->
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="text-label-md font-label-md text-slate-900 truncate font-semibold">Shibuya FM</span>
+<span class="w-1 h-1 rounded-full bg-sky-500"></span>
+<span class="text-[10px] font-label-sm text-sky-600 font-medium">Tokyo</span>
+</div>
+<p class="text-[11px] font-body-sm text-slate-500 truncate">
+              Ken Ishii - Extraterrestrial (Live Set)
+            </p>
+</div>
+</div>
+<!-- Right: Mini Player Controls -->
+<div class="flex items-center gap-1.5 shrink-0">
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-rose-500 hover:bg-slate-100 transition-colors active:scale-95" title="Favorite">
+<span class="material-symbols-outlined text-[18px]" data-icon="favorite" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<button class="w-9 h-9 rounded-full bg-sky-600 text-white flex items-center justify-center shadow-[0_2px_8px_rgba(2,132,199,0.35)] hover:bg-sky-500 active:scale-95 transition-transform" title="Pause">
+<span class="material-symbols-outlined text-[20px]" data-icon="pause" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+</div>
+</div>
+</div>
+<!-- PERSISTENT BOTTOM NAVIGATION BAR (Shared Component Anchor - Light Mode) -->
+<nav class="fixed bottom-0 left-0 right-0 w-full max-w-[412px] mx-auto z-50 flex justify-around items-center px-4 py-2 border-t border-slate-200/80 bg-white/90 backdrop-blur-md">
+<!-- 1: Globe (ACTIVE: Azure Blue #0284C7) -->
+<a class="flex flex-col items-center justify-center bg-sky-50 text-sky-600 rounded-full px-4 py-1.5 transition-all border border-sky-100 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="public" style="font-variation-settings: 'FILL' 1;">public</span>
+<span class="text-label-sm font-label-sm font-semibold mt-0.5">Globe</span>
+</a>
+<!-- 2: Discover -->
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-slate-900 hover:bg-slate-100/60 rounded-full transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="explore">explore</span>
+<span class="text-label-sm font-label-sm mt-0.5">Discover</span>
+</a>
+<!-- 3: Charts -->
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-slate-900 hover:bg-slate-100/60 rounded-full transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="leaderboard">leaderboard</span>
+<span class="text-label-sm font-label-sm mt-0.5">Charts</span>
+</a>
+<!-- 4: Profile -->
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-slate-900 hover:bg-slate-100/60 rounded-full transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+<span class="text-label-sm font-label-sm mt-0.5">Profile</span>
+</a>
+</nav>
+</div>
+<div aria-hidden="true" data-snapdom-sandbox="true" id="snapdom-sandbox" style="position: absolute; left: -9999px; top: -9999px; width: 0px; height: 0px; overflow: hidden;"></div></body></html>

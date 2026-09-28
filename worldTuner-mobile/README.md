@@ -2,6 +2,10 @@
 
 Flutter 客户端，当前先完成 Android 版本；iOS 工程仅保留基础脚手架，后续再做平台适配。首版与现有 Web 共用独立的 Cloudflare Worker API，提供地图、发现搜索、全球/语言/流派榜单、网络电台播放和本地主题/语言设置。无需用户账户。
 
+当前界面采用 `files/stitch_global_web_radio_app` 的 Aether Daybreak / Midnight Sonic 设计规范：地图、发现、排行榜、个人中心和常驻播放器共用同一套深浅色组件。个人中心可选“跟随系统 / 日间 / 深色”，并可即时切换简体中文与英语；语言、主题、收藏和最近播放记录均保存在设备本地，重启后恢复。发现页的国家筛选通过 Worker 的 `countriesId` 参数获取真实结果。
+
+设计稿和 PRD 中的实时听众数、曲目识别、VIP 订阅、FLAC/DVR、云端同步及原生 3D 球体尚无对应服务或产品能力。当前榜单使用 API 的票数，地图使用可交互的圆形卫星地图；界面不展示虚构的实时或会员数据。完整功能边界见 `docs/design-implementation.md`。
+
 ## 环境配置
 
 API 根地址由构建变量 `API_BASE_URL` 注入，**不包含** `/api/v1`。客户端统一拼接 v1 路径。地图密钥由 `MAPTILER_API_KEY` 注入；未配置时仍可看到点位，但没有卫星底图。两者均没有写死在源码中。

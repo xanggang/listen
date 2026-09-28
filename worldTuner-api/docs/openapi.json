@@ -55,6 +55,14 @@
             }
           },
           {
+            "name": "countriesId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "keyword",
             "in": "query",
             "schema": {

@@ -3,7 +3,7 @@ import { integer, validateParams } from '../../shared/validation.ts';
 
 /** 验证分页、筛选和关键词，限制页大小与深分页成本。 */
 export function parseStationQuery(params: URLSearchParams) {
-  validateParams(params, ['page', 'pageSize', 'languagesId', 'tagsId', 'keyword']);
+  validateParams(params, ['page', 'pageSize', 'languagesId', 'tagsId', 'countriesId', 'keyword']);
   const page = integer(params.get('page'), 'page', 1, 10000);
   const pageSize = integer(params.get('pageSize'), 'pageSize', 20, 100);
   const offset = (page - 1) * pageSize;
@@ -21,6 +21,9 @@ export function parseStationQuery(params: URLSearchParams) {
       ? integer(params.get('languagesId'), 'languagesId')
       : undefined,
     tagsId: params.has('tagsId') ? integer(params.get('tagsId'), 'tagsId') : undefined,
+    countriesId: params.has('countriesId')
+      ? integer(params.get('countriesId'), 'countriesId')
+      : undefined,
   };
 }
 

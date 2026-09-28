@@ -1,16 +1,16 @@
 {
-  "updated_at": "2026-09-28T02:44:27.910Z",
+  "updated_at": "2026-09-28T05:37:09.147Z",
   "counts": [
     {
       "endpoint": "channel_details",
       "status": "success",
-      "count": 75
+      "count": 3261
     },
     {
       "endpoint": "places_channels",
       "status": "success",
-      "count": 5
+      "count": 4425
     }
   ],
-  "place_channel_relations": 826
+  "place_channel_relations": 15832
 }

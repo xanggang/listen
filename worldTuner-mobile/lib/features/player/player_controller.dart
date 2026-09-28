@@ -5,10 +5,11 @@ import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../stations/station.dart';
+import '../stations/station_library.dart';
 
 // 跨页面唯一音频播放器；播放状态以音频引擎事件为准。
 class PlayerController extends ChangeNotifier {
-  PlayerController() {
+  PlayerController(this.library) {
     _subscription = _player.playerStateStream.listen(
       // 系统通知、耳机按钮等外部操作也会刷新界面。
       (state) {
@@ -29,6 +30,7 @@ class PlayerController extends ChangeNotifier {
   }
 
   final AudioPlayer _player = AudioPlayer();
+  final StationLibrary library;
   StreamSubscription<PlayerState>? _subscription;
   Station? current;
   bool playing = false;
@@ -40,6 +42,7 @@ class PlayerController extends ChangeNotifier {
   Future<void> playStation(Station station) async {
     final version = ++_requestVersion;
     current = station;
+    await library.recordPlayed(station);
     errorMessage = null;
     buffering = true;
     notifyListeners();

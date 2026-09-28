@@ -13,7 +13,7 @@ npm ci
 npm run fetch:radio-garden
 ```
 
-只顺序访问以下两个接口，间隔 2 秒，参数均为 `s=1&hl=zh-Hans`：
+只顺序访问以下两个接口，间隔 1 秒，参数均为 `s=1&hl=zh-Hans`：
 
 - `https://radio.garden/api/ara/content/places-core-columnar?s=1&hl=zh-Hans`
 - `https://radio.garden/api/ara/content/places-details-columnar?s=1&hl=zh-Hans`
@@ -28,7 +28,7 @@ npm run fetch:radio-garden
 
 ## 第二步：前五个地点页面测试
 
-在 `worldTuner-data/` 运行 `npm run fetch:radio-garden:pages`。脚本将 `data/placesIDs.js` 的 `export const ids = [...]` 作为 JSON 数组读取，不执行该文件，仅选前五个 ID，顺序请求 `page/{id}?s=1&hl=zh-Hans`，间隔两秒。
+在 `worldTuner-data/` 运行 `npm run fetch:radio-garden:pages`。脚本将 `data/placesIDs.js` 的 `export const ids = [...]` 作为 JSON 数组读取，不执行该文件，仅选前五个 ID，顺序请求 `page/{id}?s=1&hl=zh-Hans`，间隔一秒。
 
 原始响应保存到独立 SQLite 的 `place_page` 记录，请求进度元数据写入 `data/pages-fetch-result.json`。再次执行会重新请求这五项并更新 SQLite；尚未启用全量或断点续传。遇到 Cloudflare 验证时等待手动操作，其他 HTTP 错误中止并记入日志。
 
@@ -58,7 +58,7 @@ npm run sync:radio-garden:api -- --phase streams
 
 `places` 请求每个地点的 `/page/{placeId}/channels`，原样写入 SQLite 并从频道 URL 建立地点关系；`details` 按已发现的去重频道 ID 请求 `/channel/{channelId}`，原样写入 SQLite；`streams` 单独请求 listen endpoint，禁用重定向跟随，将重定向结果写入 SQLite，不读取音频流。以上阶段不再把响应数据写入独立 JSON 文件。
 
-独立 SQLite 中 `api_responses` 表只保存成功响应原文、HTTP 状态和时间；`place_channels` 保存地点与频道关系。请求失败追加到 `log/api-errors.jsonl`，每行包含时间、接口阶段、实体 ID、请求 URL、HTTP 状态、错误类型、Cloudflare 判定、关键响应头和最多 2000 字符的响应正文片段，不写入 SQLite；旧版本已写入 SQLite 的失败记录会在启动时迁移到该日志并清除。成功记录会自动跳过，失败项没有成功记录，因此重跑时会再次请求。`data/sync-progress.json` 和 `data/pages-fetch-result.json` 提供进度记录。默认串行、每次间隔两秒，可使用 `--limit N` 小批量执行或 `--delay-ms N` 调整间隔。
+独立 SQLite 中 `api_responses` 表只保存成功响应原文、HTTP 状态和时间；`place_channels` 保存地点与频道关系。请求失败追加到 `log/api-errors.jsonl`，每行包含时间、接口阶段、实体 ID、请求 URL、HTTP 状态、错误类型、Cloudflare 判定、关键响应头和最多 2000 字符的响应正文片段，不写入 SQLite；旧版本已写入 SQLite 的失败记录会在启动时迁移到该日志并清除。成功记录会自动跳过，失败项没有成功记录，因此重跑时会再次请求。`data/sync-progress.json` 和 `data/pages-fetch-result.json` 提供进度记录。默认串行、每次间隔一秒，可使用 `--limit N` 小批量执行或 `--delay-ms N` 调整间隔。
 
 2026-09-28 试跑 `/page/MQfEnBji/channels` 时，Chrome 导航和命令行请求均等待至连接超时；该轮没有产生频道列表记录。已实现对 `href`、`url` 和嵌套 `page.url` 的频道 ID 提取；遇到数量字段与结构不匹配时会记录失败，避免静默当作空列表。直接接口版提供后续重试路径，执行五地点命令可确认接口当前是否恢复。
 

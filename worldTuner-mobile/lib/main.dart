@@ -5,9 +5,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/api_client.dart';
 import 'core/app_config.dart';
 import 'core/app_text.dart';
+import 'core/aether_theme.dart';
 import 'features/player/player_controller.dart';
 import 'features/settings/settings_controller.dart';
 import 'features/shell/home_shell.dart';
+import 'features/stations/station_library.dart';
 
 // 初始化本地设置与后台媒体服务后启动应用。
 Future<void> main() async {
@@ -19,14 +21,21 @@ Future<void> main() async {
   );
   final settings = SettingsController(SharedPreferencesAsync());
   await settings.load();
-  runApp(WorldTunerApp(settings: settings));
+  final library = StationLibrary(SharedPreferencesAsync());
+  await library.load();
+  runApp(WorldTunerApp(settings: settings, library: library));
 }
 
 // 应用根节点，集中持有服务连接和全局播放器。
 class WorldTunerApp extends StatefulWidget {
-  const WorldTunerApp({super.key, required this.settings});
+  const WorldTunerApp({
+    super.key,
+    required this.settings,
+    required this.library,
+  });
 
   final SettingsController settings;
+  final StationLibrary library;
 
   @override
   State<WorldTunerApp> createState() => _WorldTunerAppState();
@@ -38,7 +47,7 @@ class _WorldTunerAppState extends State<WorldTunerApp> {
   late final ApiClient? _api = _apiOrigin == null
       ? null
       : ApiClient(origin: _apiOrigin);
-  late final PlayerController _player = PlayerController();
+  late final PlayerController _player = PlayerController(widget.library);
 
   // 关闭 API 连接和音频资源。
   @override
@@ -59,15 +68,8 @@ class _WorldTunerAppState extends State<WorldTunerApp> {
           title: 'WorldTuner',
           debugShowCheckedModeBanner: false,
           themeMode: widget.settings.themeMode,
-          theme: ThemeData(
-            colorSchemeSeed: const Color(0xFF21B073),
-            useMaterial3: true,
-          ),
-          darkTheme: ThemeData(
-            colorSchemeSeed: const Color(0xFF21B073),
-            brightness: Brightness.dark,
-            useMaterial3: true,
-          ),
+          theme: buildAetherTheme(Brightness.light),
+          darkTheme: buildAetherTheme(Brightness.dark),
           home: _api == null
               ? Scaffold(
                   body: Center(
@@ -92,6 +94,7 @@ class _WorldTunerAppState extends State<WorldTunerApp> {
               : HomeShell(
                   api: _api,
                   player: _player,
+                  library: widget.library,
                   settings: widget.settings,
                   text: text,
                 ),

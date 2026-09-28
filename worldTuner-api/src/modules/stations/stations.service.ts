@@ -22,7 +22,8 @@ export class StationService {
   async list(query: StationQuery) {
     const language = await this.catalog.resolveName('languages', query.languagesId);
     const tag = await this.catalog.resolveName('tags', query.tagsId);
-    const rows = await this.repository.findPage(query, { language, tag });
+    const country = await this.catalog.resolveName('countries', query.countriesId);
+    const rows = await this.repository.findPage(query, { language, tag, country });
     const hasMore = rows.length > query.pageSize;
     return {
       list: rows.slice(0, query.pageSize).map(stationDto),
