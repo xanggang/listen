@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/aether_theme.dart';
 import '../../core/aether_icons.dart';
@@ -43,59 +44,141 @@ class _HomeShellState extends State<HomeShell> {
   // 切换选中的主页面，不销毁其他页面的滚动或地图位置。
   void _selectPage(int index) => setState(() => _index = index);
 
-  // 绘制品牌栏、页面、迷你播放器和底部导航。
+  // 地图页让地球铺满内容区，其余页面保留品牌栏和原有布局。
   @override
   Widget build(BuildContext context) {
     final palette = AetherPalette.of(context);
-    return Scaffold(
-      backgroundColor: palette.canvas,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            const AetherHeader(),
-            Expanded(
-              child: IndexedStack(
-                index: _index,
-                children: [
-                  MapPage(
-                    api: widget.api,
-                    player: widget.player,
-                    library: widget.library,
-                    text: widget.text,
-                  ),
-                  DiscoverPage(
-                    api: widget.api,
-                    player: widget.player,
-                    library: widget.library,
-                    text: widget.text,
-                  ),
-                  LeaderboardPage(
-                    api: widget.api,
-                    player: widget.player,
-                    library: widget.library,
-                    text: widget.text,
-                  ),
-                  SettingsPage(
-                    settings: widget.settings,
-                    player: widget.player,
-                    library: widget.library,
-                    text: widget.text,
-                  ),
-                ],
+    final overlayStyle =
+        (palette.isDark
+                ? SystemUiOverlayStyle.light
+                : SystemUiOverlayStyle.dark)
+            .copyWith(
+              statusBarColor: Colors.transparent,
+              systemNavigationBarColor: palette.surface,
+              systemNavigationBarIconBrightness: palette.isDark
+                  ? Brightness.light
+                  : Brightness.dark,
+            );
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: overlayStyle,
+      child: Scaffold(
+        backgroundColor: palette.canvas,
+        body: SafeArea(
+          top: _index != 0,
+          bottom: false,
+          child: Column(
+            children: [
+              Expanded(
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: IndexedStack(
+                        index: _index,
+                        children: [
+                          MapPage(
+                            api: widget.api,
+                            player: widget.player,
+                            library: widget.library,
+                            text: widget.text,
+                          ),
+                          Column(
+                            children: [
+                              Expanded(
+                                child: DiscoverPage(
+                                  api: widget.api,
+                                  player: widget.player,
+                                  library: widget.library,
+                                  text: widget.text,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              const AetherHeader(),
+                              Expanded(
+                                child: LeaderboardPage(
+                                  api: widget.api,
+                                  player: widget.player,
+                                  library: widget.library,
+                                  text: widget.text,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              const AetherHeader(),
+                              Expanded(
+                                child: SettingsPage(
+                                  settings: widget.settings,
+                                  player: widget.player,
+                                  library: widget.library,
+                                  text: widget.text,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (_index == 0) const _MapBrand(),
+                  ],
+                ),
               ),
-            ),
-            PlayerBar(
-              player: widget.player,
-              library: widget.library,
-              text: widget.text,
-            ),
-            _BottomNavigation(
-              index: _index,
-              text: widget.text,
-              onSelected: _selectPage,
-            ),
-          ],
+              PlayerBar(
+                player: widget.player,
+                library: widget.library,
+                text: widget.text,
+              ),
+              _BottomNavigation(
+                index: _index,
+                text: widget.text,
+                onSelected: _selectPage,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// 地图首页使用轻量悬浮品牌标识，避免实体标题栏压缩地球。
+class _MapBrand extends StatelessWidget {
+  const _MapBrand();
+
+  // 在地图左上角保留品牌识别，同时避免遮住右侧电台数量。
+  @override
+  Widget build(BuildContext context) {
+    final palette = AetherPalette.of(context);
+    final statusBarHeight = MediaQuery.paddingOf(context).top;
+    return Positioned(
+      top: statusBarHeight + 12,
+      left: 16,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: palette.surface.withValues(alpha: 0.9),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: palette.border),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.graphic_eq_rounded, color: palette.primary, size: 20),
+              const SizedBox(width: 6),
+              Text(
+                'worldTuner',
+                style: TextStyle(
+                  color: palette.text,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

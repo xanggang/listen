@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,6 +8,8 @@ import 'core/api_client.dart';
 import 'core/app_config.dart';
 import 'core/app_text.dart';
 import 'core/aether_theme.dart';
+import 'features/onboarding/entry_store.dart';
+import 'features/onboarding/register_page.dart';
 import 'features/player/player_controller.dart';
 import 'features/settings/settings_controller.dart';
 import 'features/shell/home_shell.dart';
@@ -16,27 +20,34 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await JustAudioBackground.init(
     androidNotificationChannelId: 'app.worldtuner.mobile.channel.audio',
-    androidNotificationChannelName: 'WorldTuner audio',
+    androidNotificationChannelName: 'worldTuner audio',
     androidNotificationOngoing: true,
   );
-  final settings = SettingsController(SharedPreferencesAsync());
+  final preferences = SharedPreferencesAsync();
+  final settings = SettingsController(preferences);
   await settings.load();
-  final library = StationLibrary(SharedPreferencesAsync());
+  final library = StationLibrary(preferences);
   await library.load();
-  runApp(WorldTunerApp(settings: settings, library: library));
+  final entry = EntryStore(preferences);
+  await entry.load();
+  runApp(WorldTunerApp(settings: settings, library: library, entry: entry));
 }
 
 // 应用根节点，集中持有服务连接和全局播放器。
 class WorldTunerApp extends StatefulWidget {
+  // 注入已加载的本地状态，在首次打开时展示欢迎入口。
   const WorldTunerApp({
     super.key,
     required this.settings,
     required this.library,
+    required this.entry,
   });
 
   final SettingsController settings;
   final StationLibrary library;
+  final EntryStore entry;
 
+  // 创建持有 API 与全局播放器的根状态。
   @override
   State<WorldTunerApp> createState() => _WorldTunerAppState();
 }
@@ -48,6 +59,26 @@ class _WorldTunerAppState extends State<WorldTunerApp> {
       ? null
       : ApiClient(origin: _apiOrigin);
   late final PlayerController _player = PlayerController(widget.library);
+  late bool _entered = widget.entry.entered;
+  bool _entering = false;
+
+  // 首版直接进入应用，并将欢迎页完成状态保存在设备本地。
+  Future<void> _enterApp() async {
+    if (_entering || _entered) return;
+    _entering = true;
+    try {
+      await widget.entry.markEntered();
+    } catch (_) {
+      // 本地写入失败时仍允许访问无账户功能，下次启动会再次展示欢迎页。
+    } finally {
+      if (mounted) {
+        setState(() {
+          _entered = true;
+          _entering = false;
+        });
+      }
+    }
+  }
 
   // 关闭 API 连接和音频资源。
   @override
@@ -62,10 +93,11 @@ class _WorldTunerAppState extends State<WorldTunerApp> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: widget.settings,
+      // 设置变化时重新生成当前语言的文案与应用主题。
       builder: (context, child) {
         final text = AppText(widget.settings.language);
         return MaterialApp(
-          title: 'WorldTuner',
+          title: 'worldTuner',
           debugShowCheckedModeBanner: false,
           themeMode: widget.settings.themeMode,
           theme: buildAetherTheme(Brightness.light),
@@ -90,6 +122,12 @@ class _WorldTunerAppState extends State<WorldTunerApp> {
                       ),
                     ),
                   ),
+                )
+              : !_entered
+              ? RegisterPage(
+                  text: text,
+                  // 欢迎页不执行鉴权，入口统一使用本地完成状态。
+                  onEnter: () => unawaited(_enterApp()),
                 )
               : HomeShell(
                   api: _api,

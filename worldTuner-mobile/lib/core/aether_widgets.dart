@@ -27,7 +27,7 @@ class AetherHeader extends StatelessWidget {
           const SizedBox(width: 9),
           Expanded(
             child: Text(
-              'Aether Radio',
+              'worldTuner',
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),

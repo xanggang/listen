@@ -31,7 +31,7 @@ class PlayerBar extends StatelessWidget {
     );
   }
 
-  // 根据当前电台展示封面、播放状态、收藏和暂停按钮。
+  // 播放器始终占位，未选电台时展示引导并禁用需要电台的操作。
   @override
   Widget build(BuildContext context) {
     final palette = AetherPalette.of(context);
@@ -40,7 +40,17 @@ class PlayerBar extends StatelessWidget {
       // 播放与收藏任一状态变化都刷新迷你播放器。
       builder: (context, child) {
         final station = player.current;
-        if (station == null) return const SizedBox.shrink();
+        final isFavorite = station != null && library.isFavorite(station.id);
+        final String subtitle;
+        if (station == null) {
+          subtitle = text.get('online');
+        } else if (player.errorMessage != null) {
+          subtitle = text.get('audioError');
+        } else if (player.buffering) {
+          subtitle = text.get('buffering');
+        } else {
+          subtitle = station.country ?? text.get('live');
+        }
         return Container(
           margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
           padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
@@ -60,17 +70,28 @@ class PlayerBar extends StatelessWidget {
           ),
           child: Row(
             children: [
-              StationArtwork(station: station, size: 50),
+              if (station == null)
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: palette.primarySoft,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(Icons.radio_rounded, color: palette.primary),
+                )
+              else
+                StationArtwork(station: station, size: 50),
               const SizedBox(width: 10),
               Expanded(
                 child: InkWell(
-                  onTap: () => _openDetails(context),
+                  onTap: station == null ? null : () => _openDetails(context),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        station.name,
+                        station?.name ?? text.get('noStation'),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -79,11 +100,7 @@ class PlayerBar extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        player.errorMessage != null
-                            ? text.get('audioError')
-                            : player.buffering
-                            ? text.get('buffering')
-                            : station.country ?? text.get('live'),
+                        subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(color: palette.muted, fontSize: 12),
@@ -94,14 +111,14 @@ class PlayerBar extends StatelessWidget {
               ),
               IconButton(
                 tooltip: text.get('favorites'),
-                onPressed: () => library.toggleFavorite(station),
+                onPressed: station == null
+                    ? null
+                    : () => library.toggleFavorite(station),
                 icon: Icon(
-                  library.isFavorite(station.id)
+                  isFavorite
                       ? Icons.favorite_rounded
                       : Icons.favorite_border_rounded,
-                  color: library.isFavorite(station.id)
-                      ? const Color(0xFFF43F5E)
-                      : palette.muted,
+                  color: isFavorite ? const Color(0xFFF43F5E) : palette.muted,
                 ),
               ),
               SizedBox(
@@ -111,7 +128,9 @@ class PlayerBar extends StatelessWidget {
                   tooltip: player.playing
                       ? text.get('pause')
                       : text.get('play'),
-                  onPressed: player.buffering ? null : player.toggle,
+                  onPressed: station == null || player.buffering
+                      ? null
+                      : player.toggle,
                   icon: player.buffering
                       ? const SizedBox(
                           width: 19,

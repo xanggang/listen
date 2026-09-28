@@ -152,7 +152,7 @@ export async function getChannelDetails(channelId, options) {
  * 获取播放接口的 3xx Location，不跟随跳转，也不请求或下载音频内容。
  * @param {string} channelId 已校验的 Radio Garden 频道 ID。
  * @param {object} [options] 注入 fetch 和重试参数。
- * @returns {Promise<{httpStatus: number, redirectUrl: string}>} 流地址重定向信息。
+ * @returns {Promise<{channelId: string, httpStatus: number, redirectUrl: string}>} 带频道 ID 的流地址重定向信息。
  */
 export async function getStreamRedirect(channelId, options = {}) {
   const fetchImpl = options.fetchImpl ?? fetch;
@@ -184,5 +184,5 @@ export async function getStreamRedirect(channelId, options = {}) {
     error.diagnostics = responseDiagnostics(response, url.href);
     throw error;
   }
-  return { httpStatus: status, redirectUrl: new URL(location, url).href };
+  return { channelId, httpStatus: status, redirectUrl: new URL(location, url).href };
 }

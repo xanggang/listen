@@ -156,7 +156,7 @@ async function requestJson(page, pathname) {
  * 对已知频道获取 listen API 的重定向目标，不跟随重定向或下载音频。
  * @param {import('playwright').Page} page 持有 Radio Garden 会话 Cookie 的浏览器页。
  * @param {string} channelId 已验证的频道 ID。
- * @returns {Promise<{httpStatus: number, redirectUrl: string}>} HTTP 3xx 和目标流地址。
+ * @returns {Promise<{channelId: string, httpStatus: number, redirectUrl: string}>} 带频道 ID 的 HTTP 3xx 和目标流地址。
  */
 async function requestStreamRedirect(page, channelId) {
   const url = `https://radio.garden/api/ara/content/listen/${channelId}/channel.mp3?s=1&hl=zh-Hans`;
@@ -188,7 +188,7 @@ async function requestStreamRedirect(page, channelId) {
   if (!redirectUrl || !/^https?:\/\//i.test(redirectUrl)) {
     throw new Error('播放地址接口没有返回有效的 Location。');
   }
-  return { httpStatus: response.status(), redirectUrl };
+  return { channelId, httpStatus: response.status(), redirectUrl };
 }
 
 /**

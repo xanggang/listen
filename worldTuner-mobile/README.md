@@ -1,14 +1,14 @@
-# WorldTuner Mobile
+# worldTuner Mobile
 
 Flutter 客户端，当前先完成 Android 版本；iOS 工程仅保留基础脚手架，后续再做平台适配。首版与现有 Web 共用独立的 Cloudflare Worker API，提供地图、发现搜索、全球/语言/流派榜单、网络电台播放和本地主题/语言设置。无需用户账户。
 
-当前界面采用 `files/stitch_global_web_radio_app` 的 Aether Daybreak / Midnight Sonic 设计规范：地图、发现、排行榜、个人中心和常驻播放器共用同一套深浅色组件。个人中心可选“跟随系统 / 日间 / 深色”，并可即时切换简体中文与英语；语言、主题、收藏和最近播放记录均保存在设备本地，重启后恢复。发现页的国家筛选通过 Worker 的 `countriesId` 参数获取真实结果。
+当前界面采用 `files/stitch_global_web_radio_app` 的 Aether Daybreak / Midnight Sonic 设计规范：欢迎页、地图、发现、排行榜、个人中心和常驻播放器共用同一套深浅色组件。首次启动展示欢迎／注册入口；顶部“去登录”直接进入应用，首版不执行鉴权，注册按钮会提示功能尚未开放。进入状态保存在本机，后续启动直接进入首页。个人中心可选“跟随系统 / 日间 / 深色”，并可即时切换简体中文与英语；语言、主题、收藏和最近播放记录均保存在设备本地，重启后恢复。发现页的国家筛选通过 Worker 的 `countriesId` 参数获取真实结果。
 
-设计稿和 PRD 中的实时听众数、曲目识别、VIP 订阅、FLAC/DVR、云端同步及原生 3D 球体尚无对应服务或产品能力。当前榜单使用 API 的票数，地图使用可交互的圆形卫星地图；界面不展示虚构的实时或会员数据。完整功能边界见 `docs/design-implementation.md`。
+设计稿和 PRD 中的实时听众数、曲目识别、VIP 订阅、FLAC/DVR、云端同步尚无对应服务或产品能力。当前榜单使用 API 的票数；地图以可旋转的 3D 地球展示卫星影像、地形与电台点位。完整功能边界见 `docs/design-implementation.md`。
 
 ## 环境配置
 
-API 根地址由构建变量 `API_BASE_URL` 注入，**不包含** `/api/v1`。客户端统一拼接 v1 路径。地图密钥由 `MAPTILER_API_KEY` 注入；未配置时仍可看到点位，但没有卫星底图。两者均没有写死在源码中。
+API 根地址由构建变量 `API_BASE_URL` 注入，**不包含** `/api/v1`。客户端统一拼接 v1 路径。地图密钥由 `MAPTILER_API_KEY` 注入；未配置时地球不可用。两者均没有写死在源码中。
 
 `env/local.json` 已加入 .gitignore。正式构建时另行传入生产环境的 HTTPS API 地址。构建变量会进入客户端安装包，不应放入服务端密钥；MapTiler key 应在其管理后台限制使用范围。
 
@@ -38,9 +38,9 @@ flutter run -d emulator-5554 \
   --dart-define=MAPTILER_API_KEY=你的地图Key
 ```
 
-将设备 ID 换成 `flutter devices` 的实际输出。MapTiler key 可暂时省略，此时电台点位仍会显示，但没有卫星底图。也可以复制 `env/example.json` 为 `env/local.json`，然后执行 `flutter run -d emulator-5554 --dart-define-from-file=env/local.json`。示例文件使用当前 Web 的公开 MapTiler key 和 Android 模拟器的本地 API 地址；切换环境时修改 `env/local.json`。
+将设备 ID 换成 `flutter devices` 的实际输出。可以复制 `env/example.json` 为 `env/local.json`，然后执行 `flutter run -d emulator-5554 --dart-define-from-file=env/local.json`。示例文件使用当前 Web 的公开 MapTiler key 和 Android 模拟器的本地 API 地址；切换环境时修改 `env/local.json`。
 
-`10.0.2.2` 是 Android 模拟器访问电脑本地 Worker 的地址。Debug 构建只对这个地址放行 HTTP；正式构建仍要求 HTTPS API。真机调试建议使用可访问的 HTTPS 测试地址。现有地图快照的 9200 个流地址中有 2143 个是 HTTP；当前正式构建遵循 Android 默认网络安全策略，这部分电台可能无法播放，需后续明确传输策略。
+`10.0.2.2` 是 Android 模拟器访问电脑本地 Worker 的地址。Debug 构建对这个地址及 `192.168.137.226` 放行 HTTP；正式构建仍要求 HTTPS API。局域网 IP 改变时，需要同步修改启动配置和 Debug 网络配置。现有地图快照的 9200 个流地址中有 2143 个是 HTTP；当前正式构建遵循 Android 默认网络安全策略，这部分电台可能无法播放，需后续明确传输策略。
 
 调试时在 `flutter run` 终端按 `r` 热重载、`R` 热重启、`q` 退出；终端会给出 DevTools 链接。若刚启动模拟器时未显示设备，等 Android 启动完成后重试 `flutter devices`。本机 Flutter 可用完整路径 `/Users/lin/development/flutter/bin/flutter`。
 
@@ -52,16 +52,27 @@ flutter run -d emulator-5554 \
 
 直接安装 APK 不支持 Flutter 热重载和 Dart 断点；日常调试使用 `flutter run`。
 
+手机远程调试可使用 `env/lan.json`，其中 `API_BASE_URL` 为 `http://192.168.137.226:8787/`：
+
+```sh
+flutter run -d 'adb-IRNZOVUODE4XPJJ7-Qspsil._adb-tls-connect._tcp' --dart-define-from-file=env/lan.json
+```
+
+运行前确认手机与电脑在同一局域网，并在手机浏览器打开 `http://192.168.137.226:8787/api/v1/health` 检查 Worker 是否可达。Worker 需要监听可由局域网访问的地址。
+
 ## 数据与结构
 
 - `lib/core`：构建配置、API 客户端和界面文案。
 - `lib/features/stations`：电台模型、分页结果、搜索和榜单。
-- `lib/features/map`：Web 当前地图点位快照、聚合地图、点选详情。
+- `lib/features/map`：地图点位快照、3D 地球通信、点选详情。
 - `lib/features/player`：全局播放器、系统媒体控制和迷你播放器。
 - `lib/features/settings`：本地语言与主题设置。
+- `lib/features/onboarding`：首次启动欢迎页和本地进入状态。
 - `lib/features/shell`：四个主入口。
 
 地图点位来自现有 Web 的 `public/data.json` 快照，详情由 Worker 查询。点位快照更新时，需同步 `assets/data/stations.json`；未来可改成 API 地图点位接口。
+
+地球由随 APK 打包的 MapTiler SDK JS 在 Android WebView 中渲染，使用卫星影像与 DEM 地形。拖动可旋转地球，双指缩放并查看近景地形；点击小点获取电台详情。地图交互与资源说明见 `docs/globe.md`。
 
 ## 验证
 

@@ -1,0 +1,274 @@
+<!DOCTYPE html><html class="dark" lang="zh-CN" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>登录与开启探索 - Aether Radio</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "outline-variant": "#3a494b",
+            "on-secondary-fixed": "#23005c",
+            "on-primary-fixed": "#002022",
+            "on-tertiary-container": "#006e4b",
+            "surface-bright": "#343948",
+            "on-surface": "#dee2f6",
+            "surface": "#0e1321",
+            "surface-container-low": "#161b2a",
+            "primary-fixed": "#6ff6ff",
+            "surface-container-lowest": "#090e1c",
+            "secondary-container": "#571bc1",
+            "surface-dim": "#0e1321",
+            "background": "#0e1321",
+            "on-secondary-container": "#c4abff",
+            "on-primary-container": "#006a70",
+            "inverse-primary": "#00696f",
+            "secondary-fixed-dim": "#d0bcff",
+            "on-background": "#dee2f6",
+            "on-tertiary": "#003824",
+            "on-error-container": "#ffdad6",
+            "surface-container-highest": "#303444",
+            "on-secondary": "#3c0091",
+            "secondary": "#d0bcff",
+            "on-surface-variant": "#b9cacb",
+            "surface-container": "#1a1f2e",
+            "primary": "#e0fdff",
+            "on-primary": "#00373a",
+            "error-container": "#93000a",
+            "tertiary": "#e1ffec",
+            "on-tertiary-fixed": "#002113",
+            "tertiary-fixed": "#6ffbbe",
+            "on-primary-fixed-variant": "#004f53",
+            "on-error": "#690005",
+            "on-secondary-fixed-variant": "#5516be",
+            "on-tertiary-fixed-variant": "#005236",
+            "primary-fixed-dim": "#00dce6",
+            "inverse-on-surface": "#2b303f",
+            "error": "#ffb4ab",
+            "tertiary-container": "#67f4b7",
+            "secondary-fixed": "#e9ddff",
+            "inverse-surface": "#dee2f6",
+            "outline": "#849495",
+            "surface-container-high": "#252a39",
+            "surface-tint": "#00dce6",
+            "surface-variant": "#303444",
+            "primary-container": "#00f2fe",
+            "tertiary-fixed-dim": "#4edea3"
+          },
+          "borderRadius": {
+            "DEFAULT": "1rem",
+            "lg": "2rem",
+            "xl": "3rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "space-xs": "0.25rem",
+            "margin": "1rem",
+            "margin-desktop": "3rem",
+            "gutter": "1rem",
+            "space-md": "1rem",
+            "gutter-lg": "1.5rem",
+            "gutter-sm": "0.75rem",
+            "margin-tablet": "2rem",
+            "space-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "display": ["Plus Jakarta Sans"],
+            "label-lg": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-md": ["Inter"],
+            "body-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-sm": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-md": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    
+    /* Frequency coordinate glow backdrop */
+    .radial-sound-glow {
+      background: radial-gradient(circle at 50% 18%, rgba(0, 242, 254, 0.15) 0%, rgba(87, 27, 193, 0.12) 35%, rgba(14, 19, 33, 0) 70%);
+    }
+
+    /* Ambient waveform grid */
+    .acoustic-grid {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(58, 73, 75, 0.15) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(58, 73, 75, 0.15) 1px, transparent 1px);
+    }
+    
+    @keyframes pulse-signal {
+      0%, 100% { opacity: 0.35; transform: scaleY(0.7); }
+      50% { opacity: 1; transform: scaleY(1.2); }
+    }
+    
+    .wave-bar {
+      transform-origin: bottom;
+      animation: pulse-signal 2.4s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased selection:bg-primary-container selection:text-surface-container-lowest min-h-screen relative overflow-x-hidden flex flex-col justify-between">
+<!-- Background Acoustic Ambient Atmosphere -->
+<div class="fixed inset-0 pointer-events-none z-0 radial-sound-glow"></div>
+<div class="fixed inset-0 pointer-events-none z-0 acoustic-grid opacity-50"></div>
+<!-- Ambient Frequency Orbit Lines -->
+<div class="fixed -top-32 -left-32 w-96 h-96 rounded-full border border-primary-container/10 pointer-events-none z-0"></div>
+<div class="fixed top-12 -right-24 w-80 h-80 rounded-full border border-secondary-container/20 pointer-events-none z-0"></div>
+<!-- Main Viewport Canvas -->
+<div class="relative z-10 w-full max-w-md mx-auto min-h-screen flex flex-col justify-between px-6 pt-12 pb-8">
+<!-- Top Bar: Minimal Status & Close/Language -->
+<header class="flex items-center justify-between w-full h-10">
+<div class="flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container/70 backdrop-blur-md border border-outline-variant/30">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-ping"></span>
+<span class="font-label-sm text-label-sm tracking-wider text-tertiary-container uppercase">324,891 On Air</span>
+</div>
+<a class="flex items-center gap-1 text-on-surface-variant hover:text-primary-container transition-colors py-1.5 px-3 rounded-full hover:bg-surface-container-high/40 text-label-md font-label-md" href="#guest">
+<span class="">跳过</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</header>
+<!-- Hero Identity & Acoustic Brandmark -->
+<main class="flex flex-col items-center text-center my-auto py-8">
+<!-- Brand Soundwave Icon Emblem -->
+<div class="relative mb-6 flex items-center justify-center">
+<!-- Glow Aura -->
+<div class="absolute -inset-4 bg-primary-container/20 rounded-full blur-xl"></div>
+<div class="relative w-20 h-20 rounded-2xl bg-surface-container-high/90 border border-primary-container/30 backdrop-blur-xl flex items-center justify-center shadow-[0_0_24px_-4px_rgba(0,242,254,0.35)]">
+<div class="flex items-end gap-1.5 h-8">
+<span class="w-1 bg-primary-container rounded-full wave-bar h-4" style="animation-delay: 0.1s;"></span>
+<span class="w-1 bg-primary-container rounded-full wave-bar h-7" style="animation-delay: 0.3s;"></span>
+<span class="w-1 bg-primary-container rounded-full wave-bar h-5" style="animation-delay: 0.5s;"></span>
+<span class="w-1 bg-primary-container rounded-full wave-bar h-8" style="animation-delay: 0.2s;"></span>
+<span class="w-1 bg-primary-container rounded-full wave-bar h-3" style="animation-delay: 0.4s;"></span>
+</div>
+</div>
+<!-- Frequency Marker Chip -->
+<div class="absolute -bottom-2.5 bg-surface-container-lowest border border-outline-variant/40 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-primary-container text-[12px]">graphic_eq</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant tracking-wider">worldTuner 108.4</span>
+</div>
+</div>
+<!-- Brand Typography Hierarchy -->
+<div class="space-y-3 max-w-xs mx-auto">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight font-extrabold">
+          聆听全球频率<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-fixed to-primary-container">触碰声音经纬</span>
+</h1>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed px-2">
+          跨越 195+ 国家与地域，连接 320,000+ 正在直播的电台声波
+        </p>
+</div>
+<!-- Live Broadcast Visual Card Scrim (Atmospheric Micro-Card) -->
+<div class="mt-8 w-full max-w-xs bg-surface-container-low/70 border border-outline-variant/30 rounded-xl p-3.5 backdrop-blur-md flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[20px]">public</span>
+</div>
+<div class="text-left">
+<p class="font-label-md text-label-md text-on-surface">雷克雅未克 · 极光微声台</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">94.1 MHz · 128 kbps FLAC</p>
+</div>
+</div>
+<div class="flex items-center gap-1 px-2 py-1 rounded-full bg-tertiary-container/10 border border-tertiary-container/20">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></span>
+<span class="font-label-sm text-label-sm text-tertiary-fixed-dim font-bold">LIVE</span>
+</div>
+</div>
+</main>
+<!-- Interaction Hub: Authentication & Entryways -->
+<div class="w-full space-y-4">
+<!-- Primary Action: Phone / Email One-Click Login -->
+<button class="w-full h-13 py-3.5 px-6 rounded-full bg-gradient-to-r from-primary-fixed-dim to-primary-container text-on-primary-container font-headline-sm text-headline-sm flex items-center justify-center gap-2.5 shadow-[0_0_24px_-4px_rgba(0,242,254,0.4)] active:scale-95 transition-all duration-150 font-bold hover:brightness-105 cursor-pointer" type="button">
+<span class="material-symbols-outlined text-[20px]">cell_merge</span>
+<span class="">手机号 / 邮箱一键登录</span>
+</button>
+<!-- Third-party Auth Cluster -->
+<div class="grid gap-2.5 pt-1 grid-cols-2">
+<!-- Apple Login -->
+<button aria-label="Apple 账号登录" class="h-12 rounded-full bg-surface-container/80 hover:bg-surface-container-high/90 border border-outline-variant/30 flex items-center justify-center gap-2 text-on-surface active:scale-95 transition-all duration-150 cursor-pointer" type="button">
+<svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+<path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.85-.9.04-2 .6-2.65 1.35-.58.67-1.09 1.74-.95 2.77.99.08 2.06-.52 2.68-1.27z"></path>
+</svg>
+<span class="font-label-md text-label-md">Apple</span>
+</button>
+<!-- WeChat Login -->
+
+<!-- Google Login -->
+<button aria-label="Google 账号登录" class="h-12 rounded-full bg-surface-container/80 hover:bg-surface-container-high/90 border border-outline-variant/30 flex items-center justify-center gap-2 text-on-surface active:scale-95 transition-all duration-150 cursor-pointer" type="button">
+<svg class="w-4 h-4" viewBox="0 0 24 24">
+<path d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z" fill="#EA4335"></path>
+<path d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z" fill="#4285F4"></path>
+<path d="M5.6 14.8c-.3-.8-.4-1.8-.4-2.8s.2-2 .4-2.8L1.9 6.3C.7 8.7 0 10.3 0 12s.7 3.3 1.9 5.7l3.7-2.9z" fill="#FBBC05"></path>
+<path d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z" fill="#34A853"></path>
+</svg>
+<span class="font-label-md text-label-md">Google</span>
+</button>
+</div>
+<!-- Password Login / Register Toggle -->
+<div class="flex items-center justify-center gap-3 pt-2">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-container transition-colors" href="#pwd-login">
+          账号密码登录
+        </a>
+<span class="text-outline-variant">|</span>
+<a class="font-label-md text-label-md text-primary-container hover:underline" href="#register">
+          立即注册新电台号
+        </a>
+</div>
+<!-- Guest Discovery Entry (Skip for now) -->
+<div class="pt-2" id="guest">
+<a class="w-full h-11 py-2 rounded-full border border-outline-variant/40 bg-surface-container-lowest/60 hover:bg-surface-container/60 text-on-surface flex items-center justify-center gap-2 transition-all active:scale-95 group" href="#explore-globe">
+<span class="material-symbols-outlined text-[18px] text-primary-container group-hover:rotate-45 transition-transform duration-300">travel_explore</span>
+<span class="font-label-md text-label-md tracking-wide">先以访客身份探索地球 (Skip for now)</span>
+</a>
+</div>
+<!-- Legal & Terms Footer -->
+<footer class="pt-3 pb-1 text-center">
+<p class="font-label-sm text-label-sm text-outline leading-tight">
+          登录或注册即代表您已阅读并同意
+          <a class="text-on-surface-variant hover:text-primary-container underline decoration-outline-variant" href="#terms">《用户使用协议》</a>
+          与
+          <a class="text-on-surface-variant hover:text-primary-container underline decoration-outline-variant" href="#privacy">《隐私保护政策》</a>
+</p>
+</footer>
+</div>
+</div>
+
+
+</body></html>

@@ -244,7 +244,7 @@ class SettingsPage extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.info_outline_rounded, color: palette.muted),
               title: Text(text.get('aboutApp')),
-              subtitle: const Text('Aether Radio · 1.0.0'),
+              subtitle: const Text('worldTuner · 1.0.0'),
             ),
           ]),
         ],

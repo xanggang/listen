@@ -1,0 +1,472 @@
+<!DOCTYPE html><html class="dark" lang="zh-CN" style="width: 390px; height: 829px; overflow: hidden; position: relative;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>Aether Radio - 搜索与分类频段</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface-variant": "#b9cacb",
+            "surface-container-highest": "#303444",
+            "error-container": "#93000a",
+            "secondary-fixed-dim": "#d0bcff",
+            "primary-fixed-dim": "#00dce6",
+            "on-tertiary-fixed": "#002113",
+            "on-error": "#690005",
+            "outline": "#849495",
+            "on-secondary-fixed-variant": "#5516be",
+            "surface-tint": "#00dce6",
+            "surface-bright": "#343948",
+            "secondary": "#d0bcff",
+            "on-secondary-container": "#c4abff",
+            "primary-fixed": "#6ff6ff",
+            "on-tertiary": "#003824",
+            "error": "#ffb4ab",
+            "tertiary-fixed-dim": "#4edea3",
+            "secondary-container": "#571bc1",
+            "on-primary-container": "#006a70",
+            "primary-container": "#00f2fe",
+            "on-secondary": "#3c0091",
+            "surface-container": "#1a1f2e",
+            "on-primary-fixed": "#002022",
+            "on-primary-fixed-variant": "#004f53",
+            "on-tertiary-container": "#006e4b",
+            "tertiary-container": "#67f4b7",
+            "surface": "#0e1321",
+            "tertiary-fixed": "#6ffbbe",
+            "inverse-on-surface": "#2b303f",
+            "on-primary": "#00373a",
+            "tertiary": "#e1ffec",
+            "background": "#0e1321",
+            "surface-container-high": "#252a39",
+            "surface-container-lowest": "#090e1c",
+            "surface-container-low": "#161b2a",
+            "inverse-primary": "#00696f",
+            "secondary-fixed": "#e9ddff",
+            "on-secondary-fixed": "#23005c",
+            "surface-dim": "#0e1321",
+            "on-background": "#dee2f6",
+            "primary": "#e0fdff",
+            "on-tertiary-fixed-variant": "#005236",
+            "surface-variant": "#303444",
+            "outline-variant": "#3a494b",
+            "on-error-container": "#ffdad6",
+            "on-surface": "#dee2f6",
+            "inverse-surface": "#dee2f6"
+          },
+          "borderRadius": {
+            "DEFAULT": "1rem",
+            "lg": "2rem",
+            "xl": "3rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-tablet": "2rem",
+            "space-xs": "0.25rem",
+            "margin-desktop": "3rem",
+            "gutter-sm": "0.75rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem",
+            "gutter": "1rem",
+            "space-xl": "2rem",
+            "margin": "1rem",
+            "gutter-lg": "1.5rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter", "sans-serif"],
+            "display": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "label-md": ["Inter", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "label-lg": ["Inter", "sans-serif"],
+            "label-sm": ["Inter", "sans-serif"]
+          },
+          "fontSize": {
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "headline-md": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Custom scrollbar suppression for tactile mobile horizontal decks */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    @keyframes signalPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.4; }
+    }
+    .animate-signal {
+      animation: signalPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes soundWave {
+      0%, 100% { height: 4px; }
+      50% { height: 18px; }
+    }
+    .wave-bar-1 { animation: soundWave 1.1s ease-in-out infinite; }
+    .wave-bar-2 { animation: soundWave 0.8s ease-in-out infinite 0.2s; }
+    .wave-bar-3 { animation: soundWave 1.4s ease-in-out infinite 0.4s; }
+    .wave-bar-4 { animation: soundWave 0.9s ease-in-out infinite 0.1s; }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-fixed min-h-screen relative flex flex-col font-body-md overflow-x-hidden pb-[144px]">
+<!-- AMBIENT ATMOSPHERIC BACKGROUND MESH -->
+<div class="fixed inset-0 pointer-events-none z-0">
+<div class="absolute -top-32 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary-container/10 rounded-full blur-[120px]"></div>
+<div class="absolute top-[35%] -left-20 w-72 h-72 bg-secondary-container/20 rounded-full blur-[100px]"></div>
+<div class="absolute top-[65%] -right-20 w-80 h-80 bg-surface-container-highest/20 rounded-full blur-[110px]"></div>
+</div>
+<!-- 1. TOP SEARCH & RETURN BAR -->
+<header class="sticky top-0 z-40 w-full bg-surface/85 backdrop-blur-xl px-4 pt-3 pb-3 flex items-center gap-3">
+<!-- Return / Back Action -->
+<button aria-label="返回" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary-container hover:bg-surface-container-high/60 active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[22px]">arrow_back</span>
+</button>
+<!-- Global Search Input Pill (Focused Acoustic Style) -->
+<div class="flex-1 relative flex items-center">
+<div class="absolute left-3.5 flex items-center pointer-events-none text-primary-container">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="w-full h-11 bg-surface-container-lowest text-on-surface placeholder:text-outline pl-10 pr-9 rounded-full border border-primary-container/50 focus:border-primary-container focus:ring-1 focus:ring-primary-container text-body-md font-body-md transition-all shadow-[0_0_16px_-4px_rgba(0,242,254,0.25)]" placeholder="爵士, 东京, 98.4 FM..." type="text" value="Lo-Fi &amp; Chillhop">
+<!-- Clear Search Button -->
+<button aria-label="清空搜索" class="absolute right-3 text-on-surface-variant hover:text-on-surface flex items-center justify-center p-0.5" type="button">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+</button>
+</div>
+<!-- Filter Drawer Action Pill -->
+<button aria-label="筛选选项" class="relative w-10 h-10 rounded-full bg-surface-container-low border border-outline-variant/40 flex items-center justify-center text-on-surface hover:text-primary-container hover:border-primary-container/40 active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface"></span>
+</button>
+</header>
+<!-- MAIN SCROLLABLE CONTENT -->
+<main class="relative z-10 flex-1 px-4 space-y-6 mt-1">
+<!-- 2. SECONDARY CATEGORY & MULTI-DIMENSIONAL FILTER CAPSULES -->
+
+<!-- 3. TOP MATCH CARD (BEST RESULT HERO) -->
+<section aria-label="最佳匹配" class="space-y-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[18px]">verified</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">最佳匹配</h2>
+</div>
+
+</div>
+<!-- Hero Station Glass Card -->
+<article class="relative overflow-hidden rounded-2xl bg-surface-container-low border border-white/[0.08] shadow-[0_16px_32px_-8px_rgba(0,0,0,0.65)] p-4 transition-all">
+<!-- Background Ambient Cover Glow -->
+<div class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-primary-container/10 blur-[80px] pointer-events-none"></div>
+<div class="flex gap-4 items-start">
+<!-- Station Large Visual Cover with Live Pulse -->
+<div class="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 border border-white/10 shadow-lg">
+<img class="w-full h-full object-cover" data-alt="A cinematic nighttime anime illustration of a cozy Parisian bedroom study desk with soft neon rain outside the window, warm incandescent lamp glow on open vintage notebooks and vinyl headphones, bathed in midnight obsidian shadows and electric cyan accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUceIE4ud9KvI8mSRf_pK0xNqaTcUau4ZSgbwRk5KB2wnyItY5Igq712PLtk22LkQDpkmMo0PXJcHmMg_tejY4TstimnHu-9e9aopc8RTuAjLVMMLtRcKi2lmEFv7UrMk6kjEqzaGyQdmhKlrYMN1mgtsccR4PzacOZnXuF_z6hgbiqAL7PiqcCGuIRNNhLTfAZzcHIK0R7EWjrOb4KtfSyt45vENPeejUk-xMwYsiIyrRUq8DLrx5DA">
+<!-- Live Indicator Badge -->
+<div class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center gap-1 border border-white/10">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container animate-signal"></span>
+<span class="text-[9px] font-label-sm font-bold text-tertiary tracking-wider">直播中</span>
+</div>
+<!-- Frequency overlay -->
+<div class="absolute bottom-1 right-1.5 px-1 rounded bg-black/60 backdrop-blur-sm text-[9px] font-bold text-on-surface font-label-sm">
+              94.2 FM
+            </div>
+</div>
+<!-- Station Metadata & Stream Info -->
+<div class="flex-1 min-w-0 space-y-1">
+<div class="flex items-center gap-2">
+<span class="text-sm">🇫🇷</span>
+<span class="text-label-md font-label-md text-outline truncate">法国 · 巴黎</span>
+<!-- VIP FLAC badge -->
+
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface truncate tracking-tight">Lofi Girl Radio</h3>
+<!-- Currently Playing Track -->
+<div class="flex items-center gap-1.5 text-primary-container font-body-sm text-body-sm truncate pt-0.5">
+<span class="material-symbols-outlined text-[15px] flex-shrink-0">audiotrack</span>
+<span class="truncate">Kupla — Kingdom in Blue</span>
+</div>
+<!-- Audience & Quality Stats -->
+<div class="flex items-center gap-3 pt-1 text-label-sm font-label-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-tertiary-container">group</span>
+                4.82 万人收听
+              </span>
+<span class="">•</span>
+
+</div>
+</div>
+</div>
+<!-- Action Ribbon & Frequency Soundwave Visualizer -->
+<div class="mt-4 pt-3.5 border-t border-white/[0.06] flex items-center justify-between">
+<!-- Audio Waveform Graphic Mock -->
+<div class="flex items-end gap-1 h-5 px-2 py-0.5 bg-surface-container rounded-lg">
+<span class="w-1 bg-primary-container rounded-full wave-bar-1"></span>
+<span class="w-1 bg-primary-container/80 rounded-full wave-bar-2"></span>
+<span class="w-1 bg-primary-container rounded-full wave-bar-3"></span>
+<span class="w-1 bg-primary-container/60 rounded-full wave-bar-4"></span>
+<span class="text-[10px] font-label-sm text-primary-container ml-1 font-semibold">正在播出</span>
+</div>
+<!-- Transport Buttons -->
+<div class="flex items-center gap-2">
+<!-- Favorite button -->
+<button aria-label="收藏电台" class="w-10 h-10 rounded-full bg-surface-container border border-outline-variant/30 flex items-center justify-center text-on-surface-variant hover:text-error hover:border-error/40 active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<!-- Primary Hero Play Button -->
+<button class="h-10 px-5 rounded-full bg-primary-container text-surface-container-lowest font-headline-sm text-body-md font-bold flex items-center gap-2 shadow-[0_0_24px_-4px_rgba(0,242,254,0.45)] hover:brightness-110 active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+<span class="">立即收听</span>
+</button>
+</div>
+</div>
+</article>
+</section>
+<!-- 4. MATCHING STATIONS LIST (EXPANDED HIGH-FIDELITY DECK) -->
+<section aria-label="匹配电台频段" class="space-y-3">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">匹配电台频段</h2>
+<span class="text-label-md font-label-md text-primary-container font-medium hover:underline cursor-pointer">排序: 热门程度</span>
+</div>
+<div class="space-y-2.5">
+<!-- Station Item 1: Tokyo Lo-Fi Beats -->
+<article class="flex items-center gap-3 p-3 rounded-2xl bg-surface-container-low border border-white/[0.05] hover:border-primary-container/30 active:scale-[0.99] transition-all">
+<div class="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border border-white/10">
+<img class="w-full h-full object-cover" data-alt="A moody neon Tokyo Shibuya street view in a late night drizzle, reflective wet asphalt glowing with cyan, violet and amber reflections, featuring clean architectural minimalism and sonic stream visualizer aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHvCTRRZIVwarZcHim1e0PFAoFCWzRGr0hBD0wd764C7_92kHEgb02L7B5pTVF7l6N5-w4Sn9NY8VLRHbhZPCg9AMlTk4D9xNT0VBu81VgsKYZAy6ctdx8ueICmD1Q6zb_tLZiwE1Z73U2SoexXDoHSL4ndkCjBzMAzpDnF95IkEx40DJ0MOXL-jrkBumuH5J8uM4Xs2--AMQ13HLg8wIelrPWwCBMqJwZ5cp36A5lDhjiK-BD1fDrww">
+<div class="absolute bottom-0.5 left-0.5 px-1 rounded bg-black/70 text-[8px] font-bold text-tertiary-container font-label-sm">
+              直播中
+            </div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="text-xs">🇯🇵</span>
+<h4 class="font-headline-sm text-body-lg font-semibold text-on-surface truncate">Tokyo Lo-Fi Beats</h4>
+<span class="ml-auto text-label-sm font-label-sm font-bold text-primary-container bg-surface-container px-1.5 py-0.5 rounded">
+                89.7 MHz
+              </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant truncate">Nujabes, Uyama Hiroto • 涩谷 FM 广播</p>
+<div class="flex items-center gap-2 mt-0.5 text-label-sm font-label-sm text-outline">
+<span class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px] text-tertiary-container">group</span>
+                2.94 万人收听
+              </span>
+<span class="">•</span>
+<span class="">日本 · 东京涩谷</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="播放电台" class="w-10 h-10 rounded-full bg-surface-container border border-outline-variant/30 flex items-center justify-center text-primary-container hover:bg-primary-container hover:text-surface-container-lowest active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button aria-label="更多操作" class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</article>
+<!-- Station Item 2: Berlin Midnight Chill -->
+<article class="flex items-center gap-3 p-3 rounded-2xl bg-surface-container-low border border-white/[0.05] hover:border-primary-container/30 active:scale-[0.99] transition-all">
+<div class="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border border-white/10">
+<img class="w-full h-full object-cover" data-alt="An industrial minimalist electronic music studio in Berlin Kreuzberg at 3 AM with sleek modular synthesizers and gentle teal ambient LED strips cutting through deep shadow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3tojHEy_yk20OHPwUbM5pAW6S0MOLhzkDyv0w5q8fF9p4To_4390W7qhpOvzch3dcW2vvCzB3GQT3x_hkS6OXNlpzRTMihypryq0SOJA3QLUxd5ARl7CRwPwDweYdNXViVziFiJ12daxhn_sHNDmut3vRQsl2QYwHXcwM6qw3p5rdiXo-wxNyuE5j12QFOY-VkjDXjtAPkYCHu92wkJApWWr3ZY19qRV3I_P_VMYqmpqZdpS5QXxYpg">
+<div class="absolute bottom-0.5 left-0.5 px-1 rounded bg-black/70 text-[8px] font-bold text-tertiary-container font-label-sm">
+              直播中
+            </div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="text-xs">🇩🇪</span>
+<h4 class="font-headline-sm text-body-lg font-semibold text-on-surface truncate">Berlin Midnight Chill</h4>
+<span class="ml-auto text-label-sm font-label-sm font-bold text-secondary bg-surface-container px-1.5 py-0.5 rounded">
+                104.1 DAB
+              </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant truncate">Kiasmos, Christian Löffler • 施普雷河声波</p>
+<div class="flex items-center gap-2 mt-0.5 text-label-sm font-label-sm text-outline">
+<span class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px] text-tertiary-container">group</span>
+                1.87 万人收听
+              </span>
+<span class="">•</span>
+<span class="">德国 · 柏林克罗伊茨贝格</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="播放电台" class="w-10 h-10 rounded-full bg-surface-container border border-outline-variant/30 flex items-center justify-center text-primary-container hover:bg-primary-container hover:text-surface-container-lowest active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button aria-label="更多操作" class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</article>
+<!-- Station Item 3: Seoul Rain FM -->
+<article class="flex items-center gap-3 p-3 rounded-2xl bg-surface-container-low border border-white/[0.05] hover:border-primary-container/30 active:scale-[0.99] transition-all">
+<div class="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border border-white/10">
+<img class="w-full h-full object-cover" data-alt="A tranquil Seoul Han River nocturnal cityscape viewed through rain-streaked apartment glass, distant bridges glowing with faint electric emerald and violet illumination." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApW1Og8DBbQaM2sz2Xj02HkCCmTEAnauBXZ-vp8dMUzhTS0z1uAGY1QoBgF1CTkatnJ10Pvrk1-o2Ek5YkCF697YYKmItkHjLQJXzgucU8JcEovkF-lLPyqRGNm9z3xKO0Q6TBdufsAYVSfVoMYG7_uec4ImngXkC7LMyzQ1Ig5VKWDT99_xVwua9TT_k2QW-S1d0PrQSHLz6w2wdtjmP1eb7tyEYvYYi075cfc45IAuLIaKD5y_nV7A">
+<div class="absolute bottom-0.5 left-0.5 px-1 rounded bg-black/70 text-[8px] font-bold text-tertiary-container font-label-sm">
+              直播中
+            </div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="text-xs">🇰🇷</span>
+<h4 class="font-headline-sm text-body-lg font-semibold text-on-surface truncate">Seoul Rain FM</h4>
+<span class="ml-auto text-label-sm font-label-sm font-bold text-primary-container bg-surface-container px-1.5 py-0.5 rounded">
+                91.5 FM
+              </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant truncate">Offonoff, Dean • 麻浦演播厅直播</p>
+<div class="flex items-center gap-2 mt-0.5 text-label-sm font-label-sm text-outline">
+<span class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px] text-tertiary-container">group</span>
+                1.41 万人收听
+              </span>
+<span class="">•</span>
+<span class="">韩国 · 首尔麻浦区</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="播放电台" class="w-10 h-10 rounded-full bg-surface-container border border-outline-variant/30 flex items-center justify-center text-primary-container hover:bg-primary-container hover:text-surface-container-lowest active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button aria-label="更多操作" class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</article>
+<!-- Station Item 4: Brooklyn Vintage Tape Lounge -->
+<article class="flex items-center gap-3 p-3 rounded-2xl bg-surface-container-low border border-white/[0.05] hover:border-primary-container/30 active:scale-[0.99] transition-all">
+<div class="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border border-white/10">
+<img class="w-full h-full object-cover" data-alt="A vintage analog reel-to-reel tape deck rotating inside a dark Brooklyn brick loft with an amber VU meter glowing gently, surrounded by vinyl records in midnight blue lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9PVjH3sAJresQozjRkGjQtZdLYp2EBymA36NwAaCN9_qTBjYJnqRkNLxridxpifrJvea6r9QSILgBMTY7FaUYlEDL_fSNbN7D6-Hnt4DREBi-OtUdzTXtascIprvBwZbPBAjPtUrQNaA3OXTpC_ba4twFfajd-dXlL5UNU5asqseCM4TNrSmkWbxhOg5FesBc5jTTsiygqvsgdviDxhC3ue3RlNgEWsHupZa2z4MKw_Lt_ANOOTpjxA">
+<div class="absolute bottom-0.5 left-0.5 px-1 rounded bg-black/70 text-[8px] font-bold text-tertiary-container font-label-sm">
+              直播中
+            </div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="text-xs">🇺🇸</span>
+<h4 class="font-headline-sm text-body-lg font-semibold text-on-surface truncate">Brooklyn Tape Lounge</h4>
+<span class="ml-auto text-label-sm font-label-sm font-bold text-outline bg-surface-container px-1.5 py-0.5 rounded">
+                101.9 FM
+              </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant truncate">J Dilla, Madlib • 威廉斯堡现场</p>
+<div class="flex items-center gap-2 mt-0.5 text-label-sm font-label-sm text-outline">
+<span class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px] text-tertiary-container">group</span>
+                1.19 万人收听
+              </span>
+<span class="">•</span>
+<span class="">美国 · 纽约布鲁克林</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="播放电台" class="w-10 h-10 rounded-full bg-surface-container border border-outline-variant/30 flex items-center justify-center text-primary-container hover:bg-primary-container hover:text-surface-container-lowest active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button aria-label="更多操作" class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</article>
+</div>
+</section>
+<!-- 5. RELATED TAGS & REGIONS EXPLORATION -->
+
+</main>
+<!-- 6. GLOBAL FLOATING MINI-PLAYER (SUSPENDED 12PX ABOVE BOTTOM BAR) -->
+<aside aria-label="全局常驻播放器" class="fixed bottom-[68px] left-3 right-3 z-40 h-16 rounded-full bg-surface-container-high/90 backdrop-blur-2xl border-t border-white/15 border-b border-white/5 px-3 flex items-center justify-between shadow-[0_16px_32px_-8px_rgba(0,0,0,0.7)] overflow-hidden">
+<!-- Scrubber buffer line running along the bottom -->
+<div class="absolute bottom-0 left-0 right-0 h-[2.5px] bg-surface-container-highest">
+<div class="h-full bg-primary-container w-[65%] shadow-[0_0_8px_rgba(0,242,254,0.8)]"></div>
+</div>
+<!-- Station Avatar & Current Track Info -->
+<div class="flex items-center gap-3 min-w-0 flex-1 pr-2">
+<!-- Spinning vinyl avatar with emerald broadcast indicator -->
+<div class="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-primary-container/40 ring-2 ring-primary-container/20">
+<img class="w-full h-full object-cover animate-[spin_10s_linear_infinite]" data-alt="A close-up of a rotating midnight black vinyl record under cyan laser lights with holographic audio grooves reflecting deep violet ambiance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxTE8spJKkmkVGaN7fgpPeoQ33WNn8OqZaO8pJEGDDPU95TW1JrMzPcs7lShU8pJjAKVWAREGbtMtf0jf0oMPb26FaCMClcLXhla5DME-1z66Ks7wKsXqdZXcKOZWQvpipIiDNbG56Qdz4_Za-JOv6ExxIUpGWEPnU6O34-ZtgfwkQPYixYvCLML_aqOc8ImDqMGl1wy9oDhANKccRrsjLuR5ZuvZKzB5w8CKK5d30GUbpphYW27SkeQ">
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-tertiary-container ring-1 ring-surface-container-lowest"></span>
+</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-body-sm font-semibold text-on-surface truncate">ChilledCow FM</span>
+<span class="px-1 py-0.2 rounded bg-primary-container/20 text-primary-container text-[8px] font-bold">无损</span>
+</div>
+<p class="text-label-sm font-label-sm text-on-surface-variant truncate">Kupla • Kingdom in Blue — 巴黎直播</p>
+</div>
+</div>
+<!-- Mini Controls -->
+<div class="flex items-center gap-1 flex-shrink-0">
+<!-- Heart Favorite -->
+<button aria-label="收藏" class="w-9 h-9 rounded-full flex items-center justify-center text-primary-container hover:bg-surface-container-highest/60 transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<!-- Play/Pause Toggle -->
+<button aria-label="暂停播出" class="w-10 h-10 rounded-full bg-primary-container text-surface-container-lowest flex items-center justify-center shadow-[0_0_16px_rgba(0,242,254,0.5)] active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+</div>
+</aside>
+<!-- 7. CORE BOTTOM NAVIGATION BAR -->
+<!-- Mapped verbatim from Shared Components JSON: BottomNavBar with 'Discover' actively highlighted -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 border-t border-outline-variant/20 pb-safe bg-surface-container-lowest/90 backdrop-blur-xl">
+<!-- Tab 1: Globe (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1.5 hover:text-on-surface transition-colors active:scale-95 duration-150" type="button">
+<span class="material-symbols-outlined text-[22px]">public</span>
+<span class="text-label-sm font-label-sm mt-0.5">地球探索</span>
+</button>
+<!-- Tab 2: Discover (ACTIVE STATE as per Search/Category context) -->
+<button class="flex flex-col items-center justify-center bg-surface-container-high text-primary-container rounded-full px-4 py-1.5 transition-all shadow-[0_0_16px_-4px_rgba(0,242,254,0.35)] active:scale-95 duration-150" type="button">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="text-label-sm font-label-sm mt-0.5 font-bold">发现</span>
+</button>
+<!-- Tab 3: Charts (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1.5 hover:text-on-surface transition-colors active:scale-95 duration-150" type="button">
+<span class="material-symbols-outlined text-[22px]">leaderboard</span>
+<span class="text-label-sm font-label-sm mt-0.5">排行榜</span>
+</button>
+<!-- Tab 4: Profile (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1.5 hover:text-on-surface transition-colors active:scale-95 duration-150" type="button">
+<span class="material-symbols-outlined text-[22px]">person</span>
+<span class="text-label-sm font-label-sm mt-0.5">个人中心</span>
+</button>
+</nav>
+
+
+</body></html>

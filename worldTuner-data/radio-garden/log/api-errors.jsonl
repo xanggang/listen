@@ -43,3 +43,8 @@
   },
   "error": "fetch failed"
 }
+{"occurred_at":"2026-09-28T08:07:18.512Z","endpoint":"channel_details","entity_id":"pTodgf0t","http_status":null,"error_name":"TypeError","request_url":"https://radio.garden/api/ara/content/channel/pTodgf0t?s=1&hl=zh-Hans","cloudflare_detected":false,"diagnostics":{"request_url":"https://radio.garden/api/ara/content/channel/pTodgf0t?s=1&hl=zh-Hans","error_name":"TypeError","cause":{"name":"ConnectTimeoutError","message":"Connect Timeout Error (attempted addresses: 103.228.130.61:443, 2001::caa0:8291:443, timeout: 10000ms)","code":"UND_ERR_CONNECT_TIMEOUT"}},"error":"fetch failed"}
+{"occurred_at":"2026-09-28T09:03:59.098Z","endpoint":"stream_redirect","entity_id":"--3nj7p6","http_status":null,"error_name":"TypeError","request_url":null,"cloudflare_detected":false,"diagnostics":null,"error":"Provided value cannot be bound to SQLite parameter 1."}
+{"occurred_at":"2026-09-28T09:04:00.356Z","endpoint":"stream_redirect","entity_id":"--dUOiIu","http_status":null,"error_name":"TypeError","request_url":null,"cloudflare_detected":false,"diagnostics":null,"error":"Provided value cannot be bound to SQLite parameter 1."}
+{"occurred_at":"2026-09-28T09:04:01.663Z","endpoint":"stream_redirect","entity_id":"--vkQ2Ld","http_status":null,"error_name":"TypeError","request_url":null,"cloudflare_detected":false,"diagnostics":null,"error":"Provided value cannot be bound to SQLite parameter 1."}
+{"occurred_at":"2026-09-28T09:04:02.937Z","endpoint":"stream_redirect","entity_id":"-02GefYP","http_status":null,"error_name":"TypeError","request_url":null,"cloudflare_detected":false,"diagnostics":null,"error":"Provided value cannot be bound to SQLite parameter 1."}

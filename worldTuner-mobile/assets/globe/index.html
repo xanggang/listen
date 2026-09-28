@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="robots" content="noindex" />
+    <title>worldTuner Globe</title>
+    <link rel="stylesheet" href="maptiler-sdk.css" />
+    <style>
+      html, body, #globe { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+      body { background: #0e1321; }
+      body[data-theme="light"] { background: #f8fafc; }
+      #globe-hud {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: min(92vw, 88vh);
+        aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        color: rgba(0, 242, 254, 0.55);
+        opacity: 1;
+        transition: opacity 240ms ease;
+      }
+      #globe-hud.is-hidden { opacity: 0; }
+      .orbit {
+        position: absolute;
+        inset: 0;
+        border: 1px solid rgba(0, 242, 254, 0.1);
+        border-radius: 50%;
+      }
+      .orbit-dashed {
+        inset: 4%;
+        border-style: dashed;
+        border-color: rgba(0, 242, 254, 0.28);
+      }
+      .orbit-inner {
+        inset: 9%;
+        border-color: rgba(0, 242, 254, 0.23);
+      }
+      .compass-label {
+        position: absolute;
+        font: 600 10px/1 sans-serif;
+        letter-spacing: 0.12em;
+        text-shadow: 0 0 7px #0e1321;
+      }
+      .compass-north { top: 5%; left: 50%; transform: translateX(-50%); }
+      .compass-south { bottom: 5%; left: 50%; transform: translateX(-50%); }
+      .compass-west { top: 50%; left: 3%; transform: translateY(-50%); }
+      .compass-east { top: 50%; right: 3%; transform: translateY(-50%); }
+      body[data-theme="light"] #globe-hud { color: rgba(2, 132, 199, 0.72); }
+      body[data-theme="light"] .orbit { border-color: rgba(2, 132, 199, 0.12); }
+      body[data-theme="light"] .orbit-dashed { border-color: rgba(2, 132, 199, 0.33); }
+      body[data-theme="light"] .orbit-inner { border-color: rgba(2, 132, 199, 0.3); }
+      body[data-theme="light"] .compass-label { text-shadow: 0 0 7px #f8fafc; }
+      .maplibregl-control-container { font-family: sans-serif; }
+      .maplibregl-ctrl-attrib { font-size: 10px; }
+    </style>
+  </head>
+  <body>
+    <div id="globe" role="img" aria-label="Interactive 3D earth with radio stations"></div>
+    <div id="globe-hud" aria-hidden="true">
+      <div class="orbit"></div>
+      <div class="orbit orbit-dashed"></div>
+      <div class="orbit orbit-inner"></div>
+      <span class="compass-label compass-north">N</span>
+      <span class="compass-label compass-south">S</span>
+      <span class="compass-label compass-west">W</span>
+      <span class="compass-label compass-east">E</span>
+    </div>
+    <script src="maptiler-sdk.umd.min.js"></script>
+    <script src="globe.js"></script>
+  </body>
+</html>

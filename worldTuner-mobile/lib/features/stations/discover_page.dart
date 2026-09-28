@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -11,6 +10,7 @@ import '../player/player_controller.dart';
 import 'station.dart';
 import 'station_library.dart';
 import 'station_results.dart';
+import 'search_page.dart';
 
 // 设计稿的发现页，用真实分类字典驱动流派、国家与语言浏览。
 class DiscoverPage extends StatefulWidget {
@@ -34,9 +34,7 @@ class DiscoverPage extends StatefulWidget {
 
 // 分类数据只请求一次，列表查询随关键词和筛选项更新。
 class _DiscoverPageState extends State<DiscoverPage> {
-  final TextEditingController _input = TextEditingController();
-  Timer? _debounce;
-  String _keyword = '';
+  bool _searchOpen = false;
   int _category = 0;
   int? _tagId;
   int? _languageId;
@@ -56,21 +54,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
     _featured = widget.api.stations(keyword: 'ambient', pageSize: 1);
   }
 
-  // 输入停顿后提交搜索词，降低 Worker 的检索请求量。
-  void _onSearchChanged(String value) {
-    setState(() {});
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 450), () {
-      if (mounted) setState(() => _keyword = value.trim());
-    });
-  }
-
-  // 清除搜索词并立即恢复当前分类列表。
-  void _clearSearch() {
-    _debounce?.cancel();
-    _input.clear();
-    setState(() => _keyword = '');
-  }
+  // 在发现分类和完整搜索结果之间切换，保留原有分类选择。
+  void _setSearchOpen(bool value) => setState(() => _searchOpen = value);
 
   // 切换发现页分类，旧列表由 ValueKey 自动失效。
   void _selectCategory(int category) => setState(() => _category = category);
@@ -99,15 +84,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     });
   }
 
-  // 取消输入防抖并释放文本控制器。
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    _input.dispose();
-    super.dispose();
-  }
-
-  // 绘制搜索输入与四种聚合维度切换。
+  // 绘制搜索入口与四种聚合维度切换。
   Widget _searchAndFilters(BuildContext context) {
     final palette = AetherPalette.of(context);
     final t = widget.text.get;
@@ -115,23 +92,11 @@ class _DiscoverPageState extends State<DiscoverPage> {
     return Column(
       children: [
         TextField(
-          controller: _input,
-          onChanged: _onSearchChanged,
-          // 键盘提交时直接应用搜索词并取消延时请求。
-          onSubmitted: (value) {
-            _debounce?.cancel();
-            setState(() => _keyword = value.trim());
-          },
+          readOnly: true,
+          onTap: () => _setSearchOpen(true),
           decoration: InputDecoration(
             hintText: t('searchStations'),
             prefixIcon: Icon(Icons.search_rounded, color: palette.muted),
-            suffixIcon: _input.text.isEmpty
-                ? null
-                : IconButton(
-                    tooltip: t('clearSearch'),
-                    onPressed: _clearSearch,
-                    icon: const Icon(Icons.close_rounded),
-                  ),
             filled: true,
             fillColor: palette.surface,
             contentPadding: const EdgeInsets.symmetric(vertical: 14),
@@ -440,18 +405,33 @@ class _DiscoverPageState extends State<DiscoverPage> {
   // 将当前筛选状态映射到分页 API 并渲染发现页。
   @override
   Widget build(BuildContext context) {
-    final filter = '$_category:$_tagId:$_languageId:$_countryId:$_keyword';
-    return StationResults(
-      key: ValueKey(filter),
-      api: widget.api,
-      player: widget.player,
-      library: widget.library,
-      text: widget.text,
-      header: _header(context),
-      keyword: _keyword,
-      tagId: _category == 1 ? _tagId : null,
-      countryId: _category == 2 ? _countryId : null,
-      languageId: _category == 3 ? _languageId : null,
+    if (_searchOpen) {
+      return SearchPage(
+        api: widget.api,
+        player: widget.player,
+        library: widget.library,
+        text: widget.text,
+        onBack: () => _setSearchOpen(false),
+      );
+    }
+    final filter = '$_category:$_tagId:$_languageId:$_countryId';
+    return Column(
+      children: [
+        const AetherHeader(),
+        Expanded(
+          child: StationResults(
+            key: ValueKey(filter),
+            api: widget.api,
+            player: widget.player,
+            library: widget.library,
+            text: widget.text,
+            header: _header(context),
+            tagId: _category == 1 ? _tagId : null,
+            countryId: _category == 2 ? _countryId : null,
+            languageId: _category == 3 ? _languageId : null,
+          ),
+        ),
+      ],
     );
   }
 }

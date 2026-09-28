@@ -26,6 +26,33 @@ npm run fetch:radio-garden
 
 首次浏览器实测成功：核心与详情各包含 11,490 个地点，两份版本一致；详情包含 225 个国家条目。响应原文现在保存在独立 SQLite 中。
 
+## 整理地点与位置
+
+在 `worldTuner-data/` 运行：
+
+```bash
+npm run normalize:radio-garden
+```
+
+默认读取已有的 `radio-garden/data/places-core-columnar.json` 和 `places-details-columnar.json`。如果两个原始响应已保存在独立 SQLite 的 `api_responses` 中，可用 `npm run normalize:radio-garden -- --source=sqlite`。命令只在本地运算，不请求网络，也不修改 API/D1 数据库。
+
+两份响应的地点列按**同一下标**对应：`ids[i]`、`lngs[i]`、`lats[i]`、`sizes[i]`、`boosts[i]`、`titles[i]`、`countryIdx[i]` 组成一个地点；国家或地区名称为 `countries[countryIdx[i]]`。坐标顺序是**经度、纬度**。命令会校验版本、列长度、地点 ID、国家索引和坐标范围，成功后原子重建独立 SQLite 中的 `radio_garden_places` 表。重复执行可更新快照；`source_version` 记录来源版本。`size` 与 `boost` 保留源值，不将 `size` 当作已采集频道数。`skipRides` 的用途未在参考文档中定义，暂不参与地点映射。
+
+查询示例（可用 `sqlite3 radio-garden/data/radio-garden.sqlite` 执行）：
+
+```sql
+SELECT id, title, country, latitude, longitude FROM radio_garden_places LIMIT 10;
+SELECT country, COUNT(*) AS place_count FROM radio_garden_places GROUP BY country ORDER BY place_count DESC;
+SELECT p.id, p.title, COUNT(pc.channel_id) AS collected_channels
+FROM radio_garden_places AS p
+LEFT JOIN place_channels AS pc ON pc.place_id = p.id
+GROUP BY p.id ORDER BY collected_channels DESC LIMIT 10;
+```
+
+当前这份 `hl=zh-Hans` 快照中的 `titles` 和 `countries` 实际上主要是英文。它只提供地点、国家或地区名称和坐标，没有行政区代码或城市所属省州字段；需要这些字段时应另用地理数据源补全，并保留 Radio Garden 的原始名称与坐标用于核对。
+
+国家或地区中文名称由独立的[地名本地化命令](../geo-localization/README.md)生成，不在采集脚本中处理。
+
 ## 第二步：前五个地点页面测试
 
 在 `worldTuner-data/` 运行 `npm run fetch:radio-garden:pages`。脚本将 `data/placesIDs.js` 的 `export const ids = [...]` 作为 JSON 数组读取，不执行该文件，仅选前五个 ID，顺序请求 `page/{id}?s=1&hl=zh-Hans`，间隔一秒。
@@ -63,3 +90,6 @@ npm run sync:radio-garden:api -- --phase streams
 2026-09-28 试跑 `/page/MQfEnBji/channels` 时，Chrome 导航和命令行请求均等待至连接超时；该轮没有产生频道列表记录。已实现对 `href`、`url` 和嵌套 `page.url` 的频道 ID 提取；遇到数量字段与结构不匹配时会记录失败，避免静默当作空列表。直接接口版提供后续重试路径，执行五地点命令可确认接口当前是否恢复。
 
 直接接口版首次试跑时，SQLite 中前五个地点已有成功记录并被跳过；对第六个地点 `3QbMs4L3` 的 Node `fetch` 连续三次得到 `fetch failed`。该失败会保存在 `log/api-errors.jsonl`，前五个地点响应和频道关联保留，可在网络恢复后继续用接口版重试。
+
+
+## 数据整理
