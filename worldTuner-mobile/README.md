@@ -2,7 +2,7 @@
 
 Flutter 客户端，当前先完成 Android 版本；iOS 工程仅保留基础脚手架，后续再做平台适配。首版与现有 Web 共用独立的 Cloudflare Worker API，提供地图、发现搜索、全球/语言/流派榜单、网络电台播放和本地主题/语言设置。无需用户账户。
 
-当前界面采用 `files/stitch_global_web_radio_app` 的 Aether Daybreak / Midnight Sonic 设计规范：欢迎页、地图、发现、排行榜、个人中心和常驻播放器共用同一套深浅色组件。首次启动展示欢迎／注册入口；顶部“去登录”直接进入应用，首版不执行鉴权，注册按钮会提示功能尚未开放。进入状态保存在本机，后续启动直接进入首页。个人中心可选“跟随系统 / 日间 / 深色”，并可即时切换简体中文与英语；语言、主题、收藏和最近播放记录均保存在设备本地，重启后恢复。发现页的国家筛选通过 Worker 的 `countriesId` 参数获取真实结果。
+当前界面采用 `files/stitch_global_web_radio_app` 的 Aether Daybreak / Midnight Sonic 设计规范：欢迎页、地图、发现、排行榜、个人中心和常驻播放器共用同一套深浅色组件。首次启动展示欢迎／注册入口；顶部“去登录”直接进入应用，首版不执行鉴权，注册按钮会提示功能尚未开放。进入状态保存在本机，后续启动直接进入首页。“我的”可进入 VIP 权益规划页，该页没有购买入口，展示期间仍保留播放器。个人中心可选“跟随系统 / 日间 / 深色”，并可即时切换简体中文与英语；语言、主题、收藏和最近播放记录均保存在设备本地，重启后恢复。发现页的国家筛选通过 Worker 的 `countriesId` 参数获取真实结果。
 
 设计稿和 PRD 中的实时听众数、曲目识别、VIP 订阅、FLAC/DVR、云端同步尚无对应服务或产品能力。当前榜单使用 API 的票数；地图以可旋转的 3D 地球展示卫星影像、地形与电台点位。完整功能边界见 `docs/design-implementation.md`。
 
@@ -68,6 +68,7 @@ flutter run -d 'adb-IRNZOVUODE4XPJJ7-Qspsil._adb-tls-connect._tcp' --dart-define
 - `lib/features/player`：全局播放器、系统媒体控制和迷你播放器。
 - `lib/features/settings`：本地语言与主题设置。
 - `lib/features/onboarding`：首次启动欢迎页和本地进入状态。
+- `lib/features/vip`：VIP 权益概念页，当前没有购买或会员状态。
 - `lib/features/shell`：四个主入口。
 
 地图点位来自现有 Web 的 `public/data.json` 快照，详情由 Worker 查询。点位快照更新时，需同步 `assets/data/stations.json`；未来可改成 API 地图点位接口。

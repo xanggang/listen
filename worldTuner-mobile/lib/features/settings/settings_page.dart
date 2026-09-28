@@ -10,18 +10,35 @@ import 'settings_controller.dart';
 
 // 个人中心承载本地收藏、收听历史以及全局主题和语言设置。
 class SettingsPage extends StatelessWidget {
+  // 个人中心通过回调进入 VIP 规划页，由主容器保留播放器状态。
   const SettingsPage({
     super.key,
     required this.settings,
     required this.player,
     required this.library,
     required this.text,
+    required this.onViewVip,
   });
 
   final SettingsController settings;
   final PlayerController player;
   final StationLibrary library;
   final AppText text;
+  final VoidCallback onViewVip;
+
+  // 展示独立的 VIP 权益入口，不暗示当前可以购买或开通。
+  Widget _vipSection(BuildContext context) {
+    final palette = AetherPalette.of(context);
+    return _section(context, [
+      ListTile(
+        onTap: onViewVip,
+        leading: Icon(Icons.auto_awesome_rounded, color: palette.gold),
+        title: Text(text.get('vipMenu')),
+        subtitle: Text(text.get('vipComingSoon')),
+        trailing: Icon(Icons.chevron_right_rounded, color: palette.muted),
+      ),
+    ]);
+  }
 
   // 统一绘制带边框的设置分组。
   Widget _section(BuildContext context, List<Widget> children) {
@@ -220,7 +237,7 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  // 按设计稿顺序展示个人概览、收藏、主题、语言和应用信息。
+  // 按设计稿顺序展示个人概览、VIP 入口、收藏、主题、语言和应用信息。
   @override
   Widget build(BuildContext context) {
     final palette = AetherPalette.of(context);
@@ -231,6 +248,8 @@ class SettingsPage extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 18, 16, 20),
         children: [
           _overview(context),
+          const SizedBox(height: 18),
+          _vipSection(context),
           const SizedBox(height: 25),
           _librarySection(context, true),
           const SizedBox(height: 22),

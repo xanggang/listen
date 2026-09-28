@@ -1,10 +1,10 @@
 {
-  "updated_at": "2026-09-28T09:12:32.289Z",
+  "updated_at": "2026-09-28T09:36:13.500Z",
   "counts": [
     {
       "endpoint": "channel_details",
       "status": "success",
-      "count": 10784
+      "count": 11817
     },
     {
       "endpoint": "places_channels",
@@ -14,7 +14,7 @@
     {
       "endpoint": "stream_redirect",
       "status": "success",
-      "count": 136
+      "count": 1200
     }
   ],
   "place_channel_relations": 34246

@@ -11,6 +11,7 @@ import '../player/player_bar.dart';
 import '../player/player_controller.dart';
 import '../settings/settings_controller.dart';
 import '../settings/settings_page.dart';
+import '../vip/vip_page.dart';
 import '../stations/discover_page.dart';
 import '../stations/leaderboard_page.dart';
 import '../stations/station_library.dart';
@@ -40,9 +41,16 @@ class HomeShell extends StatefulWidget {
 // 主容器只维护当前页面索引；数据状态由对应模块持有。
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
+  bool _showVip = false;
 
   // 切换选中的主页面，不销毁其他页面的滚动或地图位置。
   void _selectPage(int index) => setState(() => _index = index);
+
+  // 在主内容区打开权益页，保留底部播放器和原有页面状态。
+  void _openVip() => setState(() => _showVip = true);
+
+  // 返回个人中心的原有位置，不销毁其滚动或本地数据。
+  void _closeVip() => setState(() => _showVip = false);
 
   // 地图页让地球铺满内容区，其余页面保留品牌栏和原有布局。
   @override
@@ -59,84 +67,101 @@ class _HomeShellState extends State<HomeShell> {
                   ? Brightness.light
                   : Brightness.dark,
             );
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: overlayStyle,
-      child: Scaffold(
-        backgroundColor: palette.canvas,
-        body: SafeArea(
-          top: _index != 0,
-          bottom: false,
-          child: Column(
-            children: [
-              Expanded(
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: IndexedStack(
-                        index: _index,
-                        children: [
-                          MapPage(
-                            api: widget.api,
-                            player: widget.player,
-                            library: widget.library,
-                            text: widget.text,
-                          ),
-                          Column(
+    return PopScope(
+      canPop: !_showVip,
+      // Android 系统返回键优先关闭权益页。
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && _showVip) _closeVip();
+      },
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: overlayStyle,
+        child: Scaffold(
+          backgroundColor: palette.canvas,
+          body: SafeArea(
+            top: _showVip || _index != 0,
+            bottom: false,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Visibility(
+                          visible: !_showVip,
+                          maintainState: true,
+                          child: IndexedStack(
+                            index: _index,
                             children: [
-                              Expanded(
-                                child: DiscoverPage(
-                                  api: widget.api,
-                                  player: widget.player,
-                                  library: widget.library,
-                                  text: widget.text,
-                                ),
+                              MapPage(
+                                api: widget.api,
+                                player: widget.player,
+                                library: widget.library,
+                                text: widget.text,
+                              ),
+                              Column(
+                                children: [
+                                  Expanded(
+                                    child: DiscoverPage(
+                                      api: widget.api,
+                                      player: widget.player,
+                                      library: widget.library,
+                                      text: widget.text,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  const AetherHeader(),
+                                  Expanded(
+                                    child: LeaderboardPage(
+                                      api: widget.api,
+                                      player: widget.player,
+                                      library: widget.library,
+                                      text: widget.text,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  const AetherHeader(),
+                                  Expanded(
+                                    child: SettingsPage(
+                                      settings: widget.settings,
+                                      player: widget.player,
+                                      library: widget.library,
+                                      text: widget.text,
+                                      onViewVip: _openVip,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                          Column(
-                            children: [
-                              const AetherHeader(),
-                              Expanded(
-                                child: LeaderboardPage(
-                                  api: widget.api,
-                                  player: widget.player,
-                                  library: widget.library,
-                                  text: widget.text,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              const AetherHeader(),
-                              Expanded(
-                                child: SettingsPage(
-                                  settings: widget.settings,
-                                  player: widget.player,
-                                  library: widget.library,
-                                  text: widget.text,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    if (_index == 0) const _MapBrand(),
-                  ],
+                      if (_showVip)
+                        Positioned.fill(
+                          child: VipPage(text: widget.text, onBack: _closeVip),
+                        ),
+                      if (_index == 0 && !_showVip) const _MapBrand(),
+                    ],
+                  ),
                 ),
-              ),
-              PlayerBar(
-                player: widget.player,
-                library: widget.library,
-                text: widget.text,
-              ),
-              _BottomNavigation(
-                index: _index,
-                text: widget.text,
-                onSelected: _selectPage,
-              ),
-            ],
+                PlayerBar(
+                  player: widget.player,
+                  library: widget.library,
+                  text: widget.text,
+                ),
+                if (!_showVip)
+                  _BottomNavigation(
+                    index: _index,
+                    text: widget.text,
+                    onSelected: _selectPage,
+                  ),
+              ],
+            ),
           ),
         ),
       ),

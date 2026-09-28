@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>WorldTuner VIP · 概念规划页</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus Jakarta Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-background": "#dee2f6",
+            "surface-variant": "#303444",
+            "tertiary-fixed-dim": "#4edea3",
+            "primary-container": "#00f2fe",
+            "on-tertiary-container": "#006e4b",
+            "on-error": "#690005",
+            "inverse-surface": "#dee2f6",
+            "on-primary-fixed": "#002022",
+            "surface-container-high": "#252a39",
+            "on-primary-container": "#006a70",
+            "on-secondary-fixed-variant": "#5516be",
+            "error": "#ffb4ab",
+            "surface": "#0e1321",
+            "primary-fixed": "#6ff6ff",
+            "surface-bright": "#343948",
+            "secondary": "#d0bcff",
+            "inverse-on-surface": "#2b303f",
+            "on-tertiary-fixed": "#002113",
+            "surface-container-low": "#161b2a",
+            "on-tertiary-fixed-variant": "#005236",
+            "surface-container-highest": "#303444",
+            "on-surface": "#dee2f6",
+            "on-secondary-container": "#c4abff",
+            "on-secondary": "#3c0091",
+            "on-surface-variant": "#b9cacb",
+            "tertiary-container": "#67f4b7",
+            "secondary-fixed": "#e9ddff",
+            "primary-fixed-dim": "#00dce6",
+            "surface-tint": "#00dce6",
+            "on-tertiary": "#003824",
+            "outline-variant": "#3a494b",
+            "error-container": "#93000a",
+            "on-error-container": "#ffdad6",
+            "surface-container": "#1a1f2e",
+            "background": "#0e1321",
+            "outline": "#849495",
+            "on-primary-fixed-variant": "#004f53",
+            "secondary-container": "#571bc1",
+            "primary": "#e0fdff",
+            "tertiary-fixed": "#6ffbbe",
+            "surface-dim": "#0e1321",
+            "surface-container-lowest": "#090e1c",
+            "secondary-fixed-dim": "#d0bcff",
+            "on-primary": "#00373a",
+            "inverse-primary": "#00696f",
+            "on-secondary-fixed": "#23005c",
+            "tertiary": "#e1ffec"
+          },
+          "borderRadius": {
+            "DEFAULT": "1rem",
+            "lg": "2rem",
+            "xl": "3rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "space-md": "1rem",
+            "space-xs": "0.25rem",
+            "margin-tablet": "2rem",
+            "gutter-sm": "0.75rem",
+            "gutter": "1rem",
+            "margin-desktop": "3rem",
+            "margin": "1rem"
+          },
+          "fontFamily": {
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "label-sm": ["Inter"],
+            "display": ["Plus Jakarta Sans"],
+            "label-lg": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Inter"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }],
+            "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-md": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      background-color: #060913;
+      color: #dee2f6;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 20px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Subdued ambient canvas */
+    .ambient-sphere {
+      background: radial-gradient(circle at 50% 20%, rgba(0, 242, 254, 0.08) 0%, rgba(87, 27, 193, 0.05) 45%, rgba(14, 19, 33, 0) 70%);
+    }
+  </style>
+</head>
+<body class="flex justify-center items-start min-h-screen py-0 md:py-8">
+<!-- Mobile Screen Container (390px native canvas wrapper) -->
+<main class="w-full max-w-[420px] bg-background min-h-screen shadow-2xl relative flex flex-col md:rounded-3xl md:overflow-hidden md:border md:border-outline-variant/20">
+<!-- Android Status Bar (09:41, Wi-Fi, Signal, Battery) -->
+<header class="w-full pt-3 px-6 pb-2 flex justify-between items-center text-on-surface-variant text-label-md font-label-md select-none z-50 bg-background/90 backdrop-blur-md sticky top-0">
+<span>09:41</span>
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-[15px]" data-icon="network_cell">network_cell</span>
+<span class="material-symbols-outlined text-[15px]" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="battery_full">battery_full</span>
+</div>
+</header>
+<!-- App Bar & Navigation Sub-Shell -->
+<nav class="flex justify-between items-center w-full px-4 py-2 border-b border-outline-variant/10 bg-surface/80 backdrop-blur-md sticky top-9 z-40">
+<button aria-label="返回" class="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface active:scale-95 transition-all bg-surface-container-low" onclick="window.history.back()">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<!-- Brand & Micro VIP Badge -->
+<div class="flex items-center space-x-2">
+<div class="w-5 h-5 rounded-full border border-primary-container/40 flex items-center justify-center p-0.5">
+<div class="w-full h-full rounded-full border border-primary-container flex items-center justify-center">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+</div>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-semibold">worldTuner</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container/40 border border-secondary/30 text-secondary text-label-sm font-label-sm tracking-wider font-semibold">VIP</span>
+</div>
+<button aria-label="关于概念" class="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface active:scale-95 transition-all bg-surface-container-low">
+<span class="material-symbols-outlined" data-icon="info">info</span>
+</button>
+</nav>
+<!-- Scrollable Content Canvas -->
+<div class="flex-1 overflow-y-auto px-4 pb-20 pt-2 ambient-sphere space-y-8">
+<!-- Hero Section -->
+<section class="flex flex-col items-center text-center pt-4 pb-2 relative">
+<!-- Earth Radial Vector Graphic (Quiet & Restrained) -->
+<div class="relative w-48 h-48 my-1 flex items-center justify-center">
+<svg class="w-full h-full text-outline-variant/40" fill="none" stroke="currentColor" viewbox="0 0 200 200">
+<!-- Globe Outline & Latitudes -->
+<circle cx="100" cy="100" r="88" stroke-dasharray="3 3" stroke-opacity="0.3" stroke-width="1.2"></circle>
+<circle cx="100" cy="100" r="70" stroke-opacity="0.25" stroke-width="1"></circle>
+<ellipse cx="100" cy="100" rx="36" ry="88" stroke-opacity="0.35" stroke-width="1.2"></ellipse>
+<ellipse cx="100" cy="100" rx="88" ry="32" stroke-opacity="0.25" stroke-width="1"></ellipse>
+<line stroke-opacity="0.2" stroke-width="1" x1="12" x2="188" y1="100" y2="100"></line>
+</svg>
+<!-- Connected Nodes (Paris, Tokyo, London) -->
+<div class="absolute top-12 left-16 flex items-center space-x-1 group">
+<span class="w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_#00f2fe] animate-pulse"></span>
+<span class="text-label-sm font-label-sm text-primary-container/80 tracking-wide">PARIS</span>
+</div>
+<div class="absolute bottom-16 right-12 flex items-center space-x-1">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim shadow-[0_0_8px_#4edea3]"></span>
+<span class="text-label-sm font-label-sm text-tertiary-fixed-dim/80 tracking-wide">TOKYO</span>
+</div>
+<div class="absolute top-20 right-14 flex items-center space-x-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="text-label-sm font-label-sm text-secondary/80 tracking-wide">LONDON</span>
+</div>
+<!-- Central Harmonic Ring (Logo Reference) -->
+<div class="absolute w-20 h-20 rounded-full border border-primary-container/30 flex items-center justify-center">
+<div class="w-12 h-12 rounded-full border border-primary-container/60 flex items-center justify-center">
+<span class="w-3 h-3 rounded-full bg-primary-container shadow-[0_0_12px_rgba(0,242,254,0.6)]"></span>
+</div>
+</div>
+</div>
+<!-- Eyebrow Badge -->
+<div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-secondary-container/20 border border-secondary/30 mb-3">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-secondary text-label-sm font-label-sm tracking-wider uppercase">WORLDTUNER VIP · 即将推出</span>
+</div>
+<!-- Main Headline -->
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold tracking-tight mb-3">
+          让世界的声音，<br/><span class="text-primary-container">跟着你的生活走。</span>
+</h1>
+<!-- Subtitle -->
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[310px] leading-relaxed mb-4">
+          收藏随行，按心情整理，让喜爱的电台在对的时间响起。
+        </p>
+<!-- Feature Pills Group -->
+<div class="flex flex-wrap justify-center gap-2 mb-6">
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high border border-outline-variant/20 text-on-surface text-label-md font-label-md flex items-center space-x-1">
+<span class="material-symbols-outlined text-[14px] text-primary-container" data-icon="sync">sync</span>
+<span>跨设备同步</span>
+</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high border border-outline-variant/20 text-on-surface text-label-md font-label-md flex items-center space-x-1">
+<span class="material-symbols-outlined text-[14px] text-secondary" data-icon="folder_special">folder_special</span>
+<span>专属收听空间</span>
+</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high border border-outline-variant/20 text-on-surface text-label-md font-label-md flex items-center space-x-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary-fixed-dim" data-icon="alarm">alarm</span>
+<span>定时收听</span>
+</span>
+</div>
+<!-- Sample Station Card (Honest Demonstration) -->
+<div class="w-full bg-surface-container-low/90 border border-outline-variant/20 rounded-2xl p-3.5 mb-6 text-left relative overflow-hidden backdrop-blur-md">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center space-x-2">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-outline text-[10px] font-label-sm font-medium">示例数据</span>
+<span class="text-tertiary-fixed-dim text-label-sm font-label-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim animate-ping"></span> 89.9 MHz
+              </span>
+</div>
+<span class="text-on-surface-variant text-label-sm font-label-sm">云端整备中</span>
+</div>
+<div class="flex items-center space-x-3">
+<div class="w-11 h-11 rounded-xl bg-surface-container-high flex items-center justify-center border border-outline-variant/30 text-primary-container">
+<span class="material-symbols-outlined text-2xl" data-icon="radio">radio</span>
+</div>
+<div class="flex-1 min-w-0">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate font-semibold">Paris Jazz Club</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">巴黎 · 设定 07:30 晨间唤醒伴随</p>
+</div>
+<div class="w-7 h-7 rounded-full bg-primary-container/10 border border-primary-container/30 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-base" data-icon="check">check</span>
+</div>
+</div>
+</div>
+<!-- Call to Action Group (Strictly Non-Inductive) -->
+<div class="w-full space-y-3">
+<a class="w-full py-3.5 px-6 rounded-full bg-surface-container-high hover:bg-surface-variant border border-outline-variant/30 text-on-surface font-label-lg text-label-lg flex items-center justify-center space-x-2 active:scale-95 transition-all shadow-sm" href="#benefits">
+<span>了解会员权益</span>
+<span class="material-symbols-outlined text-base" data-icon="arrow_downward">arrow_downward</span>
+</a>
+<button class="w-full py-2.5 text-center text-on-surface-variant hover:text-on-surface text-label-md font-label-md transition-colors" onclick="window.history.back()">
+            继续免费探索世界电台
+          </button>
+</div>
+<p class="font-body-sm text-body-sm text-outline mt-3 leading-relaxed">
+          * 当前为概念设计稿，所有基础收听与探索功能始终保持免费
+        </p>
+</section>
+<!-- Three Core Benefits (Planning Cards) -->
+<section class="space-y-4 pt-2" id="benefits">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">核心权益规划</h2>
+<span class="text-label-sm font-label-sm text-secondary bg-secondary-container/20 px-2 py-0.5 rounded-full border border-secondary/20">即将支持</span>
+</div>
+<!-- Benefit 01 -->
+<article class="bg-surface-container-low border border-outline-variant/15 rounded-2xl p-4 space-y-3">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-primary-container font-semibold tracking-wider">权益 01 · 收藏随行</span>
+<span class="text-[11px] font-label-sm text-outline px-2 py-0.5 rounded-md bg-surface-container">功能规划示意</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold mb-1">
+              从这台设备收藏，下次打开仍是熟悉的频率。
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              无论更换日常用机还是平板设备，你的电台足迹与常听频段都会随时整齐就绪。
+            </p>
+</div>
+<!-- Feature Mockup Inside Card -->
+<div class="bg-surface-container rounded-xl p-3 border border-outline-variant/10 space-y-2.5">
+<div class="flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim" data-icon="cloud_sync">cloud_sync</span>
+<span>跨端状态：已就绪</span>
+</span>
+<span class="text-[11px] text-outline">自动同步中</span>
+</div>
+<div class="flex items-center justify-between bg-surface-container-lowest/80 px-3 py-2 rounded-lg border border-outline-variant/10">
+<div class="flex items-center space-x-2.5">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary-container text-xs font-bold">
+                  FIP
+                </div>
+<div>
+<div class="text-label-md font-label-md text-on-surface">FIP Radio 巴黎</div>
+<div class="text-body-sm font-body-sm text-outline">同步待命 · 手机 &amp; 平板</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary-container text-sm" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+</article>
+<!-- Benefit 02 -->
+<article class="bg-surface-container-low border border-outline-variant/15 rounded-2xl p-4 space-y-3">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-secondary font-semibold tracking-wider">权益 02 · 轻松整理</span>
+<span class="text-[11px] font-label-sm text-outline px-2 py-0.5 rounded-md bg-surface-container">功能规划示意</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold mb-1">
+              为通勤、工作和深夜，各留一个声音空间。
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              跳出繁杂的一长串列表，按场景与心情创建专属分组，把东京的 Lo-Fi、伦敦的早间新闻与柏林的电子乐妥善安放。
+            </p>
+</div>
+<!-- Feature Mockup Inside Card -->
+<div class="bg-surface-container rounded-xl p-3 border border-outline-variant/10 space-y-2">
+<span class="text-body-sm font-body-sm text-outline block mb-1">自定义情境胶囊：</span>
+<div class="flex flex-wrap gap-2">
+<div class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/20 text-on-surface text-label-md font-label-md">
+<span class="material-symbols-outlined text-[14px] text-tertiary-fixed-dim" data-icon="directions_bus">directions_bus</span>
+<span>早间通勤 (4个电台)</span>
+</div>
+<div class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-secondary-container/20 border border-secondary/30 text-secondary text-label-md font-label-md">
+<span class="material-symbols-outlined text-[14px] text-secondary" data-icon="laptop_chromebook">laptop_chromebook</span>
+<span>专注工作 (6个电台)</span>
+</div>
+<div class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/20 text-on-surface text-label-md font-label-md">
+<span class="material-symbols-outlined text-[14px] text-primary-container" data-icon="bedtime">bedtime</span>
+<span>深夜静听 (3个电台)</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Benefit 03 -->
+<article class="bg-surface-container-low border border-outline-variant/15 rounded-2xl p-4 space-y-3">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-tertiary-fixed-dim font-semibold tracking-wider">权益 03 · 按时收听</span>
+<span class="text-[11px] font-label-sm text-outline px-2 py-0.5 rounded-md bg-surface-container">功能规划示意</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold mb-1">
+              早晨醒来，或夜晚放松，让电台准时陪伴。
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              设定电台早安闹钟或傍晚归家定时播放。到了约定的时刻，熟悉的频段自然响起，无需手动找寻。
+            </p>
+</div>
+<!-- Feature Mockup Inside Card -->
+<div class="bg-surface-container rounded-xl p-3 border border-outline-variant/10">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-full bg-surface-container-lowest flex items-center justify-center text-tertiary-fixed-dim border border-outline-variant/20">
+<span class="material-symbols-outlined text-lg" data-icon="schedule">schedule</span>
+</div>
+<div>
+<div class="text-label-md font-label-md text-on-surface">07:30 工作日晨间唤醒</div>
+<div class="text-body-sm font-body-sm text-outline">BBC Radio 4 · 伦敦新闻与漫谈</div>
+</div>
+</div>
+<span class="w-8 h-4 rounded-full bg-primary-container/20 p-0.5 flex items-center justify-end">
+<span class="w-3 h-3 rounded-full bg-primary-container"></span>
+</span>
+</div>
+</div>
+</article>
+</section>
+<!-- Honest Transparency: Free vs VIP Breakdown -->
+<section class="space-y-4 pt-2">
+<div class="text-left px-1">
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">清晰坦诚的权益分工</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+            我们坚持：免费版本始终完整支持全球电台的探索与聆听。
+          </p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<!-- Free Column -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-2xl p-3.5 space-y-3 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">免费探索版</span>
+<span class="text-[10px] font-label-sm text-tertiary-fixed-dim bg-tertiary-container/10 px-1.5 py-0.5 rounded border border-tertiary-container/20">完全开放</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline mb-3 leading-tight">无需任何费用即可探索</p>
+<ul class="space-y-2.5 text-body-sm font-body-sm text-on-surface-variant">
+<li class="flex items-start space-x-1.5">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[16px] shrink-0 mt-0.5" data-icon="check">check</span>
+<span>3D 地球漫游</span>
+</li>
+<li class="flex items-start space-x-1.5">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[16px] shrink-0 mt-0.5" data-icon="check">check</span>
+<span>全球电台完整收听</span>
+</li>
+<li class="flex items-start space-x-1.5">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[16px] shrink-0 mt-0.5" data-icon="check">check</span>
+<span>全局搜索与流派榜单</span>
+</li>
+<li class="flex items-start space-x-1.5">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[16px] shrink-0 mt-0.5" data-icon="check">check</span>
+<span>本地电台收藏记录</span>
+</li>
+</ul>
+</div>
+<div class="pt-2 border-t border-outline-variant/10 text-center">
+<span class="text-body-sm font-body-sm text-on-surface-variant">始终对所有人免费</span>
+</div>
+</div>
+<!-- VIP Column -->
+<div class="bg-surface-container-high/60 border border-secondary/25 rounded-2xl p-3.5 space-y-3 flex flex-col justify-between relative overflow-hidden">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-headline-sm text-headline-sm text-secondary font-semibold">VIP 进阶版</span>
+<span class="text-[10px] font-label-sm text-secondary bg-secondary-container/30 px-1.5 py-0.5 rounded border border-secondary/30">规划中</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline mb-3 leading-tight">进阶的生活与多端陪伴</p>
+<ul class="space-y-2.5 text-body-sm font-body-sm text-on-surface">
+<li class="flex items-start space-x-1.5">
+<span class="material-symbols-outlined text-primary-container text-[16px] shrink-0 mt-0.5" data-icon="add">add</span>
+<span>换设备继续听 (云同步)</span>
+</li>
+<li class="flex items-start space-x-1.5">
+<span class="material-symbols-outlined text-primary-container text-[16px] shrink-0 mt-0.5" data-icon="add">add</span>
+<span>自定义收听场景空间</span>
+</li>
+<li class="flex items-start space-x-1.5">
+<span class="material-symbols-outlined text-primary-container text-[16px] shrink-0 mt-0.5" data-icon="add">add</span>
+<span>电台闹钟与计划收听</span>
+</li>
+<li class="flex items-start space-x-1.5">
+<span class="material-symbols-outlined text-primary-container text-[16px] shrink-0 mt-0.5" data-icon="add">add</span>
+<span>后续探索实验特性</span>
+</li>
+</ul>
+</div>
+<div class="pt-2 border-t border-outline-variant/10 text-center">
+<span class="text-body-sm font-body-sm text-secondary font-medium">即将推出</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Future Plans Placeholder (Honest & Clean) -->
+<section class="space-y-3 pt-2">
+<div class="px-1">
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">未来的计划结构</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">正式上线前将提供清晰的周期与优惠方案</p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<!-- Monthly Placeholder -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-2xl p-3.5 space-y-2">
+<div class="text-label-md font-label-md text-on-surface-variant">按需随心</div>
+<div class="font-headline-sm text-headline-sm text-on-surface font-semibold">月度会员</div>
+<div class="text-label-sm font-label-sm text-outline pt-2 border-t border-outline-variant/10">价格待公布</div>
+</div>
+<!-- Yearly Placeholder -->
+<div class="bg-surface-container-low border border-secondary/30 rounded-2xl p-3.5 space-y-2 relative">
+<span class="absolute top-2 right-2 text-[9px] font-label-sm text-secondary bg-secondary-container/40 px-1.5 py-0.5 rounded">规划精选</span>
+<div class="text-label-md font-label-md text-on-surface-variant">长久相伴</div>
+<div class="font-headline-sm text-headline-sm text-secondary font-semibold">年度会员</div>
+<div class="text-label-sm font-label-sm text-outline pt-2 border-t border-outline-variant/10">价格待公布</div>
+</div>
+</div>
+</section>
+<!-- Frequently Asked Questions (FAQ) -->
+<section class="space-y-3 pt-2">
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight px-1">常见疑问解答</h2>
+<div class="space-y-2.5">
+<!-- Q1 -->
+<div class="bg-surface-container-low border border-outline-variant/15 rounded-xl p-3.5 space-y-1.5">
+<div class="flex items-center space-x-2 text-on-surface font-label-lg text-label-lg font-semibold">
+<span class="text-primary-container text-xs font-bold">Q1</span>
+<span>不订阅 VIP 还能正常听电台吗？</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant pl-5 leading-relaxed">
+              完全可以。3D 地球漫游、全球电台播放、流派与国家检索、榜单排行和本地收藏依然始终对所有用户免费开放。
+            </p>
+</div>
+<!-- Q2 -->
+<div class="bg-surface-container-low border border-outline-variant/15 rounded-xl p-3.5 space-y-1.5">
+<div class="flex items-center space-x-2 text-on-surface font-label-lg text-label-lg font-semibold">
+<span class="text-primary-container text-xs font-bold">Q2</span>
+<span>VIP 什么时候正式推出？</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant pl-5 leading-relaxed">
+              功能目前处于架构与规划阶段，具体日期尚未公布。我们希望在保证极致、温润与稳定的收听体验后再行推出。
+            </p>
+</div>
+<!-- Q3 -->
+<div class="bg-surface-container-low border border-outline-variant/15 rounded-xl p-3.5 space-y-1.5">
+<div class="flex items-center space-x-2 text-on-surface font-label-lg text-label-lg font-semibold">
+<span class="text-primary-container text-xs font-bold">Q3</span>
+<span>我现有的本地收藏电台会丢失吗？</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant pl-5 leading-relaxed">
+              绝对不会。本地收藏安全保存在你的手机设备中。未来 VIP 同步服务推出时，也会提供平滑导入与保留选项。
+            </p>
+</div>
+</div>
+</section>
+<!-- Bottom Atmospheric Closer -->
+<section class="text-center pt-4 pb-6 space-y-4">
+<p class="font-headline-sm text-headline-sm text-on-surface font-medium italic opacity-90">
+          “世界很大，喜欢的声音值得好好收藏。”
+        </p>
+<button class="w-full py-3.5 px-6 rounded-full bg-primary-container text-on-primary-fixed font-label-lg text-label-lg font-semibold active:scale-95 transition-all shadow-[0_4px_16px_rgba(0,242,254,0.25)] flex items-center justify-center space-x-2" onclick="window.history.back()">
+<span class="material-symbols-outlined text-lg" data-icon="explore">explore</span>
+<span>继续探索电台</span>
+</button>
+<div class="text-body-sm font-body-sm text-outline">
+          WorldTuner VIP 概念规划版 · 体验随时间落地
+        </div>
+</section>
+</div>
+<!-- Android Gesture Pill & Bottom Inset Bar -->
+<footer class="w-full pb-2 pt-1 flex justify-center items-center bg-background/95 backdrop-blur-md sticky bottom-0 z-40">
+<div class="w-32 h-1 bg-outline-variant/50 rounded-full"></div>
+</footer>
+</main>
+</body></html>
