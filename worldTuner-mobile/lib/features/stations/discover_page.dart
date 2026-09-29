@@ -34,54 +34,195 @@ class DiscoverPage extends StatefulWidget {
 
 // 分类数据只请求一次，列表查询随关键词和筛选项更新。
 class _DiscoverPageState extends State<DiscoverPage> {
+  final TextEditingController _optionInput = TextEditingController();
   bool _searchOpen = false;
   int _category = 0;
   int? _tagId;
   int? _languageId;
   int? _countryId;
-  late final Future<List<CatalogItem>> _genres;
-  late final Future<List<CatalogItem>> _languages;
-  late final Future<List<CatalogItem>> _countries;
+  String _optionKeyword = '';
+  late Future<List<CatalogItem>> _genres;
+  late Future<List<CatalogItem>> _languages;
+  late Future<List<CatalogItem>> _countries;
   late final Future<StationPage> _featured;
 
   // 缓存分类字典与精选电台请求，避免切换筛选时重新拉取。
   @override
   void initState() {
     super.initState();
-    _genres = widget.api.catalog('tags', limit: 20);
-    _languages = widget.api.catalog('languages', limit: 12);
-    _countries = widget.api.catalog('countries', limit: 12);
+    _genres = widget.api.catalog('tags', limit: 1000);
+    _languages = widget.api.catalog('languages', limit: 1000);
+    _countries = widget.api.catalog('countries', limit: 1000);
     _featured = widget.api.stations(keyword: 'ambient', pageSize: 1);
   }
 
   // 在发现分类和完整搜索结果之间切换，保留原有分类选择。
   void _setSearchOpen(bool value) => setState(() => _searchOpen = value);
 
-  // 切换发现页分类，旧列表由 ValueKey 自动失效。
-  void _selectCategory(int category) => setState(() => _category = category);
-
-  // 选择流派，保留可见的类别并重新请求对应电台。
-  void _selectGenre(CatalogItem item) {
+  // 切换发现页分类，保留各分类已选项，并使旧列表由 ValueKey 失效。
+  void _selectCategory(int category) {
+    if (_category == category) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    _optionInput.clear();
     setState(() {
-      _category = 1;
-      _tagId = item.id;
+      _category = category;
+      _optionKeyword = '';
     });
   }
 
-  // 选择国家，交给 API 的 countriesId 过滤。
-  void _selectCountry(CatalogItem item) {
+  // 释放分类搜索输入，避免发现页移除后保留监听资源。
+  @override
+  void dispose() {
+    _optionInput.dispose();
+    super.dispose();
+  }
+
+  // 重新请求失败的分类字典，成功后对应选项会自动恢复显示。
+  void _retryCatalog(int category) {
     setState(() {
-      _category = 2;
-      _countryId = item.id;
+      switch (category) {
+        case 1:
+          _genres = widget.api.catalog('tags', limit: 1000);
+        case 2:
+          _countries = widget.api.catalog('countries', limit: 1000);
+        case 3:
+          _languages = widget.api.catalog('languages', limit: 1000);
+      }
     });
   }
 
-  // 选择语言，交给 API 的 languagesId 过滤。
-  void _selectLanguage(CatalogItem item) {
+  // 同一分类项再次点击会取消过滤，其他分类的选择保持不变。
+  void _selectItem(int category, CatalogItem item) {
+    FocusManager.instance.primaryFocus?.unfocus();
     setState(() {
-      _category = 3;
-      _languageId = item.id;
+      _category = category;
+      switch (category) {
+        case 1:
+          _tagId = _tagId == item.id ? null : item.id;
+        case 2:
+          _countryId = _countryId == item.id ? null : item.id;
+        case 3:
+          _languageId = _languageId == item.id ? null : item.id;
+      }
     });
+  }
+
+  // 清除当前类别的筛选，列表恢复该类别的全部电台。
+  void _clearCurrentFilter() {
+    setState(() {
+      switch (_category) {
+        case 1:
+          _tagId = null;
+        case 2:
+          _countryId = null;
+        case 3:
+          _languageId = null;
+      }
+    });
+  }
+
+  // 快捷流派卡片与顶部筛选共用同一选中状态。
+  void _selectGenre(CatalogItem item) => _selectItem(1, item);
+
+  // 快捷国家入口与顶部筛选共用同一选中状态。
+  void _selectCountry(CatalogItem item) => _selectItem(2, item);
+
+  // 快捷语言入口与顶部筛选共用同一选中状态。
+  void _selectLanguage(CatalogItem item) => _selectItem(3, item);
+
+  // 当前类别对应字典及已选 id；全部类别没有二级筛选。
+  (Future<List<CatalogItem>>, int?)? _currentCatalog() {
+    return switch (_category) {
+      1 => (_genres, _tagId),
+      2 => (_countries, _countryId),
+      3 => (_languages, _languageId),
+      _ => null,
+    };
+  }
+
+  // 展示当前类别的真实选项，并为字典请求提供重试入口。
+  Widget _categoryOptions(BuildContext context) {
+    final catalog = _currentCatalog();
+    if (catalog == null) return const SizedBox.shrink();
+    final palette = AetherPalette.of(context);
+    return FutureBuilder<List<CatalogItem>>(
+      future: catalog.$1,
+      // 字典加载、失败和空列表都在分类栏下方明确反馈。
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: LinearProgressIndicator(color: palette.primary),
+          );
+        }
+        if (snapshot.hasError ||
+            snapshot.data == null ||
+            snapshot.data!.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: TextButton.icon(
+              onPressed: () => _retryCatalog(_category),
+              icon: const Icon(Icons.refresh_rounded),
+              label: Text(widget.text.get('loadError')),
+            ),
+          );
+        }
+        final keyword = _optionKeyword.trim().toLowerCase();
+        final items = keyword.isEmpty
+            ? snapshot.data!.take(30).toList()
+            : snapshot.data!
+                  .where((item) => item.name.toLowerCase().contains(keyword))
+                  .take(30)
+                  .toList();
+        if (keyword.isEmpty && catalog.$2 != null) {
+          final selected = snapshot.data!
+              .where((item) => item.id == catalog.$2)
+              .firstOrNull;
+          if (selected != null &&
+              !items.any((item) => item.id == selected.id)) {
+            // 切回分类时仍展示超出热门 30 项的已选条件。
+            items.insert(0, selected);
+          }
+        }
+        return Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 40,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: items.length + 1,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 8),
+                  // 首项清除当前筛选，其余选项使用字典 id 查询电台。
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return AetherFilterChip(
+                        label: widget.text.get('all'),
+                        selected: catalog.$2 == null,
+                        onTap: _clearCurrentFilter,
+                      );
+                    }
+                    final item = items[index - 1];
+                    return AetherFilterChip(
+                      label: item.name,
+                      selected: catalog.$2 == item.id,
+                      onTap: () => _selectItem(_category, item),
+                    );
+                  },
+                ),
+              ),
+              if (items.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(widget.text.get('noCategories')),
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   // 绘制搜索入口与四种聚合维度切换。
@@ -92,10 +233,17 @@ class _DiscoverPageState extends State<DiscoverPage> {
     return Column(
       children: [
         TextField(
-          readOnly: true,
-          onTap: () => _setSearchOpen(true),
+          controller: _optionInput,
+          readOnly: _category == 0,
+          // 全部类别进入电台搜索，其余类别在当前字典中即时查找。
+          onTap: _category == 0 ? () => _setSearchOpen(true) : null,
+          onChanged: _category == 0
+              ? null
+              : (value) => setState(() => _optionKeyword = value),
           decoration: InputDecoration(
-            hintText: t('searchStations'),
+            hintText: _category == 0
+                ? t('searchStations')
+                : t('searchCategories'),
             prefixIcon: Icon(Icons.search_rounded, color: palette.muted),
             filled: true,
             fillColor: palette.surface,
@@ -125,6 +273,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
             ),
           ),
         ),
+        _categoryOptions(context),
       ],
     );
   }
@@ -378,23 +527,27 @@ class _DiscoverPageState extends State<DiscoverPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _searchAndFilters(context),
-        _featuredCard(context),
-        _genreGrid(context),
-        _catalogRow(
-          context,
-          _countries,
-          widget.text.get('countries'),
-          _selectCountry,
-        ),
-        _catalogRow(
-          context,
-          _languages,
-          widget.text.get('languages'),
-          _selectLanguage,
-        ),
+        if (_category == 0) ...[
+          _featuredCard(context),
+          _genreGrid(context),
+          _catalogRow(
+            context,
+            _countries,
+            widget.text.get('countries'),
+            _selectCountry,
+          ),
+          _catalogRow(
+            context,
+            _languages,
+            widget.text.get('languages'),
+            _selectLanguage,
+          ),
+        ],
         const SizedBox(height: 28),
         AetherSectionHeading(
-          title: widget.text.get('popularStations'),
+          title: _currentCatalog()?.$2 == null
+              ? widget.text.get('popularStations')
+              : widget.text.get('matchingStations'),
           subtitle: widget.text.get('live'),
         ),
         const SizedBox(height: 12),
