@@ -1,6 +1,6 @@
 # Radio Browser + Radio Garden 本地合并库
 
-本目录包含建表 SQL、合并、基础数据清洗和标签拆分脚本。合并脚本读取两套现有 SQLite，生成独立的 `merged/data/worldtuner-merged.sqlite`。所有后续脚本只操作这张新库，不会更新、迁移或删除两个原始数据库，也不会连接 D1。
+本目录包含建表 SQL、合并、基础数据清洗、保守去重和标签拆分脚本。合并脚本读取两套现有 SQLite，生成独立的 `merged/data/worldtuner-merged.sqlite`。所有后续脚本只操作这张新库，不会更新、迁移或删除两个原始数据库，也不会连接 D1。
 
 ## 运行条件
 
@@ -37,7 +37,28 @@ node worldTuner-data/merged/src/clean.mjs --apply
 
 清洗范围是电台名称、国家名称、国家代码以及 URL 的安全规范化。名称统一 Unicode 和空白；URL 仅去掉首尾空白；缺失国家代码时仅从唯一匹配的国家字典项补全。非法代码、无法识别的 URL、缺失名称或流地址只记入 `data_quality_issue`，不会猜测或删除。实际字段变化会记录在 `data_cleaning_change`。重复运行不会反复修改已规范化的字段。
 
-## 第 3 步：拆分标签
+## 第 3 步：保守去重
+
+合并阶段只把唯一的 Radio Browser 候选与 Radio Garden 频道匹配。因此 Radio Browser 自身的重复，以及同一流地址对应多个 Browser 候选时的跨源重复，可能仍是多行。先预览，再应用：
+
+```bash
+node worldTuner-data/merged/src/dedupe.mjs
+node worldTuner-data/merged/src/dedupe.mjs --apply
+```
+
+去重脚本只自动合并**规范化名称、二字母国家代码和最终流地址都相同**的电台。若坐标相距超过 25 公里、州/省字段冲突或官网主机不同，整组跳过。仅相同流地址、名称不同的频道不会自动合并，因为共用流或转播可能确实是不同电台。
+
+脚本保留一条电台，并把其他来源 ID、语言、标签和清洗审计迁到保留记录；旧内部 ID 记入 `station_alias`。运行记录在 `dedupe_run`。重复运行只处理仍有多行的组。去重会改变 `station_unified` 的行数，切换 API 时需要通过 `station_alias` 解析旧 ID。
+
+对于共享最终流地址和国家、但名称不同的跨来源记录，可生成只读候选报告后逐组核对：
+
+```bash
+node worldTuner-data/merged/src/review-duplicates.mjs > worldTuner-data/merged/duplicate-candidates.csv
+```
+
+报告只列线索，不会自动合并；共享流地址的转播站可能是不同电台。
+
+## 第 4 步：拆分标签
 
 先预览，再应用：
 
@@ -63,7 +84,7 @@ node worldTuner-data/merged/src/split-tags.mjs --apply --rules worldTuner-data/m
 - `station_source` 保留每条电台对应的原始来源 ID。来源为 `both` 时，`station_unified` 只有一行、`station_source` 有两行。Radio Garden 的频道 ID 不伪装成 Radio Browser 的 UUID。
 - 自动匹配要求名称、国家代码一致，并且最终流地址或主页地址唯一。多候选、缺少国家代码、证据相冲突时保留为两条电台，供以后人工核对。
 - Radio Garden 的 `url` 使用频道播放入口，`url_resolved` 保存采集到的重定向地址；没有可信名称或重定向地址的频道保留并标为 `unverified`。
-- `tags` 和 `language` 原始文本保留在主表；合并时构建 `station_language`，运行第 3 步后构建 `station_tag`。同名标签按大小写和空白规范化后指向最小的原 v1 标签 ID，原有异写词条仍保留。新标签默认 `is_visible = 0`，不会自动进入人工精选列表。
+- `tags` 和 `language` 原始文本保留在主表；合并时构建 `station_language`，运行第 4 步后构建 `station_tag`。同名标签按大小写和空白规范化后指向最小的原 v1 标签 ID，原有异写词条仍保留。新标签默认 `is_visible = 0`，不会自动进入人工精选列表。
 - `countries`、`languages`、`tags` 尽量保留 v1 字典 ID，并按合并后的电台重新计算计数。Radio Garden 没有提供的标签、语言、票数等字段保持 `NULL`。
 
 ## 运行后检查
@@ -73,6 +94,7 @@ sqlite3 worldTuner-data/merged/data/worldtuner-merged.sqlite 'SELECT * FROM merg
 sqlite3 worldTuner-data/merged/data/worldtuner-merged.sqlite 'PRAGMA integrity_check;'
 sqlite3 worldTuner-data/merged/data/worldtuner-merged.sqlite 'PRAGMA foreign_key_check;'
 sqlite3 worldTuner-data/merged/data/worldtuner-merged.sqlite 'SELECT * FROM data_cleaning_run;'
+sqlite3 worldTuner-data/merged/data/worldtuner-merged.sqlite 'SELECT * FROM dedupe_run;'
 sqlite3 worldTuner-data/merged/data/worldtuner-merged.sqlite 'SELECT * FROM tag_split_run;'
 ```
 

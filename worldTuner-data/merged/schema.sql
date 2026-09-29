@@ -164,3 +164,22 @@ CREATE TABLE tag_split_run (
   canonical_tags INTEGER NOT NULL,
   applied_rules TEXT
 );
+
+-- 去重后保留旧内部 ID 到保留电台的映射，供 API 迁移时解析旧引用。
+CREATE TABLE station_alias (
+  old_station_id INTEGER PRIMARY KEY,
+  station_id INTEGER NOT NULL REFERENCES station_unified(id),
+  match_method TEXT NOT NULL,
+  merged_at TEXT NOT NULL
+);
+CREATE INDEX idx_station_alias_station ON station_alias(station_id);
+
+CREATE TABLE dedupe_run (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  completed_at TEXT NOT NULL,
+  merged_groups INTEGER NOT NULL,
+  removed_rows INTEGER NOT NULL,
+  skipped_coordinate_groups INTEGER NOT NULL,
+  skipped_state_groups INTEGER NOT NULL,
+  skipped_homepage_groups INTEGER NOT NULL
+);

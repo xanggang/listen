@@ -181,6 +181,37 @@ test('dictionary endpoints are sorted and bounded' /** 验证：dictionary endpo
   assert.equal((await (await request('/countries')).json()).data.length, 1);
   assert.equal((await request('/tags?limit=1001')).status, 400);
 });
+// 验证标签搜索分页、通配符转义和参数边界。
+test('tag search paginates and treats wildcard characters literally', async () => {
+  db.exec("INSERT INTO tags(id,name,stationcount) VALUES(3,'jazz%',2),(4,'jazz club',1)");
+  const first = await (await request('/tags?q=jazz&limit=1')).json();
+  const second = await (await request('/tags?q=jazz&limit=1&offset=1')).json();
+  assert.deepEqual(
+    first.data.map(
+      // 提取首批标签名称，检查热门顺序。
+      (item) => item.name,
+    ),
+    ['jazz'],
+  );
+  assert.deepEqual(
+    second.data.map(
+      // 提取第二批标签名称，确认 offset 没有重复。
+      (item) => item.name,
+    ),
+    ['jazz%'],
+  );
+  const literal = await (await request('/tags?q=%25')).json();
+  assert.deepEqual(
+    literal.data.map(
+      // 验证百分号只匹配字面字符。
+      (item) => item.name,
+    ),
+    ['jazz%'],
+  );
+  for (const query of ['offset=-1', 'offset=100001', 'q=a&q=b', `q=${'a'.repeat(101)}`]) {
+    assert.equal((await request(`/tags?${query}`)).status, 400);
+  }
+});
 test('cached data avoids DB reads but never reuses CORS or request IDs' /** 验证：cached data avoids DB reads but never reuses CORS or request IDs。 */, async () => {
   const first = await request('/stations?page=1&pageSize=10', {
     headers: { Origin: 'https://web.test' },

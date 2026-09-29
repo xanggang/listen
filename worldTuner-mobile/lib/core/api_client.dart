@@ -98,6 +98,24 @@ class ApiClient {
         .toList();
   }
 
+  // 按名称分页读取标签；空关键词返回热门标签，offset 从 0 开始。
+  Future<List<CatalogItem>> searchTags({
+    String keyword = '',
+    int limit = 30,
+    int offset = 0,
+  }) async {
+    final rows =
+        await _get('tags', {
+              'q': keyword.trim(),
+              'limit': '$limit',
+              'offset': '$offset',
+            })
+            as List<dynamic>;
+    return rows
+        .map((row) => CatalogItem.fromJson(row as Map<String, dynamic>))
+        .toList();
+  }
+
   // 关闭底层连接，通常在应用生命周期结束时调用。
   void dispose() => _client.close();
 }

@@ -9,6 +9,7 @@ import '../../core/app_text.dart';
 import '../player/player_controller.dart';
 import 'station.dart';
 import 'station_library.dart';
+import 'catalog_picker.dart';
 
 // 独立搜索视图沿用全局播放器和导航，只展示 Worker 返回的电台资料。
 class SearchPage extends StatefulWidget {
@@ -19,6 +20,8 @@ class SearchPage extends StatefulWidget {
     required this.library,
     required this.text,
     required this.onBack,
+    this.initialCategory = 0,
+    this.initialItem,
   });
 
   final ApiClient api;
@@ -26,6 +29,8 @@ class SearchPage extends StatefulWidget {
   final StationLibrary library;
   final AppText text;
   final VoidCallback onBack;
+  final int initialCategory;
+  final CatalogItem? initialItem;
 
   // 创建搜索视图状态，管理防抖、筛选和分页。
   @override
@@ -37,11 +42,13 @@ class _SearchPageState extends State<SearchPage> {
   final TextEditingController _input = TextEditingController();
   final ScrollController _scroll = ScrollController();
   final List<Station> _stations = [];
+  final Map<int, CatalogItem> _selectedItems = {};
   Timer? _debounce;
-  late final Future<List<CatalogItem>> _genres;
-  late final Future<List<CatalogItem>> _languages;
-  late final Future<List<CatalogItem>> _countries;
+  late Future<List<CatalogItem>> _tags;
+  late Future<List<CatalogItem>> _languages;
+  late Future<List<CatalogItem>> _countries;
   String _keyword = '';
+  int _category = 0;
   int? _tagId;
   int? _languageId;
   int? _countryId;
@@ -50,21 +57,34 @@ class _SearchPageState extends State<SearchPage> {
   bool _loading = false;
   bool _failed = false;
 
-  // 首次进入展示 API 热门电台，并预取筛选字典。
+  // 首次进入时应用发现页快捷入口带来的筛选，再加载电台和快捷字典。
   @override
   void initState() {
     super.initState();
-    _genres = _loadCatalog('tags');
+    _category = widget.initialCategory;
+    final initialItem = widget.initialItem;
+    if (initialItem != null) {
+      _selectedItems[_category] = initialItem;
+      switch (_category) {
+        case 1:
+          _tagId = initialItem.id;
+        case 2:
+          _countryId = initialItem.id;
+        case 3:
+          _languageId = initialItem.id;
+      }
+    }
+    _tags = _loadCatalog('tags');
     _languages = _loadCatalog('languages');
     _countries = _loadCatalog('countries');
     _scroll.addListener(_onScroll);
     unawaited(_load());
   }
 
-  // 筛选字典失败时返回空列表，避免未打开筛选面板时产生未处理错误。
+  // 快捷字典失败时返回空列表，完整面板仍可独立请求并重试。
   Future<List<CatalogItem>> _loadCatalog(String kind) async {
     try {
-      return await widget.api.catalog(kind, limit: 20);
+      return await widget.api.catalog(kind, limit: 10);
     } catch (_) {
       return [];
     }
@@ -94,7 +114,7 @@ class _SearchPageState extends State<SearchPage> {
     unawaited(_load(reset: true));
   }
 
-  // 清空输入和筛选前先取消待提交的旧关键词。
+  // 清空关键词前先取消待提交的输入，保留当前分类筛选。
   void _clearQuery() {
     _debounce?.cancel();
     _input.clear();
@@ -122,9 +142,9 @@ class _SearchPageState extends State<SearchPage> {
       final result = await widget.api.stations(
         page: page,
         keyword: _keyword,
-        tagId: _tagId,
-        languageId: _languageId,
-        countryId: _countryId,
+        tagId: _category == 1 ? _tagId : null,
+        countryId: _category == 2 ? _countryId : null,
+        languageId: _category == 3 ? _languageId : null,
       );
       if (!mounted || generation != _generation) return;
       setState(() {
@@ -142,101 +162,166 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  // 选择一个筛选项并关闭面板，选中项再次点击则取消筛选。
-  void _selectFilter(String kind, int id) {
-    setState(() {
-      switch (kind) {
-        case 'tags':
-          _tagId = _tagId == id ? null : id;
-        case 'languages':
-          _languageId = _languageId == id ? null : id;
-        case 'countries':
-          _countryId = _countryId == id ? null : id;
-      }
-    });
-    Navigator.of(context).pop();
+  // 切换搜索分类，保留各类别的已选项，只向列表应用当前类别过滤。
+  void _selectCategory(int category) {
+    if (_category == category) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _category = category);
     unawaited(_load(reset: true));
   }
 
-  // 打开真实分类字典组成的筛选面板，不使用设计稿中的静态假数据。
-  void _openFilters() {
+  // 选择或取消当前分类项，随后从第一页重新查询电台。
+  void _selectItem(int category, CatalogItem item) {
+    setState(() {
+      _category = category;
+      switch (category) {
+        case 1:
+          _tagId = _tagId == item.id ? null : item.id;
+          if (_tagId == null) _selectedItems.remove(category);
+        case 2:
+          _countryId = _countryId == item.id ? null : item.id;
+          if (_countryId == null) _selectedItems.remove(category);
+        case 3:
+          _languageId = _languageId == item.id ? null : item.id;
+          if (_languageId == null) _selectedItems.remove(category);
+      }
+      if (_currentCatalog()?.$2 == item.id) _selectedItems[category] = item;
+    });
+    unawaited(_load(reset: true));
+  }
+
+  // 清除当前类别的筛选，其他类别的已选项仍可切回使用。
+  void _clearCurrentFilter() {
+    setState(() {
+      switch (_category) {
+        case 1:
+          _tagId = null;
+        case 2:
+          _countryId = null;
+        case 3:
+          _languageId = null;
+      }
+      _selectedItems.remove(_category);
+    });
+    unawaited(_load(reset: true));
+  }
+
+  // 返回当前分类的快捷字典与已选 id；全部类别没有二级选项。
+  (Future<List<CatalogItem>>, int?)? _currentCatalog() {
+    return switch (_category) {
+      1 => (_tags, _tagId),
+      2 => (_countries, _countryId),
+      3 => (_languages, _languageId),
+      _ => null,
+    };
+  }
+
+  // 使用完整选择面板查找标签、国家或语言。
+  void _openCatalogPicker() {
+    final catalog = _currentCatalog();
+    if (catalog == null) return;
+    final category = _category;
+    final kind = switch (category) {
+      1 => 'tags',
+      2 => 'countries',
+      _ => 'languages',
+    };
+    final title = switch (category) {
+      1 => widget.text.get('genres'),
+      2 => widget.text.get('countries'),
+      _ => widget.text.get('languages'),
+    };
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
-      // 各字典加载互不依赖，单组失败时不影响其他筛选。
+      // 面板只负责选项查找，结果由搜索页状态统一应用。
       builder: (context) => FractionallySizedBox(
-        heightFactor: 0.78,
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-            child: ListView(
-              children: [
-                Text(
-                  widget.text.get('filterOptions'),
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 12),
-                _filterGroup(
-                  'tags',
-                  widget.text.get('genres'),
-                  _genres,
-                  _tagId,
-                ),
-                _filterGroup(
-                  'languages',
-                  widget.text.get('languages'),
-                  _languages,
-                  _languageId,
-                ),
-                _filterGroup(
-                  'countries',
-                  widget.text.get('countries'),
-                  _countries,
-                  _countryId,
-                ),
-              ],
-            ),
-          ),
+        heightFactor: 0.88,
+        child: CatalogPicker(
+          api: widget.api,
+          text: widget.text,
+          kind: kind,
+          title: title,
+          selectedId: catalog.$2,
+          onSelected: (item) => _selectItem(category, item),
+          onClear: _clearCurrentFilter,
         ),
       ),
     );
   }
 
-  // 构造一组可滚动的真实分类筛选标签。
-  Widget _filterGroup(
-    String kind,
-    String title,
-    Future<List<CatalogItem>> future,
-    int? selectedId,
-  ) {
+  // 分类栏展示四种维度；具体选项只在当前分类下出现。
+  Widget _categoryBar() {
+    final labels = [
+      widget.text.get('all'),
+      widget.text.get('genres'),
+      widget.text.get('countries'),
+      widget.text.get('languages'),
+    ];
+    return SizedBox(
+      height: 40,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: labels.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 8),
+        // 顶部分类切换时重新查询当前关键词下的结果。
+        itemBuilder: (context, index) => AetherFilterChip(
+          label: labels[index],
+          selected: _category == index,
+          onTap: () => _selectCategory(index),
+        ),
+      ),
+    );
+  }
+
+  // 当前类别显示少量快捷项，并固定显示完整搜索入口。
+  Widget _categoryOptions() {
+    final catalog = _currentCatalog();
+    if (catalog == null) return const SizedBox.shrink();
     return FutureBuilder<List<CatalogItem>>(
-      future: future,
-      // 失败的字典仅隐藏本组，已有搜索仍然可用。
+      future: catalog.$1,
+      // 快捷字典不可用时仍可进入完整选择面板重试。
       builder: (context, snapshot) {
-        final items = snapshot.data;
-        if (items == null || items.isEmpty) return const SizedBox.shrink();
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 18),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: [
-                  for (final item in items)
-                    FilterChip(
-                      label: Text(item.name),
-                      selected: selectedId == item.id,
-                      onSelected: (_) => _selectFilter(kind, item.id),
-                    ),
-                ],
+        final items = snapshot.data?.take(6).toList() ?? <CatalogItem>[];
+        final selected = _selectedItems[_category];
+        if (selected != null && !items.any((item) => item.id == selected.id)) {
+          items.insert(0, selected);
+        }
+        return Row(
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: 40,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: items.length + 1,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 8),
+                  // 首项清除过滤，其余快捷项使用对应字典 id。
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return AetherFilterChip(
+                        label: widget.text.get('all'),
+                        selected: catalog.$2 == null,
+                        onTap: _clearCurrentFilter,
+                      );
+                    }
+                    final item = items[index - 1];
+                    return AetherFilterChip(
+                      label: item.name,
+                      selected: catalog.$2 == item.id,
+                      onTap: () => _selectItem(_category, item),
+                    );
+                  },
+                ),
               ),
-            ],
-          ),
+            ),
+            TextButton(
+              onPressed: _openCatalogPicker,
+              child: Text(widget.text.get('viewAll')),
+            ),
+          ],
         );
       },
     );
@@ -252,11 +337,9 @@ class _SearchPageState extends State<SearchPage> {
     super.dispose();
   }
 
-  // 顶部搜索框复刻设计稿的返回、清空和筛选入口。
+  // 顶部搜索框只负责电台关键词，分类条件移到下方独立栏。
   Widget _searchHeader(BuildContext context) {
     final palette = AetherPalette.of(context);
-    final hasFilters =
-        _tagId != null || _languageId != null || _countryId != null;
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 12),
       child: Row(
@@ -310,15 +393,6 @@ class _SearchPageState extends State<SearchPage> {
                   contentPadding: const EdgeInsets.symmetric(vertical: 15),
                 ),
               ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Badge(
-            isLabelVisible: hasFilters,
-            child: IconButton.outlined(
-              tooltip: widget.text.get('filterOptions'),
-              onPressed: _openFilters,
-              icon: const Icon(Icons.tune_rounded),
             ),
           ),
         ],
@@ -535,7 +609,7 @@ class _SearchPageState extends State<SearchPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        _keyword.isEmpty
+                        _keyword.isEmpty && _currentCatalog()?.$2 == null
                             ? widget.text.get('popularStations')
                             : widget.text.get('matchingStations'),
                         style: Theme.of(context).textTheme.titleLarge,
@@ -582,12 +656,23 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  // 搜索输入固定在上方，结果与最佳匹配在其下方独立滚动。
+  // 搜索输入、分类和快捷项固定在上方，结果在其下方独立滚动。
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         _searchHeader(context),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _categoryBar(),
+        ),
+        if (_category != 0) ...[
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _categoryOptions(),
+          ),
+        ],
         Expanded(child: _results(context)),
       ],
     );

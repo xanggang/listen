@@ -380,6 +380,26 @@
               "default": 30,
               "maximum": 1000
             }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "description": "按标签名称进行不区分大小写的字面子串搜索，最多 100 字符。",
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "从排序后的第几项开始读取；与 limit 配合分页。",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000,
+              "default": 0
+            }
           }
         ],
         "responses": {

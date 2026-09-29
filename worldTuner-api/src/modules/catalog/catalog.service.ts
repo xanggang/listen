@@ -11,6 +11,12 @@ export class CatalogService {
   list(kind: CatalogKind, limit: number) {
     return this.repository.list(kind, limit);
   }
+  /**
+   * 分页搜索标签，空关键词也沿用相同的热度排序。
+   */
+  searchTags(query: string, limit: number, offset: number) {
+    return this.repository.searchTags(query, limit, offset);
+  }
   /** 解析可选筛选 id；不存在或名称为空时拒绝请求，避免意外返回全量列表。 */
   async resolveName(kind: CatalogKind, id?: number): Promise<string | undefined> {
     if (id === undefined) return undefined;

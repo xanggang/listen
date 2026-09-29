@@ -63,7 +63,7 @@ Web 开发模式默认直连 `http://127.0.0.1:8787`；端口或主机不同时�
 | `/stations` | page 默认 1，pageSize 默认 20/最大 100；keyword 最长 100；languagesId、tagsId、countriesId 可同时筛选 |
 | `/stations/{id}` | 现有数值 id，保留地图兼容性；不存在 404 |
 | `/languages` | limit 默认 1000，最大 1000 |
-| `/tags` | limit 默认 30，最大 1000 |
+| `/tags` | limit 默认 30，最大 1000；可用 `q` 按名称搜索、`offset` 分页，响应仍为数组 |
 | `/countries` | limit 默认 30，最大 1000 |
 
 `POST /metrics/visit` 只接受匿名 UUID、`web`/`android` 平台和固定页面名，并汇总 PV、日 UV 与月活；没有公开读取接口。数据口径、保留期和本地 SQL 见 [`docs/metrics.md`](docs/metrics.md)。

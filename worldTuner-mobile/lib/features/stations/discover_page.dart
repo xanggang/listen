@@ -12,7 +12,7 @@ import 'station_library.dart';
 import 'station_results.dart';
 import 'search_page.dart';
 
-// 设计稿的发现页，用真实分类字典驱动流派、国家与语言浏览。
+// 发现页展示搜索入口、精选、快捷探索与热门电台；完整分类筛选在搜索页完成。
 class DiscoverPage extends StatefulWidget {
   const DiscoverPage({
     super.key,
@@ -27,254 +27,69 @@ class DiscoverPage extends StatefulWidget {
   final StationLibrary library;
   final AppText text;
 
-  // 创建保留搜索与筛选状态的发现页。
+  // 创建可在发现和搜索之间切换的页面状态。
   @override
   State<DiscoverPage> createState() => _DiscoverPageState();
 }
 
-// 分类数据只请求一次，列表查询随关键词和筛选项更新。
+// 精选与快捷字典只请求一次，热门电台交给共用分页视图加载。
 class _DiscoverPageState extends State<DiscoverPage> {
-  final TextEditingController _optionInput = TextEditingController();
   bool _searchOpen = false;
-  int _category = 0;
-  int? _tagId;
-  int? _languageId;
-  int? _countryId;
-  String _optionKeyword = '';
-  late Future<List<CatalogItem>> _genres;
-  late Future<List<CatalogItem>> _languages;
-  late Future<List<CatalogItem>> _countries;
+  int _searchCategory = 0;
+  CatalogItem? _searchItem;
+  late final Future<List<CatalogItem>> _tags;
+  late final Future<List<CatalogItem>> _countries;
+  late final Future<List<CatalogItem>> _languages;
   late final Future<StationPage> _featured;
 
-  // 缓存分类字典与精选电台请求，避免切换筛选时重新拉取。
+  // 预取精选电台和探索字典，页面重建时不会重复请求。
   @override
   void initState() {
     super.initState();
-    _genres = widget.api.catalog('tags', limit: 1000);
-    _languages = widget.api.catalog('languages', limit: 1000);
-    _countries = widget.api.catalog('countries', limit: 1000);
+    _tags = widget.api.catalog('tags', limit: 10);
+    _countries = widget.api.catalog('countries', limit: 10);
+    _languages = widget.api.catalog('languages', limit: 10);
     _featured = widget.api.stations(keyword: 'ambient', pageSize: 1);
   }
 
-  // 在发现分类和完整搜索结果之间切换，保留原有分类选择。
+  // 在发现页与独立搜索页之间切换。
   void _setSearchOpen(bool value) => setState(() => _searchOpen = value);
 
-  // 切换发现页分类，保留各分类已选项，并使旧列表由 ValueKey 失效。
-  void _selectCategory(int category) {
-    if (_category == category) return;
-    FocusManager.instance.primaryFocus?.unfocus();
-    _optionInput.clear();
+  // 快捷探索入口带选中项进入搜索页，搜索页负责真正的 API 过滤。
+  void _openSearchWithFilter(int category, CatalogItem item) {
     setState(() {
-      _category = category;
-      _optionKeyword = '';
+      _searchCategory = category;
+      _searchItem = item;
+      _searchOpen = true;
     });
   }
 
-  // 释放分类搜索输入，避免发现页移除后保留监听资源。
-  @override
-  void dispose() {
-    _optionInput.dispose();
-    super.dispose();
-  }
-
-  // 重新请求失败的分类字典，成功后对应选项会自动恢复显示。
-  void _retryCatalog(int category) {
-    setState(() {
-      switch (category) {
-        case 1:
-          _genres = widget.api.catalog('tags', limit: 1000);
-        case 2:
-          _countries = widget.api.catalog('countries', limit: 1000);
-        case 3:
-          _languages = widget.api.catalog('languages', limit: 1000);
-      }
-    });
-  }
-
-  // 同一分类项再次点击会取消过滤，其他分类的选择保持不变。
-  void _selectItem(int category, CatalogItem item) {
-    FocusManager.instance.primaryFocus?.unfocus();
-    setState(() {
-      _category = category;
-      switch (category) {
-        case 1:
-          _tagId = _tagId == item.id ? null : item.id;
-        case 2:
-          _countryId = _countryId == item.id ? null : item.id;
-        case 3:
-          _languageId = _languageId == item.id ? null : item.id;
-      }
-    });
-  }
-
-  // 清除当前类别的筛选，列表恢复该类别的全部电台。
-  void _clearCurrentFilter() {
-    setState(() {
-      switch (_category) {
-        case 1:
-          _tagId = null;
-        case 2:
-          _countryId = null;
-        case 3:
-          _languageId = null;
-      }
-    });
-  }
-
-  // 快捷流派卡片与顶部筛选共用同一选中状态。
-  void _selectGenre(CatalogItem item) => _selectItem(1, item);
-
-  // 快捷国家入口与顶部筛选共用同一选中状态。
-  void _selectCountry(CatalogItem item) => _selectItem(2, item);
-
-  // 快捷语言入口与顶部筛选共用同一选中状态。
-  void _selectLanguage(CatalogItem item) => _selectItem(3, item);
-
-  // 当前类别对应字典及已选 id；全部类别没有二级筛选。
-  (Future<List<CatalogItem>>, int?)? _currentCatalog() {
-    return switch (_category) {
-      1 => (_genres, _tagId),
-      2 => (_countries, _countryId),
-      3 => (_languages, _languageId),
-      _ => null,
-    };
-  }
-
-  // 展示当前类别的真实选项，并为字典请求提供重试入口。
-  Widget _categoryOptions(BuildContext context) {
-    final catalog = _currentCatalog();
-    if (catalog == null) return const SizedBox.shrink();
+  // 唯一搜索入口打开支持标签、国家与语言筛选的搜索页。
+  Widget _searchEntry(BuildContext context) {
     final palette = AetherPalette.of(context);
-    return FutureBuilder<List<CatalogItem>>(
-      future: catalog.$1,
-      // 字典加载、失败和空列表都在分类栏下方明确反馈。
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: LinearProgressIndicator(color: palette.primary),
-          );
-        }
-        if (snapshot.hasError ||
-            snapshot.data == null ||
-            snapshot.data!.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: TextButton.icon(
-              onPressed: () => _retryCatalog(_category),
-              icon: const Icon(Icons.refresh_rounded),
-              label: Text(widget.text.get('loadError')),
-            ),
-          );
-        }
-        final keyword = _optionKeyword.trim().toLowerCase();
-        final items = keyword.isEmpty
-            ? snapshot.data!.take(30).toList()
-            : snapshot.data!
-                  .where((item) => item.name.toLowerCase().contains(keyword))
-                  .take(30)
-                  .toList();
-        if (keyword.isEmpty && catalog.$2 != null) {
-          final selected = snapshot.data!
-              .where((item) => item.id == catalog.$2)
-              .firstOrNull;
-          if (selected != null &&
-              !items.any((item) => item.id == selected.id)) {
-            // 切回分类时仍展示超出热门 30 项的已选条件。
-            items.insert(0, selected);
-          }
-        }
-        return Padding(
-          padding: const EdgeInsets.only(top: 12),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 40,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: items.length + 1,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(width: 8),
-                  // 首项清除当前筛选，其余选项使用字典 id 查询电台。
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return AetherFilterChip(
-                        label: widget.text.get('all'),
-                        selected: catalog.$2 == null,
-                        onTap: _clearCurrentFilter,
-                      );
-                    }
-                    final item = items[index - 1];
-                    return AetherFilterChip(
-                      label: item.name,
-                      selected: catalog.$2 == item.id,
-                      onTap: () => _selectItem(_category, item),
-                    );
-                  },
-                ),
-              ),
-              if (items.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(widget.text.get('noCategories')),
-                ),
-            ],
-          ),
-        );
+    return TextField(
+      readOnly: true,
+      // 普通搜索从全部分类开始，避免沿用上次快捷入口的筛选。
+      onTap: () {
+        _searchCategory = 0;
+        _searchItem = null;
+        _setSearchOpen(true);
       },
-    );
-  }
-
-  // 绘制搜索入口与四种聚合维度切换。
-  Widget _searchAndFilters(BuildContext context) {
-    final palette = AetherPalette.of(context);
-    final t = widget.text.get;
-    final labels = [t('all'), t('genres'), t('countries'), t('languages')];
-    return Column(
-      children: [
-        TextField(
-          controller: _optionInput,
-          readOnly: _category == 0,
-          // 全部类别进入电台搜索，其余类别在当前字典中即时查找。
-          onTap: _category == 0 ? () => _setSearchOpen(true) : null,
-          onChanged: _category == 0
-              ? null
-              : (value) => setState(() => _optionKeyword = value),
-          decoration: InputDecoration(
-            hintText: _category == 0
-                ? t('searchStations')
-                : t('searchCategories'),
-            prefixIcon: Icon(Icons.search_rounded, color: palette.muted),
-            filled: true,
-            fillColor: palette.surface,
-            contentPadding: const EdgeInsets.symmetric(vertical: 14),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(999),
-              borderSide: BorderSide(color: palette.border),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(999),
-              borderSide: BorderSide(color: palette.border),
-            ),
-          ),
+      decoration: InputDecoration(
+        hintText: widget.text.get('searchStations'),
+        prefixIcon: Icon(Icons.search_rounded, color: palette.muted),
+        filled: true,
+        fillColor: palette.surface,
+        contentPadding: const EdgeInsets.symmetric(vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(999),
+          borderSide: BorderSide(color: palette.border),
         ),
-        const SizedBox(height: 16),
-        SizedBox(
-          height: 40,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: labels.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 8),
-            // 每个类别对应一个真实的 API 筛选维度。
-            itemBuilder: (context, index) => AetherFilterChip(
-              label: labels[index],
-              selected: _category == index,
-              onTap: () => _selectCategory(index),
-            ),
-          ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(999),
+          borderSide: BorderSide(color: palette.border),
         ),
-        _categoryOptions(context),
-      ],
+      ),
     );
   }
 
@@ -393,11 +208,11 @@ class _DiscoverPageState extends State<DiscoverPage> {
     );
   }
 
-  // 以两列卡片展示 API 返回的热门流派，点击后立即筛选。
+  // 以两列卡片展示 API 返回的热门标签，点击后进入搜索页筛选。
   Widget _genreGrid(BuildContext context) {
     final palette = AetherPalette.of(context);
     return FutureBuilder<List<CatalogItem>>(
-      future: _genres,
+      future: _tags,
       // 分类不可用时不影响热门电台列表。
       builder: (context, snapshot) {
         final items = snapshot.data;
@@ -432,7 +247,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   color: palette.surface,
                   borderRadius: BorderRadius.circular(18),
                   child: InkWell(
-                    onTap: () => _selectGenre(item),
+                    onTap: () => _openSearchWithFilter(1, item),
                     borderRadius: BorderRadius.circular(18),
                     child: Container(
                       padding: const EdgeInsets.all(13),
@@ -500,7 +315,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 scrollDirection: Axis.horizontal,
                 itemCount: min(items.length, 10),
                 separatorBuilder: (context, index) => const SizedBox(width: 8),
-                // 点击分类项时向列表传入相应的 API id。
+                // 点击快捷项后在搜索页应用相应的 API id。
                 itemBuilder: (context, index) {
                   final item = items[index];
                   return ActionChip(
@@ -521,33 +336,31 @@ class _DiscoverPageState extends State<DiscoverPage> {
     );
   }
 
-  // 将设计稿的各模块作为电台列表头部统一滚动。
+  // 搜索入口、精选卡片与快捷探索内容在同一列表头部滚动。
   Widget _header(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _searchAndFilters(context),
-        if (_category == 0) ...[
-          _featuredCard(context),
-          _genreGrid(context),
-          _catalogRow(
-            context,
-            _countries,
-            widget.text.get('countries'),
-            _selectCountry,
-          ),
-          _catalogRow(
-            context,
-            _languages,
-            widget.text.get('languages'),
-            _selectLanguage,
-          ),
-        ],
+        _searchEntry(context),
+        _featuredCard(context),
+        _genreGrid(context),
+        _catalogRow(
+          context,
+          _countries,
+          widget.text.get('countries'),
+          // 国家快捷项进入搜索页并选中对应国家。
+          (item) => _openSearchWithFilter(2, item),
+        ),
+        _catalogRow(
+          context,
+          _languages,
+          widget.text.get('languages'),
+          // 语言快捷项进入搜索页并选中对应语言。
+          (item) => _openSearchWithFilter(3, item),
+        ),
         const SizedBox(height: 28),
         AetherSectionHeading(
-          title: _currentCatalog()?.$2 == null
-              ? widget.text.get('popularStations')
-              : widget.text.get('matchingStations'),
+          title: widget.text.get('popularStations'),
           subtitle: widget.text.get('live'),
         ),
         const SizedBox(height: 12),
@@ -555,7 +368,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     );
   }
 
-  // 将当前筛选状态映射到分页 API 并渲染发现页。
+  // 发现页只加载热门电台；进入搜索页后由搜索状态管理全部筛选。
   @override
   Widget build(BuildContext context) {
     if (_searchOpen) {
@@ -565,23 +378,20 @@ class _DiscoverPageState extends State<DiscoverPage> {
         library: widget.library,
         text: widget.text,
         onBack: () => _setSearchOpen(false),
+        initialCategory: _searchCategory,
+        initialItem: _searchItem,
       );
     }
-    final filter = '$_category:$_tagId:$_languageId:$_countryId';
     return Column(
       children: [
         const AetherHeader(),
         Expanded(
           child: StationResults(
-            key: ValueKey(filter),
             api: widget.api,
             player: widget.player,
             library: widget.library,
             text: widget.text,
             header: _header(context),
-            tagId: _category == 1 ? _tagId : null,
-            countryId: _category == 2 ? _countryId : null,
-            languageId: _category == 3 ? _languageId : null,
           ),
         ),
       ],

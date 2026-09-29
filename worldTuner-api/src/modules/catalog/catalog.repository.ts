@@ -19,6 +19,19 @@ export class CatalogRepository {
       .all<CatalogItem>();
     return results;
   }
+  /**
+   * 按标签名称搜索并分页，LIKE 通配符按字面匹配，排序与字典列表一致。
+   */
+  async searchTags(query: string, limit: number, offset: number) {
+    const escaped = query.replace(/[\\%_]/g, '\\$&');
+    const { results } = await this.db
+      .prepare(
+        "SELECT * FROM tags WHERE (? = '' OR name LIKE ? ESCAPE '\\') ORDER BY stationcount DESC, id ASC LIMIT ? OFFSET ?",
+      )
+      .bind(query, `%${escaped}%`, limit, offset)
+      .all<CatalogItem>();
+    return results;
+  }
   /** 按字典主键读取名称，用于把筛选 id 转换为现有存储格式。 */
   findName(kind: CatalogKind, id: number) {
     return this.db
