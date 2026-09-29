@@ -80,13 +80,13 @@
       source: 'stations',
       paint: {
         'circle-color': theme === 'dark' ? '#00f2fe' : '#0284c7',
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 2.2, 5, 3.4, 10, 5],
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 2.2, 5, 4.5, 10, 7, 15, 9],
         'circle-opacity': 0.82,
         'circle-stroke-color': '#ffffff',
         'circle-stroke-width': 0.5,
       },
     });
-    map.on('click', 'station-points', onStationClick);
+    map.on('click', onStationClick);
     ready = true;
     updateHudVisibility();
     setStations(pendingStations);
@@ -120,10 +120,27 @@
     hud.classList.toggle('is-hidden', map.getZoom() > 1.35 || map.getPitch() > 20);
   }
 
-  // 点击电台时仅回传 id，详情、收藏与播放由 Flutter 处理。
+  // 在点位中心周围扩大触控范围，并优先选取离手指最近的可见电台。
   function onStationClick(event) {
-    const feature = event.features && event.features[0];
-    const id = Number(feature && feature.properties && feature.properties.id);
+    const point = event.point;
+    const stationTouchRadius = map.getZoom() >= 5 ? 22 : 14;
+    const bounds = [
+      [point.x - stationTouchRadius, point.y - stationTouchRadius],
+      [point.x + stationTouchRadius, point.y + stationTouchRadius],
+    ];
+    const features = map.queryRenderedFeatures(bounds, { layers: ['station-points'] });
+    let closest = null;
+    let closestDistance = stationTouchRadius * stationTouchRadius;
+    for (const feature of features) {
+      const coordinates = feature.geometry && feature.geometry.coordinates;
+      if (!Array.isArray(coordinates)) continue;
+      const projected = map.project(coordinates);
+      const distance = (projected.x - point.x) ** 2 + (projected.y - point.y) ** 2;
+      if (distance > closestDistance) continue;
+      closest = feature;
+      closestDistance = distance;
+    }
+    const id = Number(closest && closest.properties && closest.properties.id);
     if (!Number.isSafeInteger(id) || id <= 0) return;
     send('select', { id });
   }

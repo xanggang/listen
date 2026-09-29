@@ -46,6 +46,20 @@ flutter run -d emulator-5554 \
 
 调试时在 `flutter run` 终端按 `r` 热重载、`R` 热重启、`q` 退出；终端会给出 DevTools 链接。若刚启动模拟器时未显示设备，等 Android 启动完成后重试 `flutter devices`。本机 Flutter 可用完整路径 `/Users/lin/development/flutter/bin/flutter`。
 
+播放失败时，保持 `flutter run` 终端打开，点选电台后查找 `[worldTuner/audio]`：日志包含失败阶段、stationId、流地址协议、错误类型及 `just_audio` 错误码；完整流地址会被隐藏，Release 构建不输出这类诊断。更新此诊断代码后按 `R` 热重启，使播放器重新订阅错误流。已启动应用但没有 `flutter run` 终端时，可另开终端运行：
+
+```sh
+/Users/lin/development/flutter/bin/flutter logs -d emulator-5554
+```
+
+需要同时查看 Android 音频引擎错误时，运行：
+
+```sh
+/Users/lin/Library/Android/sdk/platform-tools/adb logcat -v time | grep -Ei 'worldTuner/audio|ExoPlayer|Cleartext|MediaCodec'
+```
+
+将 `emulator-5554` 换成 `flutter devices` 列出的实际设备 ID。排查 HTTP 电台时重点看 `Cleartext` 或 `not permitted`；Debug 构建目前只对本地 API 地址放行 HTTP，第三方 HTTP 流可能被 Android 拒绝。
+
 若只想安装已构建的 Debug APK，可以运行：
 
 ```sh

@@ -16,10 +16,10 @@ Next.js Web 客户端。电台列表、详情和分类数据统一由同级 `../
 
 ```bash
 pnpm install
-LISTEN_API_BASE_URL=http://127.0.0.1:8787 pnpm dev
+pnpm dev
 ```
 
-也可以将 `.env.example` 中的变量加入现有 `.env.local`。开发时显式指定 API 地址便于分别调试两个服务。不设置变量时，Web 会尝试使用本地 Wrangler 的 `LISTEN_API` Service Binding。
+开发模式默认请求 `http://127.0.0.1:8787`。API 使用其他地址时，通过 `LISTEN_API_BASE_URL` 或 `.env.local` 覆盖；生产环境不设置该变量，改用 `LISTEN_API` Service Binding。本地修改环境变量后需要重启 `pnpm dev`。
 
 ## 配置与部署
 

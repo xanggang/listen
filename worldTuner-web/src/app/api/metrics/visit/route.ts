@@ -1,5 +1,6 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import type { NextRequest } from 'next/server';
+import { getListenApiBaseUrl } from '@/lib/listen-api-config';
 
 // 同源转发匿名访问记录，浏览器无需获知 Worker 的部署地址。
 export async function POST(request: NextRequest): Promise<Response> {
@@ -12,7 +13,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (clientIp) headers['CF-Connecting-IP'] = clientIp;
   const options = { method: 'POST', headers, body, signal: AbortSignal.timeout(5000) };
   try {
-    const baseUrl = process.env.LISTEN_API_BASE_URL;
+    const baseUrl = getListenApiBaseUrl();
     const response = baseUrl
       ? await fetch(new URL('/api/v1/metrics/visit', baseUrl), { ...options, cache: 'no-store' })
       : await (async () => {

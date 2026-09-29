@@ -59,10 +59,23 @@ async function loadStationFeatures(signal: AbortSignal): Promise<GeoJSON.Feature
   return { type: 'FeatureCollection', features };
 }
 
+/** 地图加载完成后同步空间、辅助线和点位配色，避免初始化期间重复添加 Cubemap 图层。 */
+function applyGlobeTheme(globe: MapTilerMap, dark: boolean): void {
+  globe.setSpace({ color: dark ? '#0e1321' : '#f8fafc' });
+  const color = dark ? '#00f2fe' : '#0284c7';
+  if (globe.getLayer('graticule-lines')) {
+    globe.setPaintProperty('graticule-lines', 'line-color', color);
+  }
+  if (globe.getLayer('station-points')) {
+    globe.setPaintProperty('station-points', 'circle-color', color);
+  }
+}
+
 /** 绘制安卓端同款卫星地球、地形和逐点电台，不对点位聚合。 */
 export default function Map({ onChange }: MapProps) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapTilerMap | null>(null);
+  const mapReady = useRef(false);
   const onChangeRef = useRef(onChange);
   const [hudVisible, setHudVisible] = useState(true);
   const [pointsError, setPointsError] = useState(false);
@@ -129,6 +142,8 @@ export default function Map({ onChange }: MapProps) {
             'circle-stroke-width': 0.5,
           },
         });
+        mapReady.current = true;
+        applyGlobeTheme(globe, dark);
         // 点位文件加载完成后一次性更新图层；组件卸载则取消请求。
         void loadStationFeatures(pointsController.signal)
           .then(
@@ -164,6 +179,7 @@ export default function Map({ onChange }: MapProps) {
       /** 页面卸载时释放地图实例。 */
       return () => {
         pointsController.abort();
+        mapReady.current = false;
         globe.remove();
         map.current = null;
       };
@@ -175,24 +191,15 @@ export default function Map({ onChange }: MapProps) {
     /** 主题变化时保留地球视角，只替换空间、辅助线和点位配色。 */
     () => {
       const globe = map.current;
-      if (!globe || !resolvedTheme) return;
-      const dark = resolvedTheme === 'dark';
-      globe.setSpace({ color: dark ? '#0e1321' : '#f8fafc' });
-      if (!globe.isStyleLoaded()) return;
-      const color = dark ? '#00f2fe' : '#0284c7';
-      if (globe.getLayer('graticule-lines')) {
-        globe.setPaintProperty('graticule-lines', 'line-color', color);
-      }
-      if (globe.getLayer('station-points')) {
-        globe.setPaintProperty('station-points', 'circle-color', color);
-      }
+      if (!globe || !mapReady.current || !globe.isStyleLoaded() || !resolvedTheme) return;
+      applyGlobeTheme(globe, resolvedTheme === 'dark');
     },
     [resolvedTheme],
   );
 
   return (
     <div className="globe-page">
-      <div ref={container} className="absolute inset-0" role="img" aria-label="Interactive 3D earth with radio stations" />
+      <div ref={container} className="globe-map" role="img" aria-label="Interactive 3D earth with radio stations" />
       <div className="globe-brand"><span className="aether-eq" aria-hidden="true"><i /><i /><i /><i /></span> worldTuner</div>
       {pointsError && <div className="globe-error" role="status">
         {locale === 'zh' ? '电台点位暂时无法加载' : 'Station points unavailable'}

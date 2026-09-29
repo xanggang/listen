@@ -45,13 +45,13 @@ pnpm db:migrate:local
 另开终端启动 Web：
 
 ```bash
-cd ../listen
+cd ../worldTuner-web
 # 已有 .env.local 时只合并该变量，不要覆盖文件。
 # LISTEN_API_BASE_URL=http://127.0.0.1:8787
-LISTEN_API_BASE_URL=http://127.0.0.1:8787 pnpm dev
+pnpm dev
 ```
 
-也可按 `.env.example` 创建 Web 的 `.env.local`。生产默认使用 `LISTEN_API` Service Binding；不设置 URL 时，Web 开发模式也会尝试通过本地 Wrangler 注册表寻找 API 服务。
+Web 开发模式默认直连 `http://127.0.0.1:8787`；端口或主机不同时可按 `.env.example` 在 Web 的 `.env.local` 覆盖 `LISTEN_API_BASE_URL`。生产默认使用 `LISTEN_API` Service Binding。
 
 ## 接口
 

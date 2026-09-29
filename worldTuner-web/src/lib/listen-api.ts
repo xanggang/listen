@@ -1,6 +1,7 @@
 import 'server-only';
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { headers } from 'next/headers';
+import { getListenApiBaseUrl } from './listen-api-config';
 
 export class ListenApiError extends Error {
   /** 保留 HTTP 状态，供兼容门面区分不存在与服务故障。 */
@@ -12,14 +13,14 @@ export class ListenApiError extends Error {
   }
 }
 
-/** 从服务端请求独立 API；本地使用显式 URL，Cloudflare 默认使用绑定，十秒超时。 */
+/** 从服务端请求独立 API；开发模式直连本地 Worker，生产默认使用绑定，十秒超时。 */
 export async function apiGet<T>(path: string): Promise<T> {
   const incoming = await headers();
   const ip = incoming.get('cf-connecting-ip');
   const requestHeaders: Record<string, string> = { Accept: 'application/json' };
   if (ip) requestHeaders['CF-Connecting-IP'] = ip;
   const options = { method: 'GET', headers: requestHeaders, signal: AbortSignal.timeout(10000) };
-  const baseUrl = process.env.LISTEN_API_BASE_URL;
+  const baseUrl = getListenApiBaseUrl();
   let response: Response;
   if (baseUrl) {
     // Explicit override for local development or a non-Cloudflare Web host.
