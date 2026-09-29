@@ -4,7 +4,28 @@ import '../features/stations/station.dart';
 import 'aether_theme.dart';
 import 'app_text.dart';
 
-// 四个页面共用的品牌栏，保留设计稿的声波标识和紧凑高度。
+// 页面品牌位共用透明地球声波 Logo。
+class WorldTunerLogo extends StatelessWidget {
+  // 小尺寸品牌位按屏幕密度解码图片，避免加载完整尺寸纹理。
+  const WorldTunerLogo({super.key, this.size = 28});
+
+  final double size;
+
+  // 保持原始比例显示 Logo，旁边的品牌名称由使用方提供。
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      'assets/images/worldtuner-logo.png',
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+      cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).ceil(),
+      excludeFromSemantics: true,
+    );
+  }
+}
+
+// 四个页面共用的品牌栏，保留紧凑高度并显示正式 Logo。
 class AetherHeader extends StatelessWidget {
   const AetherHeader({super.key, this.trailing});
 
@@ -23,11 +44,11 @@ class AetherHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.graphic_eq_rounded, color: palette.primary, size: 28),
+          const WorldTunerLogo(),
           const SizedBox(width: 9),
           Expanded(
             child: Text(
-              'worldTuner',
+              'WORLDTUNER',
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),

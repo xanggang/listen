@@ -189,40 +189,39 @@ class _HomeShellState extends State<HomeShell> {
   }
 }
 
-// 地图首页使用轻量悬浮品牌标识，避免实体标题栏压缩地球。
+// 地图首页使用与其他页面同宽同高的品牌栏，保持顶部边线连续。
 class _MapBrand extends StatelessWidget {
   const _MapBrand();
 
-  // 在地图左上角保留品牌识别，同时避免遮住右侧电台数量。
+  // 将 56 像素品牌栏铺满顶部，避免局部右边框形成半框效果。
   @override
   Widget build(BuildContext context) {
     final palette = AetherPalette.of(context);
     final statusBarHeight = MediaQuery.paddingOf(context).top;
     return Positioned(
-      top: statusBarHeight + 12,
-      left: 16,
+      top: statusBarHeight,
+      left: 0,
+      right: 0,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: palette.surface.withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: palette.border),
+          color: palette.canvas,
+          border: Border(bottom: BorderSide(color: palette.border)),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.graphic_eq_rounded, color: palette.primary, size: 20),
-              const SizedBox(width: 6),
-              Text(
-                'worldTuner',
-                style: TextStyle(
-                  color: palette.text,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
+        child: SizedBox(
+          height: 56,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const WorldTunerLogo(),
+                const SizedBox(width: 9),
+                Text(
+                  'WORLDTUNER',
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -49,15 +49,28 @@ class _MapPageState extends State<MapPage> {
   String _theme = 'dark';
   int? _selectedId;
   Station? _selectedStation;
+  int? _shownPlayingStationId;
 
   // 并行加载本地点位和地球页面，任一方完成后尝试同步数据。
   @override
   void initState() {
     super.initState();
+    widget.player.addListener(_syncPlayingStation);
     if (AppConfig.mapTilerKey.isNotEmpty) {
       unawaited(_initializeWebView());
     }
     unawaited(_loadPoints());
+  }
+
+  // 父组件更换播放器时转移监听，避免旧实例继续向地球发送播放状态。
+  @override
+  void didUpdateWidget(covariant MapPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.player == widget.player) return;
+    oldWidget.player.removeListener(_syncPlayingStation);
+    widget.player.addListener(_syncPlayingStation);
+    _shownPlayingStationId = null;
+    _syncPlayingStation(force: true);
   }
 
   // 外层应用切换主题时，保持当前地球视角并更新地图配色。
@@ -132,6 +145,7 @@ class _MapPageState extends State<MapPage> {
         _pointsLoading = false;
       });
       unawaited(_syncPoints());
+      _syncPlayingStation(force: true);
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -156,8 +170,43 @@ class _MapPageState extends State<MapPage> {
     await _runGlobeScript('setStations', stations);
   }
 
-  // 通过 JSON 编码传参，避免构造可注入的 JavaScript 源码。
-  Future<void> _runGlobeScript(String method, Object value) async {
+  // 只为实际播放且有有效坐标的电台传递点位；暂停、缓冲或失败时移除光圈。
+  void _syncPlayingStation({bool force = false}) {
+    if (!_globeReady) return;
+    final station = widget.player.current;
+    final playingId =
+        widget.player.playing &&
+            !widget.player.buffering &&
+            widget.player.errorMessage == null
+        ? station?.id
+        : null;
+    if (!force && playingId == _shownPlayingStationId) return;
+    _shownPlayingStationId = playingId;
+    final point = playingId == null ? null : _pointsById[playingId];
+    final latitude = point?.latitude ?? station?.geoLat;
+    final longitude = point?.longitude ?? station?.geoLong;
+    final hasCoordinates =
+        playingId != null &&
+        latitude != null &&
+        longitude != null &&
+        latitude.isFinite &&
+        longitude.isFinite &&
+        latitude >= -90 &&
+        latitude <= 90 &&
+        longitude >= -180 &&
+        longitude <= 180;
+    unawaited(
+      _runGlobeScript(
+        'setActiveStation',
+        hasCoordinates
+            ? {'id': playingId, 'latitude': latitude, 'longitude': longitude}
+            : null,
+      ),
+    );
+  }
+
+  // 通过 JSON 编码传递可空参数，避免构造可注入的 JavaScript 源码。
+  Future<void> _runGlobeScript(String method, Object? value) async {
     try {
       await _webView.runJavaScript(
         'window.AetherGlobe.$method(${jsonEncode(value)});',
@@ -179,6 +228,7 @@ class _MapPageState extends State<MapPage> {
           _error = false;
         });
         unawaited(_syncPoints());
+        _syncPlayingStation(force: true);
       case GlobeMessageType.error:
         _showGlobeError();
       case GlobeMessageType.select:
@@ -219,6 +269,7 @@ class _MapPageState extends State<MapPage> {
       _globeReady = false;
       _error = false;
     });
+    _shownPlayingStationId = null;
     if (_pointsById.isEmpty) unawaited(_loadPoints());
     if (AppConfig.mapTilerKey.isNotEmpty) {
       unawaited(_webView.reload());
@@ -228,6 +279,7 @@ class _MapPageState extends State<MapPage> {
   // 释放初始化超时计时器，避免离开页面后更新已销毁的状态。
   @override
   void dispose() {
+    widget.player.removeListener(_syncPlayingStation);
     _loadTimeout?.cancel();
     super.dispose();
   }
@@ -258,7 +310,7 @@ class _MapPageState extends State<MapPage> {
         ),
         if (_globeReady && _pointsById.isNotEmpty)
           Positioned(
-            top: statusBarHeight + 12,
+            top: statusBarHeight + 68,
             right: 12,
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -380,7 +432,7 @@ class _MapPageState extends State<MapPage> {
       children: [
         _globe(context),
         Positioned(
-          top: statusBarHeight + 56,
+          top: statusBarHeight + 112,
           right: 16,
           child: DecoratedBox(
             decoration: BoxDecoration(

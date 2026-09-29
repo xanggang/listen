@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../core/aether_theme.dart';
+import '../../core/aether_widgets.dart';
 import '../../core/app_text.dart';
 
 // 展示尚未上线的 VIP 权益规划；页面不提供购买或开通入口。
@@ -51,11 +52,7 @@ class _VipPageState extends State<VipPage> {
             icon: const Icon(Icons.arrow_back_rounded),
           ),
           const Spacer(),
-          Icon(
-            Icons.radio_button_checked_rounded,
-            color: palette.primary,
-            size: 20,
-          ),
+          const WorldTunerLogo(size: 24),
           const SizedBox(width: 7),
           Flexible(
             child: Text(
@@ -98,7 +95,7 @@ class _VipPageState extends State<VipPage> {
     );
   }
 
-  // 复现设计稿的地球经纬线、城市信号点与中心声波标识。
+  // 复现设计稿的地球经纬线、城市信号点与中心品牌标识。
   Widget _globe(AetherPalette palette) {
     return SizedBox(
       width: 190,
@@ -117,7 +114,7 @@ class _VipPageState extends State<VipPage> {
               color: palette.primary.withValues(alpha: 0.1),
               border: Border.all(color: palette.primary.withValues(alpha: 0.4)),
             ),
-            child: Icon(Icons.graphic_eq_rounded, color: palette.primary),
+            child: const WorldTunerLogo(size: 42),
           ),
           Positioned(
             top: 36,

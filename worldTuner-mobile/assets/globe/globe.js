@@ -5,6 +5,9 @@
   let map = null;
   let ready = false;
   let pendingStations = [];
+  let activeStation = null;
+  let pulseFrame = null;
+  let lastPulseTime = 0;
   let theme = 'dark';
 
   // 只通过固定的 JavaScript channel 回传地图状态与选中的电台 id。
@@ -86,10 +89,37 @@
         'circle-stroke-width': 0.5,
       },
     });
+    map.addSource('active-station', {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+    });
+    map.addLayer({
+      id: 'active-station-halo',
+      type: 'circle',
+      source: 'active-station',
+      paint: {
+        'circle-color': theme === 'dark' ? '#00f2fe' : '#0284c7',
+        'circle-radius': 10,
+        'circle-opacity': 0.45,
+        'circle-blur': 0.35,
+      },
+    });
+    map.addLayer({
+      id: 'active-station-core',
+      type: 'circle',
+      source: 'active-station',
+      paint: {
+        'circle-color': '#ffffff',
+        'circle-radius': 6,
+        'circle-stroke-color': theme === 'dark' ? '#00f2fe' : '#0284c7',
+        'circle-stroke-width': 2,
+      },
+    });
     map.on('click', onStationClick);
     ready = true;
     updateHudVisibility();
     setStations(pendingStations);
+    setActiveStation(activeStation);
     send('ready');
   }
 
@@ -128,7 +158,7 @@
       [point.x - stationTouchRadius, point.y - stationTouchRadius],
       [point.x + stationTouchRadius, point.y + stationTouchRadius],
     ];
-    const features = map.queryRenderedFeatures(bounds, { layers: ['station-points'] });
+    const features = map.queryRenderedFeatures(bounds, { layers: ['active-station-core', 'station-points'] });
     let closest = null;
     let closestDistance = stationTouchRadius * stationTouchRadius;
     for (const feature of features) {
@@ -164,6 +194,42 @@
     map.getSource('stations').setData({ type: 'FeatureCollection', features });
   }
 
+  // 播放点位随状态移动或清空；坐标来自 Flutter 已校验的电台和地图快照。
+  function setActiveStation(station) {
+    const valid = station && Number.isSafeInteger(station.id) && station.id > 0 &&
+      Number.isFinite(station.latitude) && station.latitude >= -90 && station.latitude <= 90 &&
+      Number.isFinite(station.longitude) && station.longitude >= -180 && station.longitude <= 180;
+    activeStation = valid ? station : null;
+    if (!ready) return;
+    const features = activeStation ? [{
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [activeStation.longitude, activeStation.latitude] },
+      properties: { id: activeStation.id },
+    }] : [];
+    map.getSource('active-station').setData({ type: 'FeatureCollection', features });
+    if (activeStation && pulseFrame === null) {
+      pulseFrame = requestAnimationFrame(animatePlayingPulse);
+    } else if (!activeStation && pulseFrame !== null) {
+      cancelAnimationFrame(pulseFrame);
+      pulseFrame = null;
+    }
+  }
+
+  // 仅播放时更新单个光圈，约 30 帧每秒；底图和其他电台点位不参与动画。
+  function animatePlayingPulse(timestamp) {
+    if (!ready || !activeStation) {
+      pulseFrame = null;
+      return;
+    }
+    if (timestamp - lastPulseTime >= 32) {
+      const progress = (timestamp % 1800) / 1800;
+      map.setPaintProperty('active-station-halo', 'circle-radius', 9 + progress * 18);
+      map.setPaintProperty('active-station-halo', 'circle-opacity', (1 - progress) * 0.55);
+      lastPulseTime = timestamp;
+    }
+    pulseFrame = requestAnimationFrame(animatePlayingPulse);
+  }
+
   // 外观设置改变时更新球体周围的空间色和电台点位色。
   function setTheme(value) {
     theme = value === 'light' ? 'light' : 'dark';
@@ -174,7 +240,9 @@
     map.setPaintProperty('graticule-lines', 'line-color', color);
     map.setPaintProperty('graticule-lines', 'line-opacity', theme === 'dark' ? 0.24 : 0.28);
     map.setPaintProperty('station-points', 'circle-color', color);
+    map.setPaintProperty('active-station-halo', 'circle-color', color);
+    map.setPaintProperty('active-station-core', 'circle-stroke-color', color);
   }
 
-  window.AetherGlobe = { initialize, setStations, setTheme };
+  window.AetherGlobe = { initialize, setStations, setActiveStation, setTheme };
 })();

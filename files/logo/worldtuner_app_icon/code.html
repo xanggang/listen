@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141c30"/>
+      <stop offset="40%" stop-color="#0c111e"/>
+      <stop offset="100%" stop-color="#050811"/>
+    </linearGradient>
+
+    <!-- Outer Rim Glow -->
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#1e293b" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <!-- Soundwave & Globe Cyan Glow Gradient -->
+    <linearGradient id="cyanNeon" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="50%" stop-color="#00f2fe"/>
+      <stop offset="100%" stop-color="#a5f3fc"/>
+    </linearGradient>
+
+    <!-- Accent Golden Light for Master Tier Tone -->
+    <linearGradient id="amberGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+
+    <!-- Radial Sphere Depth Glow -->
+    <radialGradient id="sphereCore" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.25"/>
+      <stop offset="45%" stop-color="#0284c7" stop-opacity="0.12"/>
+      <stop offset="85%" stop-color="#0b1120" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Soft Drop Shadows -->
+    <filter id="neonBlur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="pillShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- iOS Squircle Base -->
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle Internal Stroke / Rim Light -->
+  <rect x="17.5" y="17.5" width="477" height="477" rx="106.5" fill="none" stroke="url(#borderGrad)" stroke-width="3"/>
+
+  <!-- Background Acoustic Ambient Glow Behind Earth -->
+  <circle cx="256" cy="256" r="170" fill="url(#sphereCore)"/>
+
+  <!-- Subtle Latitude & Longitude Coordinate Grid (The "World" Globe Motif) -->
+  <g stroke="#38bdf8" stroke-width="2" stroke-opacity="0.2" fill="none">
+    <!-- Outer boundary of globe -->
+    <circle cx="256" cy="256" r="148" stroke-width="2.5" stroke-opacity="0.35"/>
+    
+    <!-- Equator and parallels -->
+    <line x1="108" y1="256" x2="404" y2="256" stroke-dasharray="4 4" stroke-opacity="0.3"/>
+    <ellipse cx="256" cy="256" rx="148" ry="60" stroke-opacity="0.25"/>
+    <ellipse cx="256" cy="256" rx="148" ry="110" stroke-opacity="0.2"/>
+    
+    <!-- Central Meridians -->
+    <line x1="256" y1="108" x2="256" y2="404" stroke-opacity="0.3"/>
+    <ellipse cx="256" cy="256" rx="80" ry="148" stroke-opacity="0.3"/>
+  </g>
+
+  <!-- Orbital Radio Wave Ring (Tuning / Frequency Ring) -->
+  <g transform="rotate(-28 256 256)">
+    <!-- Elliptical Orbit Track -->
+    <ellipse cx="256" cy="256" rx="188" ry="68" fill="none" stroke="url(#cyanNeon)" stroke-width="3" stroke-opacity="0.45" stroke-dasharray="8 6"/>
+    
+    <!-- Orbiting Satellite Beacon / Radio Tuner Dot -->
+    <circle cx="444" cy="256" r="7" fill="#00f2fe" filter="url(#neonBlur)"/>
+    <circle cx="444" cy="256" r="4" fill="#ffffff"/>
+
+    <circle cx="68" cy="256" r="4.5" fill="#f59e0b" filter="url(#neonBlur)"/>
+  </g>
+
+  <!-- Central Acoustic Soundwave Matrix (The "Tuner" EQ / Frequency Core) -->
+  <g filter="url(#neonBlur)">
+    <!-- Left 2: lowest freq -->
+    <rect x="156" y="216" width="16" height="80" rx="8" fill="url(#cyanNeon)"/>
+    
+    <!-- Left 1: mid-low -->
+    <rect x="196" y="172" width="16" height="168" rx="8" fill="url(#cyanNeon)"/>
+    
+    <!-- Center: Primary Apex Frequency Pillar -->
+    <rect x="236" y="120" width="18" height="272" rx="9" fill="url(#cyanNeon)" filter="url(#pillShadow)"/>
+    <!-- Center white core highlight -->
+    <rect x="242" y="132" width="6" height="110" rx="3" fill="#ffffff" fill-opacity="0.85"/>
+
+    <!-- Right 1: mid-high -->
+    <rect x="278" y="156" width="16" height="200" rx="8" fill="url(#cyanNeon)"/>
+    
+    <!-- Right 2: high freq -->
+    <rect x="318" y="200" width="16" height="112" rx="8" fill="url(#cyanNeon)"/>
+    
+    <!-- Far Right 3: harmonic spark -->
+    <rect x="358" y="234" width="14" height="44" rx="7" fill="url(#cyanNeon)" fill-opacity="0.85"/>
+    
+    <!-- Far Left 3: ambient sub -->
+    <rect x="118" y="238" width="14" height="36" rx="7" fill="url(#cyanNeon)" fill-opacity="0.7"/>
+  </g>
+
+  <!-- Tuner Dial Center Point Marker (Acoustic Needle Center) -->
+  <circle cx="245" cy="256" r="3.5" fill="#ffffff"/>
+</svg>

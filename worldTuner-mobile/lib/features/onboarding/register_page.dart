@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../core/aether_theme.dart';
+import '../../core/aether_widgets.dart';
 import '../../core/app_text.dart';
 
 // 根据设计稿呈现注册欢迎页；首版只允许访客或登录入口直接进入应用。
@@ -84,11 +85,7 @@ class RegisterPage extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Icon(
-                Icons.graphic_eq_rounded,
-                color: palette.primary,
-                size: 42,
-              ),
+              child: const WorldTunerLogo(size: 62),
             ),
             Positioned(
               bottom: -17,

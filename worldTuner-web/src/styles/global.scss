@@ -117,20 +117,7 @@ button {
   line-height: 1;
 }
 
-.aether-eq {
-  display: flex;
-  width: 25px;
-  height: 25px;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  color: var(--primary);
-}
-
-.aether-eq i { width: 3px; border-radius: 3px; background: currentColor; }
-.aether-eq i:nth-child(1), .aether-eq i:nth-child(4) { height: 9px; }
-.aether-eq i:nth-child(2) { height: 19px; }
-.aether-eq i:nth-child(3) { height: 15px; }
+.worldtuner-logo { width: 28px; height: 28px; flex: none; object-fit: contain; }
 
 .aether-header__spacer { flex: 1; }
 
@@ -310,22 +297,23 @@ button {
 .globe-brand {
   position: absolute;
   z-index: 5;
-  top: 18px;
-  left: 16px;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--surface), transparent 10%);
+  gap: 9px;
+  box-sizing: border-box;
+  height: 56px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--canvas);
   color: var(--text);
-  font-size: 13px;
-  font-weight: 700;
+  font: 700 18px PlusJakartaSans, sans-serif;
   pointer-events: none;
 }
 
-.globe-brand span { color: var(--primary); font-size: 20px; line-height: 1; }
+.globe-brand .worldtuner-logo { width: 28px; height: 28px; }
 .globe-error { position: absolute; z-index: 5; top: 18px; right: 16px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--muted); font-size: 12px; }
 .globe-hud { position: absolute; top: 50%; left: 50%; width: min(92vw, 75vh); aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none; color: var(--primary); transition: opacity .25s; }
 .globe-hud.is-hidden { opacity: 0; }

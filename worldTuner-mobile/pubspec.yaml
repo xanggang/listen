@@ -28,6 +28,7 @@ flutter:
     - assets/data/stations.json
     - assets/globe/
     - assets/images/aurora.jpg
+    - assets/images/worldtuner-logo.png
   fonts:
     - family: Inter
       fonts:
