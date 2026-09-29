@@ -8,6 +8,7 @@ import 'core/api_client.dart';
 import 'core/app_config.dart';
 import 'core/app_text.dart';
 import 'core/aether_theme.dart';
+import 'core/metrics_reporter.dart';
 import 'features/onboarding/entry_store.dart';
 import 'features/onboarding/register_page.dart';
 import 'features/player/player_controller.dart';
@@ -30,7 +31,18 @@ Future<void> main() async {
   await library.load();
   final entry = EntryStore(preferences);
   await entry.load();
-  runApp(WorldTunerApp(settings: settings, library: library, entry: entry));
+  final origin = AppConfig.apiOrigin;
+  final metrics = origin == null
+      ? null
+      : MetricsReporter(origin: origin, preferences: preferences);
+  runApp(
+    WorldTunerApp(
+      settings: settings,
+      library: library,
+      entry: entry,
+      metrics: metrics,
+    ),
+  );
 }
 
 // 应用根节点，集中持有服务连接和全局播放器。
@@ -41,11 +53,13 @@ class WorldTunerApp extends StatefulWidget {
     required this.settings,
     required this.library,
     required this.entry,
+    required this.metrics,
   });
 
   final SettingsController settings;
   final StationLibrary library;
   final EntryStore entry;
+  final MetricsReporter? metrics;
 
   // 创建持有 API 与全局播放器的根状态。
   @override
@@ -53,7 +67,8 @@ class WorldTunerApp extends StatefulWidget {
 }
 
 // 将构建环境中的 API 地址应用到唯一的客户端实例。
-class _WorldTunerAppState extends State<WorldTunerApp> {
+class _WorldTunerAppState extends State<WorldTunerApp>
+    with WidgetsBindingObserver {
   late final Uri? _apiOrigin = AppConfig.apiOrigin;
   late final ApiClient? _api = _apiOrigin == null
       ? null
@@ -61,6 +76,25 @@ class _WorldTunerAppState extends State<WorldTunerApp> {
   late final PlayerController _player = PlayerController(widget.library);
   late bool _entered = widget.entry.entered;
   bool _entering = false;
+
+  // 首次显示的欢迎页或地图只记录一次访问，并监听后台恢复。
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    final metrics = widget.metrics;
+    if (metrics != null) {
+      unawaited(metrics.trackPage(_entered ? 'map' : 'welcome'));
+    }
+  }
+
+  // Android 从后台回到前台时按时间间隔补记页面访问。
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && widget.metrics != null) {
+      unawaited(widget.metrics!.trackResume());
+    }
+  }
 
   // 首版直接进入应用，并将欢迎页完成状态保存在设备本地。
   Future<void> _enterApp() async {
@@ -76,6 +110,7 @@ class _WorldTunerAppState extends State<WorldTunerApp> {
           _entered = true;
           _entering = false;
         });
+        if (widget.metrics != null) unawaited(widget.metrics!.trackPage('map'));
       }
     }
   }
@@ -83,7 +118,9 @@ class _WorldTunerAppState extends State<WorldTunerApp> {
   // 关闭 API 连接和音频资源。
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _api?.dispose();
+    widget.metrics?.dispose();
     _player.dispose();
     super.dispose();
   }
@@ -135,6 +172,7 @@ class _WorldTunerAppState extends State<WorldTunerApp> {
                   library: widget.library,
                   settings: widget.settings,
                   text: text,
+                  metrics: widget.metrics,
                 ),
         );
       },

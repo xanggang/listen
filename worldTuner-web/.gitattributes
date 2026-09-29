@@ -1,0 +1,3 @@
+# Third-party licenses and generated Cloudflare declarations are kept verbatim.
+cloudflare-env.d.ts -whitespace
+public/fonts/*-OFL.txt -whitespace

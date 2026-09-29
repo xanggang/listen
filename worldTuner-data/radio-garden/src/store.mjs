@@ -205,7 +205,7 @@ export async function writeProgress(db) {
     place_channel_relations: totalRelations,
   };
   const destination = new URL('sync-progress.json', dataDirectory);
-  const temporary = new URL('sync-progress.json.tmp', dataDirectory);
+  const temporary = new URL(`sync-progress.${process.pid}.json.tmp`, dataDirectory);
   await writeFile(temporary, `${JSON.stringify(summary, null, 2)}\n`);
   await rename(temporary, destination);
   return summary;

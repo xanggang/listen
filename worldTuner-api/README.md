@@ -1,6 +1,6 @@
 # listen-api
 
-独立 Cloudflare Worker，使用 TypeScript + Hono + D1，为 Web、Android、iOS 提供游客只读 HTTP API。Web 项目在同级 `listen/`，原 Server Actions 仅保留兼容调用门面，不再执行 SQL。
+独立 Cloudflare Worker，使用 TypeScript + Hono + D1，为 Web 和 Android 提供游客电台 API 与最小匿名访问量上报接口；iOS 后续接入。Web 项目在同级 `worldTuner-web/`，原 Server Actions 仅保留兼容调用门面，不再执行 SQL。
 
 ## package.json 脚本说明
 
@@ -55,7 +55,7 @@ LISTEN_API_BASE_URL=http://127.0.0.1:8787 pnpm dev
 
 ## 接口
 
-全部前缀 `/api/v1`，游客访问，无登录密钥。错误采用 HTTP 状态码及 `{error:{code,message,requestId}}`；成功采用 `{data:...}`。
+全部前缀 `/api/v1`，游客访问，无登录密钥。电台和字典接口只读；唯一写入接口是受限的匿名访问量上报。错误采用 HTTP 状态码及 `{error:{code,message,requestId}}`；成功采用 `{data:...}`。
 
 | GET 路径 | 参数 / 返回 |
 |---|---|
@@ -65,6 +65,8 @@ LISTEN_API_BASE_URL=http://127.0.0.1:8787 pnpm dev
 | `/languages` | limit 默认 1000，最大 1000 |
 | `/tags` | limit 默认 30，最大 1000 |
 | `/countries` | limit 默认 30，最大 1000 |
+
+`POST /metrics/visit` 只接受匿名 UUID、`web`/`android` 平台和固定页面名，并汇总 PV、日 UV 与月活；没有公开读取接口。数据口径、保留期和本地 SQL 见 [`docs/metrics.md`](docs/metrics.md)。
 
 列表 data 为 `{list,page,pageSize,hasMore,nextPage}`，不返回虚假的 total。排序为 votes DESC、id ASC；offset 最大 100000，page 最大 10000。并发更新票数仍可能使 offset 分页发生漂移。未来如改游标，需保持 v1 兼容或增加版本。
 
@@ -88,18 +90,20 @@ src/
     stations/              路由、schema、service、repository、DTO、类型
     catalog/               语言/标签/国家独立路由，共享字典查询服务
     health/                健康接口
+    metrics/               匿名访问校验、日期哈希与 D1 汇总
 ```
 
 ## 防滥用与缓存
 
 - 全局 180 次/60秒/IP，关键词搜索额外 30 次/60秒/IP，配置在 wrangler.jsonc。
+- 匿名访问上报使用独立 60 次/60秒/IP 限流；请求体最多 1024 字符，拒绝任何额外字段和公共缓存。
 - IP 由 Cloudflare 提供，不能用客户端自报 userId 替代；缺失 IP 共享 unknown 桶。共享网络可能误限流，需要观察后调整。
 - Cloudflare 限流按地点计算且最终一致，不是全球精准计费额度。
 - 仅成功的公开 JSON 缓存在 Worker Cache API：列表/详情 300 秒，字典 3600 秒；搜索不缓存。
 - 每次请求先限流，参数验证后查缓存。缓存不保存 CORS 或请求 ID。缓存失败回退正常查询。
 - 响应 no-store，避免浏览器额外缓存掩盖服务端限流；缓存命中仍会执行 Worker。
 - ALLOWED_ORIGINS 配置浏览器跨域白名单。CORS 不阻止非浏览器调用，也不是鉴权。
-- 无客户端数据库凭证、无 HTTP 写入接口。
+- 无客户端数据库凭证；统计写入不作为用户身份或安全凭证。
 
 ## 检查与部署
 

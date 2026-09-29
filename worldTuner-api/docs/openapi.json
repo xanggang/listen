@@ -3,7 +3,7 @@
   "info": {
     "title": "Listen API",
     "version": "1.0.0",
-    "description": "Guest read-only API. Numeric IDs and legacy names retained for compatibility. Unknown/repeated parameters rejected. Offset capped at 100000. No user authentication."
+    "description": "Guest catalog API with a minimal anonymous visit endpoint. Numeric IDs and legacy names retained for compatibility. Unknown/repeated parameters rejected. Offset capped at 100000. No user authentication."
   },
   "servers": [
     {
@@ -11,6 +11,50 @@
     }
   ],
   "paths": {
+    "/metrics/visit": {
+      "post": {
+        "operationId": "recordAnonymousVisit",
+        "tags": ["metrics"],
+        "description": "Records one page view. The server derives UTC day/month hashes and stores no raw visitor ID. No account or authentication is involved; the result is approximate usage analytics.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["visitorId", "source", "page"],
+                "properties": {
+                  "visitorId": { "type": "string", "format": "uuid", "description": "Random anonymous UUID stored only on the client." },
+                  "source": { "type": "string", "enum": ["web", "android"] },
+                  "page": {
+                    "type": "string",
+                    "enum": ["welcome", "map", "discover", "search", "charts", "settings", "vip", "player"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Visit accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "data": { "type": "object", "properties": { "recorded": { "type": "boolean" } } } }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid or unexpected field" },
+          "413": { "description": "Request body exceeds 1024 characters" },
+          "415": { "description": "JSON content type required" },
+          "429": { "description": "Metrics write rate limit exceeded" }
+        }
+      }
+    },
     "/stations": {
       "get": {
         "operationId": "listStations",

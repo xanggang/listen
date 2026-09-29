@@ -1,0 +1,20 @@
+import Link from 'next/link';
+import type { ReactNode } from 'react';
+
+interface AetherHeaderProps {
+  trailing?: ReactNode;
+}
+
+/** 复用安卓端的紧凑品牌栏，地图页可改用悬浮标识。 */
+export default function AetherHeader({ trailing }: AetherHeaderProps) {
+  return (
+    <header className="aether-header">
+      <Link href="/player" className="aether-header__brand">
+        <span className="aether-eq" aria-hidden="true"><i /><i /><i /><i /></span>
+        worldTuner
+      </Link>
+      <span className="aether-header__spacer" />
+      {trailing}
+    </header>
+  );
+}

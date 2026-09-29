@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -6,6 +8,7 @@ import '../../core/aether_icons.dart';
 import '../../core/aether_widgets.dart';
 import '../../core/api_client.dart';
 import '../../core/app_text.dart';
+import '../../core/metrics_reporter.dart';
 import '../map/map_page.dart';
 import '../player/player_bar.dart';
 import '../player/player_controller.dart';
@@ -25,6 +28,7 @@ class HomeShell extends StatefulWidget {
     required this.library,
     required this.settings,
     required this.text,
+    required this.metrics,
   });
 
   final ApiClient api;
@@ -32,6 +36,7 @@ class HomeShell extends StatefulWidget {
   final StationLibrary library;
   final SettingsController settings;
   final AppText text;
+  final MetricsReporter? metrics;
 
   // 创建保持导航状态的主容器。
   @override
@@ -44,13 +49,28 @@ class _HomeShellState extends State<HomeShell> {
   bool _showVip = false;
 
   // 切换选中的主页面，不销毁其他页面的滚动或地图位置。
-  void _selectPage(int index) => setState(() => _index = index);
+  void _selectPage(int index) {
+    if (index == _index) return;
+    setState(() => _index = index);
+    const pages = ['map', 'discover', 'charts', 'settings'];
+    if (widget.metrics != null) {
+      unawaited(widget.metrics!.trackPage(pages[index]));
+    }
+  }
 
   // 在主内容区打开权益页，保留底部播放器和原有页面状态。
-  void _openVip() => setState(() => _showVip = true);
+  void _openVip() {
+    setState(() => _showVip = true);
+    if (widget.metrics != null) unawaited(widget.metrics!.trackPage('vip'));
+  }
 
   // 返回个人中心的原有位置，不销毁其滚动或本地数据。
-  void _closeVip() => setState(() => _showVip = false);
+  void _closeVip() {
+    setState(() => _showVip = false);
+    if (widget.metrics != null) {
+      unawaited(widget.metrics!.trackPage('settings'));
+    }
+  }
 
   // 地图页让地球铺满内容区，其余页面保留品牌栏和原有布局。
   @override

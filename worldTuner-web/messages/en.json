@@ -1,0 +1,87 @@
+{
+  "HomePage": {
+    "title": "Hello world!",
+    "about": "Go to about page"
+  },
+  "table": {
+    "date": "Date",
+    "name": "Name",
+    "address": "Address"
+  },
+  "menu": {},
+  "tabs": {
+    "map": "Map",
+    "search": "Search",
+    "leaderboard": "Leaderboard",
+    "settings": "Settings"
+  },
+  "nav": {
+    "player": "Globe",
+    "discover": "Discover",
+    "leaderboard": "Charts",
+    "settings": "Me"
+  },
+  "discover": {
+    "browseCategories": "Browse Categories",
+    "byLanguage": "By Language",
+    "byGenre": "By Genre",
+    "global": "Global",
+    "placeholder": "Stations, Country, City, Language, Genre",
+    "retry": "Could not load stations. Retry",
+    "all": "All",
+    "genres": "Genres",
+    "languages": "Languages",
+    "editorPick": "Editor's pick",
+    "live": "LIVE",
+    "listenNow": "Listen now",
+    "chooseGenre": "Choose a genre",
+    "stations": "stations",
+    "popularStations": "Popular stations",
+    "searchResults": "Search results",
+    "countries": "Countries"
+  },
+  "settings": {
+    "setting": "Setting",
+    "language": "Language",
+    "preferences": "Preferences",
+    "nightMode": "Night Mode",
+    "profile": "My profile",
+    "localOnly": "Currently using guest mode",
+    "vipMenu": "Explore VIP benefits",
+    "vipComingSoon": "Coming soon",
+    "appearance": "Appearance",
+    "followSystem": "Follow system",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "localization": "Language",
+    "favorites": "Favorites",
+    "history": "Recently played",
+    "noFavorites": "No favorite stations yet",
+    "noHistory": "No listening history yet"
+  },
+  "charts": {
+    "title": "Global charts",
+    "subtitle": "Discover stations worth hearing around the world",
+    "all": "Global",
+    "languages": "By language",
+    "genres": "By genre",
+    "topThree": "Top three stations",
+    "topStations": "Top stations",
+    "votes": "votes",
+    "retry": "Could not load stations. Retry"
+  },
+  "vip": {
+    "back": "Back to profile",
+    "comingSoon": "COMING SOON",
+    "title": "Bring the world closer",
+    "description": "More ways to personalize listening are being planned. This page previews future benefits; purchasing is not available.",
+    "learnMore": "Explore benefits",
+    "benefits": "Planned benefits",
+    "syncTitle": "Cross-device sync",
+    "syncDescription": "Keep your favorite sounds across devices.",
+    "groupsTitle": "Favorite groups",
+    "groupsDescription": "Organize stations in your own collections.",
+    "scheduleTitle": "Listening schedule",
+    "scheduleDescription": "Plan listening around your day."
+  }
+}

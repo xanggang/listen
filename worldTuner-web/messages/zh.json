@@ -1,0 +1,87 @@
+{
+  "HomePage": {
+    "title": "你好，世界！",
+    "about": "前往关于页面"
+  },
+  "table": {
+    "date": "日期",
+    "name": "名称",
+    "address": "地址"
+  },
+  "menu": {},
+  "tabs": {
+    "map": "地图",
+    "search": "搜索",
+    "leaderboard": "排行榜",
+    "settings": "设置"
+  },
+  "nav": {
+    "player": "地球",
+    "discover": "发现",
+    "leaderboard": "榜单",
+    "settings": "我的"
+  },
+  "discover": {
+    "browseCategories": "浏览分类",
+    "byLanguage": "按语言",
+    "byGenre": "按流派",
+    "global": "全球",
+    "placeholder": "电台，国家，城市，语言，流派",
+    "retry": "电台加载失败，点击重试",
+    "all": "全部",
+    "genres": "流派",
+    "languages": "语言",
+    "editorPick": "编辑精选",
+    "live": "直播",
+    "listenNow": "立即收听",
+    "chooseGenre": "选择流派",
+    "stations": "个电台",
+    "popularStations": "热门电台",
+    "searchResults": "搜索结果",
+    "countries": "国家"
+  },
+  "settings": {
+    "setting": "设置",
+    "language": "语言",
+    "preferences": "偏好设置",
+    "nightMode": "夜间模式",
+    "profile": "我的",
+    "localOnly": "当前使用访客模式",
+    "vipMenu": "查看 VIP 权益",
+    "vipComingSoon": "功能规划中",
+    "appearance": "外观",
+    "followSystem": "跟随系统",
+    "lightMode": "浅色模式",
+    "darkMode": "深色模式",
+    "localization": "语言",
+    "favorites": "收藏",
+    "history": "最近收听",
+    "noFavorites": "还没有收藏的电台",
+    "noHistory": "还没有收听记录"
+  },
+  "charts": {
+    "title": "全球榜单",
+    "subtitle": "发现世界各地值得收听的电台",
+    "all": "全球",
+    "languages": "按语言",
+    "genres": "按流派",
+    "topThree": "前三名电台",
+    "topStations": "热门电台",
+    "votes": "票",
+    "retry": "加载失败，点击重试"
+  },
+  "vip": {
+    "back": "返回我的页面",
+    "comingSoon": "敬请期待",
+    "title": "让世界的声音更近",
+    "description": "更多个性化收听能力正在规划中。当前页面仅介绍未来权益，不提供开通或购买。",
+    "learnMore": "了解会员权益",
+    "benefits": "规划中的权益",
+    "syncTitle": "跨设备同步",
+    "syncDescription": "在不同设备之间延续喜欢的声音。",
+    "groupsTitle": "收藏分组",
+    "groupsDescription": "为喜欢的电台建立自己的分类。",
+    "scheduleTitle": "定时收听",
+    "scheduleDescription": "按照你的日程安排收听。"
+  }
+}

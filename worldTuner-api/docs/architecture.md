@@ -4,11 +4,11 @@
 
 `index → app → v1 子路由 → 参数校验 → 路由缓存 → service → repository → D1`
 
-全局 requestContext/CORS/read rate limit 在路由前执行。Hono onError 统一输出安全错误；路由负责 HTTP 输入输出。新增受保护写入模块时应在对应子路由挂鉴权，不能复用公开缓存。
+全局 requestContext/CORS/按路径选择的限流在路由前执行。Hono onError 统一输出安全错误；路由负责 HTTP 输入输出。`metrics` 是唯一受限的游客写入模块，仅接收匿名页面访问且不使用缓存；未来新增私有写入仍须单独设计鉴权。
 
 ## 职责边界
 
-- index.ts：仅导出 Worker；app.ts：全局策略；routes/v1.ts：注册模块，不写业务分支。
+- index.ts：HTTP 入口和每日统计汇总触发器；app.ts：全局策略；routes/v1.ts：注册模块，不写业务分支。
 - routes：HTTP 路径、参数验证器、模块中间件和响应封装。
 - schema：解析和验证外部输入，输出明确类型；拒绝未知、重复参数。
 - service：业务编排，例如将字典 id 解析为过滤条件、判断详情不存在、计算分页。
