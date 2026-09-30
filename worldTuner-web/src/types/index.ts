@@ -11,68 +11,55 @@ export enum FilterEnums {
 
 // 语言实体
 export interface Languages {
-  id: number;
+  id: string;
   name: string;
-  iso_639: string;
+  code: string | null;
   stationcount: number;
 }
 
 // 国家实体
 export interface Countries {
-  id: number;
+  id: string;
   name: string;
-  iso_3166_1: string;
+  code: string | null;
   stationcount: number;
 }
 
 // 标签实体
 export interface Tags {
-  id: number;
+  id: string;
   name: string;
   stationcount: number;
 }
 
-// 电台实体
+// 新业务库的电台展示字段；实体 ID 始终保留字符串和前导零。
 export interface Station {
-  id: number;
-  changeuuid: string;
-  stationuuid: string;
+  id: string;
   name: string;
-  url: string;
-  urlResolved: string;
-  homepage: string;
-  favicon: string;
-  tags: string;
-  country: string;
-  countrycode: string;
-  iso_3166_2: string;
-  state: string;
-  language: string;
-  languagecodes: string;
-  votes: number;
-  lastchangetime: string;
-  lastchangetimeIso8601: string;
-  codec: string;
-  bitrate: number;
-  hls: number;
-  lastcheckok: number;
-  lastchecktime: string;
-  lastchecktimeIso8601: string;
-  lastcheckoktime: string;
-  lastcheckoktimeIso8601: string;
-  lastlocalchecktime: string;
-  lastlocalchecktimeIso8601: string;
-  clicktimestamp: string;
-  clicktimestampIso8601: string;
-  clickcount: number;
-  clicktrend: number;
-  sslError: number;
-  geoLat: number;
-  geoLong: number;
-  geoDistance: number;
-  hasExtendedInfo: number;
-
-  rank?: number
+  url: string | null;
+  urlResolved: string | null;
+  website: string | null;
+  favicon: string | null;
+  place: string | null;
+  countryId: string | null;
+  country: string | null;
+  countrycode: string | null;
+  tags: string | null;
+  language: string | null;
+  languagecodes: string | null;
+  votes: number | null;
+  codec: string | null;
+  bitrate: number | null;
+  hls: number | null;
+  lastcheckok: number | null;
+  clickcount: number | null;
+  geoLat: number | null;
+  geoLong: number | null;
+  sourceType: 'radio_browser' | 'radio_garden' | 'both';
+  catalogStatus: 'active' | 'unverified';
+  createdAt: string;
+  updatedAt: string;
+  rank?: number;
 }
 
 // 分页查询参数
@@ -83,7 +70,7 @@ export interface PageQueryDTO {
 
 // 电台查询参数
 export interface StationQuery {
-  id?: number;
+  id?: string;
   name?: string;
   country?: string;
   language?: string;

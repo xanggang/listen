@@ -1,4 +1,4 @@
-// 构建时配置。API_BASE_URL 是服务根地址，不包含 /api/v1。
+// 构建时配置。API_BASE_URL 是服务根地址，不包含 /api。
 class AppConfig {
   const AppConfig._();
 

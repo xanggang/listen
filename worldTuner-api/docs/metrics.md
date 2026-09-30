@@ -1,6 +1,6 @@
 # 匿名访问量统计
 
-首版只统计页面访问量，不建立账户、设备档案或行为轨迹。Web 与 Android 在本机各保存一个随机 UUID；一次页面进入向 `POST /api/v1/metrics/visit` 发送 `visitorId`、`source` 和固定 `page`。不传 URL 查询参数、搜索词、播放内容、IP、地理位置或设备信息。Web 通过同源 `/api/metrics/visit` 转发到独立 Worker；Android 直接请求 Worker。未来 iOS 接入时需要扩展 `source` 白名单和契约。
+首版只统计页面访问量，不建立账户、设备档案或行为轨迹。Web 与 Android 在本机各保存一个随机 UUID；一次页面进入向 `POST /api/metrics/visit` 发送 `visitorId`、`source` 和固定 `page`。不传 URL 查询参数、搜索词、播放内容、IP、地理位置或设备信息。Android 直接请求新 API；旧 Web 转发尚需同步接口地址。未来 iOS 接入时需要扩展 `source` 白名单和契约。
 
 ## 口径
 
@@ -13,7 +13,7 @@ Worker 使用自己的 UTC 接收时间确定日期，分别对 `day + visitorId
 
 ## 本地验证
 
-新迁移 `0003_visit_metrics.sql` 只新增统计表，不修改电台表。启动本地 Worker 前运行：
+新迁移 `0002_visit_metrics.sql` 只新增统计表，不修改电台表。启动本地 Worker 前运行：
 
 ```sh
 cd /Users/lin/Documents/www/lin/worldtuner/worldTuner-api
@@ -24,7 +24,7 @@ pnpm dev
 可发送一次匿名访问：
 
 ```sh
-curl -X POST http://127.0.0.1:8787/api/v1/metrics/visit \
+curl -X POST http://127.0.0.1:8787/api/metrics/visit \
   -H 'Content-Type: application/json' \
   -d '{"visitorId":"8b9f4bb9-00cb-4b55-8b88-7db20822e618","source":"android","page":"map"}'
 ```
@@ -62,3 +62,5 @@ ORDER BY month DESC, source;
 ```
 
 本地可访问 `/cdn-cgi/handler/scheduled` 手动触发汇总。远程 D1 迁移和 Worker 部署必须分别审查后手动执行；日常测试不改生产数据库。当前没有统计展示页面或公开读取接口。
+
+SQLite API 将统计写入 `.local/metrics.sqlite`，电台库只读；启动时和每小时补做汇总。完整启动说明见 [新库接入文档](../../docs/api-mobile-new-catalog.md)。

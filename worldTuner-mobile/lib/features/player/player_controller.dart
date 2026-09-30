@@ -95,7 +95,7 @@ class PlayerController extends ChangeNotifier {
         AudioSource.uri(
           url,
           tag: MediaItem(
-            id: '${station.id}',
+            id: station.id,
             title: station.name,
             artist: [
               station.country,

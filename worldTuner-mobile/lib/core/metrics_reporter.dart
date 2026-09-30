@@ -51,7 +51,7 @@ class MetricsReporter {
     try {
       final visitorId = await (_visitorId ??= _loadVisitorId());
       final prefix = origin.path.replaceAll(RegExp(r'/$'), '');
-      final uri = origin.replace(path: '$prefix/api/v1/metrics/visit');
+      final uri = origin.replace(path: '$prefix/api/metrics/visit');
       await _client
           .post(
             uri,

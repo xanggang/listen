@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   audio_service: ^0.18.19
   http: ^1.6.0
+  path_provider: ^2.1.5
   just_audio: ^0.10.6
   just_audio_background: ^0.0.1-beta.17
   shared_preferences: ^2.5.5
@@ -25,7 +26,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/data/stations.json
     - assets/globe/
     - assets/images/aurora.jpg
     - assets/images/worldtuner-logo.png

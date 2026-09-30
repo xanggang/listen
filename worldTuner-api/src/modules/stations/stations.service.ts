@@ -2,28 +2,40 @@ import { ApiError } from '../../shared/errors.ts';
 import type { CatalogService } from '../catalog/catalog.service.ts';
 import type { StationRepository } from './stations.repository.ts';
 import type { StationQuery } from './stations.schema.ts';
-import { stationDto } from './stations.dto.ts';
+import { stationDto, streamDto } from './stations.dto.ts';
 
 export class StationService {
-  private repository: StationRepository;
-  private catalog: CatalogService;
-  /** 注入电台 repository 和分类服务，业务层不依赖路由框架。 */
+  private readonly repository: StationRepository;
+  private readonly catalog: CatalogService;
+  /**
+   * 注入电台和分类依赖；所有运行环境共用相同业务规则。
+   */
   constructor(repository: StationRepository, catalog: CatalogService) {
     this.repository = repository;
     this.catalog = catalog;
   }
-  /** 读取并映射电台详情，不存在时返回明确的业务异常。 */
-  async detail(id: number) {
+  /**
+   * 只返回公开电台；播放流和链接仅在详情请求时加载。
+   */
+  async detail(id: string) {
     const row = await this.repository.findById(id);
     if (!row) throw new ApiError(404, 'STATION_NOT_FOUND', 'Station not found');
-    return stationDto(row);
+    const [streams, links] = await Promise.all([
+      this.repository.streams(id),
+      this.repository.links(id),
+    ]);
+    return { ...stationDto(row), streams: streams.map(streamDto), links };
   }
-  /** 解析分类筛选并组装分页 DTO，通过额外一条记录确定 hasMore。 */
+  /**
+   * 校验关联分类后进行精确筛选；多读一条记录判断是否有下一页。
+   */
   async list(query: StationQuery) {
-    const language = await this.catalog.resolveName('languages', query.languagesId);
-    const tag = await this.catalog.resolveName('tags', query.tagsId);
-    const country = await this.catalog.resolveName('countries', query.countriesId);
-    const rows = await this.repository.findPage(query, { language, tag, country });
+    await Promise.all([
+      this.catalog.validateId('languages', query.languagesId),
+      this.catalog.validateId('tags', query.tagsId),
+      this.catalog.validateId('countries', query.countriesId),
+    ]);
+    const rows = await this.repository.findPage(query);
     const hasMore = rows.length > query.pageSize;
     return {
       list: rows.slice(0, query.pageSize).map(stationDto),

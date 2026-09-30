@@ -32,8 +32,8 @@ class LeaderboardPage extends StatefulWidget {
 // 榜首三台与下方分页列表共用当前 API 筛选条件。
 class _LeaderboardPageState extends State<LeaderboardPage> {
   int _scope = 0;
-  int? _languageId;
-  int? _tagId;
+  String? _languageId;
+  String? _tagId;
   late final Future<List<CatalogItem>> _languages;
   late final Future<List<CatalogItem>> _tags;
   late Future<StationPage> _topStations;
@@ -56,7 +56,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   }
 
   // 选择语言或流派字典项并刷新前三名。
-  void _selectFilter(int id) {
+  void _selectFilter(String id) {
     setState(() {
       if (_scope == 1) {
         _languageId = id;

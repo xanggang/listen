@@ -104,7 +104,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       requests
-          .lastWhere((uri) => uri.path == '/api/v1/stations')
+          .lastWhere((uri) => uri.path == '/api/stations')
           .queryParameters['tagsId'],
       '100',
     );
@@ -147,7 +147,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         requests
-            .lastWhere((uri) => uri.path == '/api/v1/stations')
+            .lastWhere((uri) => uri.path == '/api/stations')
             .queryParameters[parameter],
         id,
       );
@@ -158,7 +158,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       requests
-          .lastWhere((uri) => uri.path == '/api/v1/stations')
+          .lastWhere((uri) => uri.path == '/api/stations')
           .queryParameters
           .containsKey('languagesId'),
       isFalse,

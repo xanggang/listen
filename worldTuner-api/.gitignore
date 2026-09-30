@@ -4,3 +4,6 @@ dist/
 .dev.vars*
 .env*
 *.tsbuildinfo
+
+.local/
+!.env.sqlite.example

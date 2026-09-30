@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../core/aether_theme.dart';
@@ -41,17 +40,19 @@ class MapPage extends StatefulWidget {
 // 隔离 WebView 通信，并校验地球脚本传回的电台 id。
 class _MapPageState extends State<MapPage> {
   final WebViewController _webView = WebViewController();
-  final Map<int, MapPoint> _pointsById = {};
+  final Map<String, MapPoint> _pointsById = {};
   Timer? _loadTimeout;
   bool _globeReady = false;
   bool _pointsLoading = true;
+  bool _pointsFailed = false;
+  int _pointLoadVersion = 0;
   bool _error = false;
   String _theme = 'dark';
-  int? _selectedId;
+  String? _selectedId;
   Station? _selectedStation;
-  int? _shownPlayingStationId;
+  String? _shownPlayingStationId;
 
-  // 并行加载本地点位和地球页面，任一方完成后尝试同步数据。
+  // 并行加载 API 点位和地球页面，任一方完成后尝试同步数据。
   @override
   void initState() {
     super.initState();
@@ -128,36 +129,42 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-  // 在 isolate 中解析坐标快照，避免大量点位阻塞页面首帧。
+  // 一次读取全量快照并同步到地球，保留每个电台的独立点位。
   Future<void> _loadPoints() async {
+    final version = ++_pointLoadVersion;
+    // 开始新代次加载时清空旧点位，防止重试后混用不同请求结果。
     setState(() {
       _pointsLoading = true;
-      _error = false;
+      _pointsFailed = false;
+      _pointsById.clear();
     });
     try {
-      final raw = await rootBundle.loadString('assets/data/stations.json');
-      final points = await compute(MapPoint.parseSnapshot, raw);
-      if (!mounted) return;
+      final points = await widget.api.mapSnapshot();
+      if (!mounted || version != _pointLoadVersion) return;
+      // 验证后的完整快照统一替换，旧加载任务不能覆盖新的请求结果。
       setState(() {
-        _pointsById
-          ..clear()
-          ..addEntries(points.map((point) => MapEntry(point.id, point)));
+        _pointsById.addEntries(
+          points.map(
+            // 字符串 ID 不数值化，同坐标电台仍分别保留。
+            (point) => MapEntry(point.id, point),
+          ),
+        );
         _pointsLoading = false;
       });
-      unawaited(_syncPoints());
-      _syncPlayingStation(force: true);
+      await _syncPoints();
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted || version != _pointLoadVersion) return;
+      // 点位失败独立于地球初始化状态，页面就绪消息不能掩盖 API 错误。
       setState(() {
         _pointsLoading = false;
-        _error = true;
+        _pointsFailed = true;
       });
     }
   }
 
-  // 地球和快照都就绪后，一次性把每个有效电台的经纬度传给地球。
+  // 地球和 API 就绪后同步完整点位；空快照也同步，清除已经下架的旧点。
   Future<void> _syncPoints() async {
-    if (!_globeReady || _pointsLoading || _pointsById.isEmpty) return;
+    if (!_globeReady || _pointsLoading) return;
     final stations = _pointsById.values
         .map(
           (point) => {
@@ -270,7 +277,7 @@ class _MapPageState extends State<MapPage> {
       _error = false;
     });
     _shownPlayingStationId = null;
-    if (_pointsById.isEmpty) unawaited(_loadPoints());
+    unawaited(_loadPoints());
     if (AppConfig.mapTilerKey.isNotEmpty) {
       unawaited(_webView.reload());
     }
@@ -331,7 +338,7 @@ class _MapPageState extends State<MapPage> {
           ),
         if (!hasKey)
           Center(child: Text(widget.text.get('mapKeyMissing')))
-        else if (_error)
+        else if (_error || _pointsFailed)
           Center(
             child: FilledButton.icon(
               onPressed: _retry,

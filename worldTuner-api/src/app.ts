@@ -5,13 +5,15 @@ import { requestContext } from './middleware/context.ts';
 import { corsPolicy } from './middleware/cors.ts';
 import { requestRateLimit } from './middleware/rate-limit.ts';
 import { errorHandler } from './middleware/errors.ts';
-import { v1 } from './routes/v1.ts';
+import { apiRoutes } from './routes/api.ts';
 
 export const app = new Hono<AppEnv>();
 app.use('*', requestContext, corsPolicy, requestRateLimit);
-app.route('/api/v1', v1);
+app.route('/api', apiRoutes);
 app.notFound(
-  /** 为未注册路径返回 404，并拒绝统计入口之外的写入方法。 */
+  /**
+   * 为未注册路径返回 404，并拒绝统计入口之外的写入方法。
+   */
   (c) => {
     if (!['GET', 'HEAD', 'OPTIONS'].includes(c.req.method)) {
       c.header('Allow', 'GET, HEAD, OPTIONS');

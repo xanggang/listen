@@ -1,15 +1,20 @@
+import type { SqlDatabase } from '../../database/database.ts';
 import type { VisitRecord } from './metrics.types.ts';
 
 // 所有 SQL 均限定在独立统计表，不读取电台或用户业务数据。
 export class MetricsRepository {
-  private readonly db: D1Database;
+  private readonly db: SqlDatabase;
 
-  /** 注入当前 Worker 的 D1 绑定。 */
-  constructor(db: D1Database) {
+  /**
+   * 注入独立统计库或 Worker 数据库绑定。
+   */
+  constructor(db: SqlDatabase) {
     this.db = db;
   }
 
-  /** 原子写入一次 PV 与日、月去重值；重复访问只增加 PV。 */
+  /**
+   * 原子写入一次 PV 与日、月去重值；重复访问只增加 PV。
+   */
   async recordVisit(record: VisitRecord): Promise<void> {
     await this.db.batch([
       this.db
@@ -31,7 +36,9 @@ export class MetricsRepository {
     ]);
   }
 
-  /** 每天重算已结束日期和月份，再清理超过保留期的匿名去重值。 */
+  /**
+   * 每天重算已结束日期和月份，再清理超过保留期的匿名去重值。
+   */
   async rollup(
     currentDay: string,
     currentMonth: string,

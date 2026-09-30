@@ -23,7 +23,7 @@ class CatalogPicker extends StatefulWidget {
   final AppText text;
   final String kind;
   final String title;
-  final int? selectedId;
+  final String? selectedId;
   final ValueChanged<CatalogItem> onSelected;
   final VoidCallback onClear;
 

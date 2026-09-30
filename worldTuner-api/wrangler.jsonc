@@ -1,14 +1,14 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "listen-api",
+  "name": "worldtuner-api",
   "main": "src/index.ts",
   "compatibility_date": "2025-12-01",
   "observability": { "enabled": true },
-  "vars": { "ALLOWED_ORIGINS": "http://localhost:3000,http://127.0.0.1:3000" },
+  "vars": { "MAP_SNAPSHOT_CACHE_TTL_SECONDS": "300", "ALLOWED_ORIGINS": "http://localhost:3000,http://127.0.0.1:3000" },
   "d1_databases": [{
     "binding": "DB",
-    "database_name": "listen",
-    "database_id": "8b3bfe83-4091-4dbb-b199-6d42b3babf71",
+    "database_name": "worldtuner",
+    "database_id": "00000000-0000-0000-0000-000000000000",
     "migrations_dir": "migrations"
   }],
   "ratelimits": [

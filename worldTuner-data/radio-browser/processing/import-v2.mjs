@@ -1,12 +1,15 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { DatabaseSync } from 'node:sqlite';
 import { createSnowflakeIdGenerator } from '../../v2/src/snowflake-id.mjs';
+import { normalizeTag, proposeTag } from './report-tags.mjs';
 
 const defaultSource = fileURLToPath(new URL('../data/radio-browser.sqlite', import.meta.url));
 const defaultTarget = fileURLToPath(new URL('../../v2/data/worldtuner-v2.sqlite', import.meta.url));
+const tagRulesPath = new URL('./tag-cleaning-rules.json', import.meta.url);
+const tagTranslationsPath = new URL('./tag-names.zh-CN.json', import.meta.url);
 const stationFields = ['name', 'website', 'favicon', 'country_id', 'place', 'votes', 'clickcount'];
 
 /**
@@ -182,6 +185,12 @@ export function importRadioBrowser(
   if (!existsSync(sourceFile)) throw new Error(`找不到 Radio Browser 原始库：${sourceFile}`);
   if (!existsSync(targetFile)) throw new Error(`找不到 V2 数据库：${targetFile}`);
   const nextId = createSnowflakeIdGenerator({ workerId: options.workerId });
+  const tagRules = JSON.parse(readFileSync(tagRulesPath, 'utf8'));
+  const tagTranslations = JSON.parse(readFileSync(tagTranslationsPath, 'utf8'));
+  const tagAliases = new Map();
+  for (const [targetName, names] of Object.entries(tagRules.aliases)) {
+    for (const name of names) tagAliases.set(normalizeTag(name), targetName);
+  }
   const source = new DatabaseSync(sourceFile, { readOnly: true });
   const target = new DatabaseSync(targetFile);
   let sourceTransaction = false;
@@ -222,6 +231,17 @@ export function importRadioBrowser(
     if (!groups.size) throw new Error('没有可导入且有名称的 Radio Browser 电台。');
     target.exec('BEGIN IMMEDIATE');
     targetTransaction = true;
+    // 兼容已有 V2 文件，为中文展示名补列；失败时与整批导入一起回滚。
+    if (
+      !target
+        .prepare('PRAGMA table_info(tag)')
+        .all()
+        .some((row) => row.name === 'name_zh')
+    ) {
+      target.exec(
+        'ALTER TABLE tag ADD COLUMN name_zh TEXT CHECK (name_zh IS NULL OR length(trim(name_zh)) > 0)',
+      );
+    }
     target.exec(
       'CREATE UNIQUE INDEX IF NOT EXISTS idx_language_code_unique ON language(code) WHERE code IS NOT NULL',
     );
@@ -276,7 +296,7 @@ export function importRadioBrowser(
       "SELECT 1 FROM station_stream WHERE station_id = ? AND url = ? AND coalesce(resolved_url, '') = ? LIMIT 1",
     );
     const insertTag = target.prepare(
-      'INSERT INTO tag (id, name, normalized_name) VALUES (?, ?, ?)',
+      'INSERT INTO tag (id, name, normalized_name, name_zh) VALUES (?, ?, ?, ?)',
     );
     const insertStationTag = target.prepare(
       'INSERT OR IGNORE INTO station_tag (station_id, tag_id) VALUES (?, ?)',
@@ -420,11 +440,13 @@ export function importRadioBrowser(
       }
       for (const row of rows) {
         for (const name of splitValues(row.tags)) {
-          const normalized = name.toLocaleLowerCase();
+          const proposal = proposeTag(name, tagRules, tagAliases);
+          if (proposal.action === 'ignore') continue;
+          const normalized = proposal.target ?? normalizeTag(name);
           let tagId = tagIds.get(normalized);
           if (!tagId) {
             tagId = nextId();
-            insertTag.run(tagId, name, normalized);
+            insertTag.run(tagId, normalized, normalized, tagTranslations[normalized] ?? null);
             tagIds.set(normalized, tagId);
             stats.tags++;
           }

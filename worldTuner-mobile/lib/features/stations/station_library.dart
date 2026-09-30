@@ -29,7 +29,7 @@ class StationLibrary extends ChangeNotifier {
   }
 
   // 查询电台是否被当前设备收藏。
-  bool isFavorite(int id) => _favorites.any((station) => station.id == id);
+  bool isFavorite(String id) => _favorites.any((station) => station.id == id);
 
   // 切换收藏状态并持久化，首版不依赖账户或写入 API。
   Future<void> toggleFavorite(Station station) async {

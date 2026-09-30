@@ -5,6 +5,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/api_client.dart';
+import 'core/map_snapshot_cache.dart';
 import 'core/app_config.dart';
 import 'core/app_text.dart';
 import 'core/aether_theme.dart';
@@ -72,7 +73,7 @@ class _WorldTunerAppState extends State<WorldTunerApp>
   late final Uri? _apiOrigin = AppConfig.apiOrigin;
   late final ApiClient? _api = _apiOrigin == null
       ? null
-      : ApiClient(origin: _apiOrigin);
+      : ApiClient(origin: _apiOrigin, snapshotCache: FileMapSnapshotCache());
   late final PlayerController _player = PlayerController(widget.library);
   late bool _entered = widget.entry.entered;
   bool _entering = false;

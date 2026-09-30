@@ -1,0 +1,17 @@
+{
+  "applied": true,
+  "before": {
+    "tags": 11982,
+    "stationTags": 136430
+  },
+  "after": {
+    "tags": 11222,
+    "stationTags": 119017
+  },
+  "ignoredTags": 308,
+  "mergedTags": 452,
+  "reviewTagsKept": 10803,
+  "associationsRemoved": 17413,
+  "backupPath": "/Users/lin/Documents/www/lin/worldtuner/worldTuner-data/v2/data/worldtuner-v2-tags-2026-09-30T08-26-56.903Z.sqlite",
+  "translatedTags": 419
+}

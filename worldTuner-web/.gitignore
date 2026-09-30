@@ -52,5 +52,5 @@ next-env.d.ts
 !.dev.vars.example
 .idea
 
-# 未被引用的历史 mock 快照；地图以 public/data.json 为准。
+# 未被引用的历史 mock 快照；地图从 /api/map/snapshot 获取全量点位。
 /src/types/mocl.ts

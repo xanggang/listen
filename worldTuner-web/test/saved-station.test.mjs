@@ -3,7 +3,7 @@ import test from 'node:test';
 import { readSavedStations, toPlayableStation } from '../src/lib/saved-station.ts';
 
 const station = {
-  id: 7,
+  id: '0363513228099059707',
   name: '  Radio Seven  ',
   url: 'https://example.com/live',
   urlResolved: '',
@@ -29,7 +29,7 @@ test('忽略坏协议、无效 id 和损坏的单条记录',
     assert.equal(toPlayableStation({ ...station, id: 0 }), null);
     assert.equal(toPlayableStation({ ...station, url: 'javascript:alert(1)' }), null);
     const restored = readSavedStations([null, station, { ...station, id: 0 }], 30);
-    assert.deepEqual(restored.map((item) => item.id), [7]);
+    assert.deepEqual(restored.map((item) => item.id), ['0363513228099059707']);
   },
 );
 
@@ -39,8 +39,8 @@ test('恢复时按 id 去重并遵守长度上限',
     const restored = readSavedStations([
       station,
       { ...station, name: 'Duplicate' },
-      { ...station, id: 8 },
+      { ...station, id: '0363513228099059708' },
     ], 1);
-    assert.deepEqual(restored.map((item) => item.id), [7]);
+    assert.deepEqual(restored.map((item) => item.id), ['0363513228099059707']);
   },
 );

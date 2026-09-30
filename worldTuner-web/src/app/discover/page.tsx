@@ -12,20 +12,24 @@ import type { Countries, Languages, Tags } from '@/types';
 
 type Scope = 'all' | 'genres' | 'countries' | 'languages';
 
-/** 按安卓端发现页组织搜索、精选、流派卡片与真实电台列表。 */
+/**
+ * 按安卓端发现页组织搜索、精选、流派卡片与真实电台列表。
+ */
 export default function DiscoverPage() {
   const t = useTranslations('discover');
   const [keyword, setKeyword] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [scope, setScope] = useState<Scope>('all');
-  const [tagId, setTagId] = useState<number>();
-  const [languageId, setLanguageId] = useState<number>();
-  const [countryId, setCountryId] = useState<number>();
+  const [tagId, setTagId] = useState<string>();
+  const [languageId, setLanguageId] = useState<string>();
+  const [countryId, setCountryId] = useState<string>();
   const [tags, setTags] = useState<Tags[]>([]);
   const [languages, setLanguages] = useState<Languages[]>([]);
   const [countries, setCountries] = useState<Countries[]>([]);
   const playStation = useStationStore(
-    /** 只订阅选台动作，避免发现页随播放状态重渲染。 */
+    /**
+ * 只订阅选台动作，避免发现页随播放状态重渲染。
+ */
     (state) => state.playStation,
   );
   const { stations, loading, hasMore, error, loadMore } = useStations({
@@ -36,7 +40,9 @@ export default function DiscoverPage() {
   }, 20);
 
   useEffect(
-    /** 分类字典只用于真实过滤项，失败时保留搜索与电台列表。 */
+    /**
+ * 分类字典只用于真实过滤项，失败时保留搜索与电台列表。
+ */
     () => {
       // 分类读取失败时不显示该维度的选项，其余页面仍可使用。
       void getTopTags().then(setTags).catch(() => undefined);
@@ -47,14 +53,20 @@ export default function DiscoverPage() {
   );
 
   useEffect(
-    /** 搜索输入 500ms 后应用，提交按钮仍可立即查询。 */
+    /**
+ * 搜索输入 500ms 后应用，提交按钮仍可立即查询。
+ */
     () => {
       const timer = setTimeout(
-        /** 输入稳定后应用过滤词。 */
+        /**
+ * 输入稳定后应用过滤词。
+ */
         () => setSearchTerm(keyword.trim()),
         500,
       );
-      /** 输入变化或页面卸载时取消旧计时器。 */
+      /**
+ * 输入变化或页面卸载时取消旧计时器。
+ */
       return () => clearTimeout(timer);
     },
     [keyword],
@@ -76,25 +88,33 @@ export default function DiscoverPage() {
         <SearchInput keyword={keyword} onKeywordChange={setKeyword} onSearch={setSearchTerm} placeholder={t('placeholder')} />
         <div className="aether-chip-row discover-scopes" aria-label={t('browseCategories')}>
           {(['all', 'genres', 'countries', 'languages'] as const).map(
-            /** 切换分类时保留各类别的当前选择，列表条件随之变化。 */
+            /**
+ * 切换分类时保留各类别的当前选择，列表条件随之变化。
+ */
             (value) => <button key={value} className="aether-chip" type="button" aria-pressed={scope === value} onClick={() => setScope(value)}>{t(value)}</button>,
           )}
         </div>
         {scope === 'genres' && <div className="aether-chip-row" aria-label={t('genres')}>
           {tags.map(
-            /** 使用标签 id 过滤 API 列表，名称只用于展示。 */
+            /**
+ * 使用标签 id 过滤 API 列表，名称只用于展示。
+ */
             (tag) => <button key={tag.id} className="aether-chip" type="button" aria-pressed={tagId === tag.id} onClick={() => setTagId(tag.id)}>{tag.name}</button>,
           )}
         </div>}
         {scope === 'languages' && <div className="aether-chip-row" aria-label={t('languages')}>
           {languages.map(
-            /** 使用语言 id 过滤 API 列表。 */
+            /**
+ * 使用语言 id 过滤 API 列表。
+ */
             (language) => <button key={language.id} className="aether-chip" type="button" aria-pressed={languageId === language.id} onClick={() => setLanguageId(language.id)}>{language.name}</button>,
           )}
         </div>}
         {scope === 'countries' && <div className="aether-chip-row" aria-label={t('countries')}>
           {countries.map(
-            /** 使用国家 id 过滤 API 列表，与安卓端分类一致。 */
+            /**
+ * 使用国家 id 过滤 API 列表，与安卓端分类一致。
+ */
             (country) => <button key={country.id} className="aether-chip" type="button" aria-pressed={countryId === country.id} onClick={() => setCountryId(country.id)}>{country.name}</button>,
           )}
         </div>}
@@ -115,7 +135,9 @@ export default function DiscoverPage() {
           <div className="section-heading"><h2>{t('chooseGenre')}</h2><span>{t('genres')}</span></div>
           <div className="genre-grid">
             {tags.slice(0, 6).map(
-              /** 热门流派卡片直接切换真实标签过滤。 */
+              /**
+ * 热门流派卡片直接切换真实标签过滤。
+ */
               (tag, index) => <button key={tag.id} className="genre-card aether-card" type="button" onClick={() => { setTagId(tag.id); setScope('genres'); }}>
                 <span className={`genre-card__icon genre-card__icon--${index % 3}`} aria-hidden="true">♫</span>
                 <strong>{tag.name}</strong>

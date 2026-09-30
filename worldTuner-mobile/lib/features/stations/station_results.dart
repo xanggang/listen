@@ -31,9 +31,9 @@ class StationResults extends StatefulWidget {
   final AppText text;
   final Widget? header;
   final String? keyword;
-  final int? languageId;
-  final int? tagId;
-  final int? countryId;
+  final String? languageId;
+  final String? tagId;
+  final String? countryId;
   final bool showRank;
   final int skipFirst;
 

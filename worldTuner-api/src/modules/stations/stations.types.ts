@@ -1,39 +1,45 @@
 export interface StationRow {
-  id: number;
-  changeuuid: string | null;
-  stationuuid: string | null;
-  name: string | null;
-  url: string | null;
-  url_resolved: string | null;
-  homepage: string | null;
+  id: string;
+  name: string;
+  website: string | null;
   favicon: string | null;
-  tags: string | null;
+  place: string | null;
+  country_id: string | null;
   country: string | null;
   countrycode: string | null;
-  iso_3166_2: string | null;
-  state: string | null;
-  language: string | null;
-  languagecodes: string | null;
+  geo_lat: number | null;
+  geo_long: number | null;
   votes: number | null;
-  lastchangetime: string | null;
-  lastchangetime_iso8601: string | null;
+  clickcount: number | null;
+  source_type: string;
+  catalog_status: string;
+  created_at: string;
+  updated_at: string;
+  url: string | null;
+  url_resolved: string | null;
   codec: string | null;
   bitrate: number | null;
   hls: number | null;
   lastcheckok: number | null;
-  lastchecktime: string | null;
-  lastchecktime_iso8601: string | null;
-  lastcheckoktime: string | null;
-  lastcheckoktime_iso8601: string | null;
-  lastlocalchecktime: string | null;
-  lastlocalchecktime_iso8601: string | null;
-  clicktimestamp: string | null;
-  clicktimestamp_iso8601: string | null;
-  clickcount: number | null;
-  clicktrend: number | null;
-  ssl_error: number | null;
-  geo_lat: number | null;
-  geo_long: number | null;
-  geo_distance: number | null;
-  has_extended_info: number | null;
+  tags: string | null;
+  language: string | null;
+  languagecodes: string | null;
+}
+export interface StreamRow {
+  id: string;
+  station_id: string;
+  url: string;
+  resolved_url: string | null;
+  codec: string | null;
+  bitrate: number | null;
+  is_hls: number | null;
+  is_primary: number;
+  last_check_ok: number | null;
+  last_checked_at: string | null;
+  resolved_at: string | null;
+}
+export interface LinkRow {
+  id: string;
+  platform: string;
+  url: string;
 }

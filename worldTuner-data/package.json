@@ -9,6 +9,8 @@
   "scripts": {
     "sync:radio-browser": "node radio-browser/src/sync.mjs",
     "process:radio-browser:v2": "node radio-browser/processing/import-v2.mjs",
+    "report:radio-browser:tags": "node radio-browser/processing/report-tags.mjs",
+    "clean:radio-browser:tags": "node radio-browser/processing/clean-tags.mjs",
     "test:radio-browser": "node --test radio-browser/test/*.test.mjs",
     "test": "node --test */test/*.test.mjs",
     "fetch:radio-garden": "node radio-garden/src/fetch-places.mjs",

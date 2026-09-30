@@ -1,0 +1,3806 @@
+[
+  {
+    "key": "pop",
+    "nameZh": "流行音乐",
+    "stationCount": 6246,
+    "originalNames": [
+      "pop",
+      "pop en español e inglés",
+      "pop en inglés",
+      "pop en español",
+      "поп",
+      "популярная музыка",
+      "music pop",
+      "流行音乐"
+    ]
+  },
+  {
+    "key": "news",
+    "nameZh": "新闻",
+    "stationCount": 3140,
+    "originalNames": [
+      "news",
+      "noticias en español",
+      "noticias nacionales e internacionales",
+      "noticias cortas",
+      "noticieros",
+      "新闻",
+      "новости",
+      "вести",
+      "music news",
+      "musica news",
+      "news music",
+      "новини",
+      "اخبار",
+      "خبر"
+    ]
+  },
+  {
+    "key": "rock",
+    "nameZh": "摇滚",
+    "stationCount": 2998,
+    "originalNames": [
+      "rock",
+      "рок",
+      "rock music"
+    ]
+  },
+  {
+    "key": "talk",
+    "nameZh": "谈话节目",
+    "stationCount": 1992,
+    "originalNames": [
+      "talk",
+      "talk & speech",
+      "talk radio",
+      "hablada",
+      "spoken word",
+      "speech",
+      "разговорное",
+      "разговорный",
+      "разговор",
+      "聊天",
+      "谈话"
+    ]
+  },
+  {
+    "key": "hits",
+    "nameZh": "热门歌曲",
+    "stationCount": 1869,
+    "originalNames": [
+      "hits",
+      "top hits",
+      "charts",
+      "top charts",
+      "greatest hits",
+      "éxitos",
+      "party hits",
+      "хиты"
+    ]
+  },
+  {
+    "key": "entertainment",
+    "nameZh": "娱乐",
+    "stationCount": 1746,
+    "originalNames": [
+      "entertainment"
+    ]
+  },
+  {
+    "key": "dance",
+    "nameZh": "舞曲",
+    "stationCount": 1556,
+    "originalNames": [
+      "dance",
+      "dance music",
+      "танцевальная",
+      "танцевальная музыка",
+      "música dance",
+      "танцевальный"
+    ]
+  },
+  {
+    "key": "oldies",
+    "nameZh": "怀旧金曲",
+    "stationCount": 1544,
+    "originalNames": [
+      "oldies",
+      "música del recuerdo",
+      "goldies",
+      "golden oldies",
+      "throwbacks",
+      "хиты прошлых лет",
+      "怀旧"
+    ]
+  },
+  {
+    "key": "80s",
+    "nameZh": "八十年代音乐",
+    "stationCount": 1463,
+    "originalNames": [
+      "80s",
+      "1980's",
+      "anni 80",
+      "80-е",
+      "80-s"
+    ]
+  },
+  {
+    "key": "classical",
+    "nameZh": "古典音乐",
+    "stationCount": 1399,
+    "originalNames": [
+      "classical",
+      "classical music",
+      "klassik",
+      "классическая музыка",
+      "古典音乐"
+    ]
+  },
+  {
+    "key": "eclectic",
+    "nameZh": "多元音乐",
+    "stationCount": 1356,
+    "originalNames": [
+      "música variada",
+      "misc",
+      "eclectic",
+      "various",
+      "mix",
+      "miscellaneous",
+      "various music",
+      "eclética",
+      "musica variada",
+      "разная музыка",
+      "смешанный",
+      "разное",
+      "eclectic music"
+    ]
+  },
+  {
+    "key": "90s",
+    "nameZh": "九十年代音乐",
+    "stationCount": 1182,
+    "originalNames": [
+      "90s",
+      "1990's",
+      "90-е",
+      "90’s",
+      "anni 90",
+      "90-s",
+      "90s music"
+    ]
+  },
+  {
+    "key": "jazz",
+    "nameZh": "爵士",
+    "stationCount": 1138,
+    "originalNames": [
+      "jazz",
+      "jazz music",
+      "джаз"
+    ]
+  },
+  {
+    "key": "electronic",
+    "nameZh": "电子音乐",
+    "stationCount": 1134,
+    "originalNames": [
+      "electronic",
+      "electronica",
+      "electronic music",
+      "электронная",
+      "электронная музыка",
+      "электроника"
+    ]
+  },
+  {
+    "key": "top 40",
+    "nameZh": "流行榜单前四十",
+    "stationCount": 1129,
+    "originalNames": [
+      "top 40",
+      "top 40 hits"
+    ]
+  },
+  {
+    "key": "classic hits",
+    "nameZh": "经典热门歌曲",
+    "stationCount": 1107,
+    "originalNames": [
+      "classic hits",
+      "clásicos",
+      "classics",
+      "clásicos en inglés",
+      "clásicos en español",
+      "retro hits",
+      "classichits"
+    ]
+  },
+  {
+    "key": "public radio",
+    "nameZh": "公共广播",
+    "stationCount": 1007,
+    "originalNames": [
+      "public radio",
+      "public",
+      "radio pública",
+      "pública"
+    ]
+  },
+  {
+    "key": "christian",
+    "nameZh": "基督教",
+    "stationCount": 988,
+    "originalNames": [
+      "christian",
+      "cristiana",
+      "radio cristiana",
+      "християнство",
+      "христианская радиостанция"
+    ]
+  },
+  {
+    "key": "community radio",
+    "nameZh": "社区广播",
+    "stationCount": 960,
+    "originalNames": [
+      "community radio",
+      "community",
+      "radio comunitaria",
+      "community-radio",
+      "コミュニティfm"
+    ]
+  },
+  {
+    "key": "classic rock",
+    "nameZh": "经典摇滚",
+    "stationCount": 877,
+    "originalNames": [
+      "classic rock",
+      "classic rock music",
+      "classic-rock",
+      "classicrock"
+    ]
+  },
+  {
+    "key": "adult contemporary",
+    "nameZh": "成人当代音乐",
+    "stationCount": 851,
+    "originalNames": [
+      "adult contemporary",
+      "adult contemporary music",
+      "adult-contemporary"
+    ]
+  },
+  {
+    "key": "local news",
+    "nameZh": "本地新闻",
+    "stationCount": 849,
+    "originalNames": [
+      "local news",
+      "местные новости"
+    ]
+  },
+  {
+    "key": "local radio",
+    "nameZh": "本地广播",
+    "stationCount": 778,
+    "originalNames": [
+      "local radio",
+      "radio locale",
+      "radio local",
+      "地方台"
+    ]
+  },
+  {
+    "key": "country",
+    "nameZh": "乡村音乐",
+    "stationCount": 748,
+    "originalNames": [
+      "country",
+      "country music",
+      "música country"
+    ]
+  },
+  {
+    "key": "pop rock",
+    "nameZh": "流行摇滚",
+    "stationCount": 740,
+    "originalNames": [
+      "pop rock",
+      "poprock",
+      "поп-рок"
+    ]
+  },
+  {
+    "key": "house",
+    "nameZh": "浩室音乐",
+    "stationCount": 735,
+    "originalNames": [
+      "house",
+      "house music"
+    ]
+  },
+  {
+    "key": "folk",
+    "nameZh": "民谣",
+    "stationCount": 724,
+    "originalNames": [
+      "folk",
+      "folk music",
+      "folklore",
+      "фолк",
+      "народне",
+      "народна",
+      "фолклор"
+    ]
+  },
+  {
+    "key": "70s",
+    "nameZh": "七十年代音乐",
+    "stationCount": 707,
+    "originalNames": [
+      "70s",
+      "anni 70"
+    ]
+  },
+  {
+    "key": "alternative",
+    "nameZh": "另类音乐",
+    "stationCount": 660,
+    "originalNames": [
+      "alternative"
+    ]
+  },
+  {
+    "key": "information",
+    "nameZh": "资讯",
+    "stationCount": 634,
+    "originalNames": [
+      "information",
+      "información",
+      "informativa",
+      "info",
+      "информационное",
+      "информационный"
+    ]
+  },
+  {
+    "key": "hip hop",
+    "nameZh": "嘻哈",
+    "stationCount": 627,
+    "originalNames": [
+      "hip hop",
+      "хип-хоп"
+    ]
+  },
+  {
+    "key": "sports",
+    "nameZh": "体育",
+    "stationCount": 621,
+    "originalNames": [
+      "sports",
+      "deportes",
+      "спорт"
+    ]
+  },
+  {
+    "key": "chillout",
+    "nameZh": "舒缓音乐",
+    "stationCount": 561,
+    "originalNames": [
+      "chillout",
+      "chill",
+      "чилаут",
+      "chill out",
+      "chill-out"
+    ]
+  },
+  {
+    "key": "regional mexican",
+    "nameZh": "墨西哥地方音乐",
+    "stationCount": 528,
+    "originalNames": [
+      "regional mexican",
+      "musica regional mexicana"
+    ]
+  },
+  {
+    "key": "religious",
+    "nameZh": "宗教",
+    "stationCount": 492,
+    "originalNames": [
+      "religious",
+      "religion",
+      "דתי",
+      "دين"
+    ]
+  },
+  {
+    "key": "2000s",
+    "nameZh": "二〇〇〇年代音乐",
+    "stationCount": 490,
+    "originalNames": [
+      "2000s"
+    ]
+  },
+  {
+    "key": "variety",
+    "nameZh": "综合节目",
+    "stationCount": 485,
+    "originalNames": [
+      "variety",
+      "music variety"
+    ]
+  },
+  {
+    "key": "culture",
+    "nameZh": "文化",
+    "stationCount": 464,
+    "originalNames": [
+      "culture",
+      "cultural",
+      "cultura"
+    ]
+  },
+  {
+    "key": "news talk",
+    "nameZh": "新闻谈话节目",
+    "stationCount": 464,
+    "originalNames": [
+      "news talk",
+      "noticias y comentarios",
+      "noticias opinion",
+      "newstalk",
+      "news & talk"
+    ]
+  },
+  {
+    "key": "mexican music",
+    "nameZh": "墨西哥音乐",
+    "stationCount": 459,
+    "originalNames": [
+      "música popular mexicana",
+      "mexican music",
+      "música mexicana",
+      "musica mexicana"
+    ]
+  },
+  {
+    "key": "soul",
+    "nameZh": "灵魂乐",
+    "stationCount": 435,
+    "originalNames": [
+      "soul",
+      "soul music",
+      "соул"
+    ]
+  },
+  {
+    "key": "metal",
+    "nameZh": "金属乐",
+    "stationCount": 430,
+    "originalNames": [
+      "metal",
+      "металл",
+      "metal music"
+    ]
+  },
+  {
+    "key": "r&b",
+    "nameZh": "节奏布鲁斯",
+    "stationCount": 427,
+    "originalNames": [
+      "r&b",
+      "r&b music",
+      "r & b"
+    ]
+  },
+  {
+    "key": "indie",
+    "nameZh": "独立音乐",
+    "stationCount": 416,
+    "originalNames": [
+      "indie",
+      "indie music",
+      "инди"
+    ]
+  },
+  {
+    "key": "regional music",
+    "nameZh": "地方音乐",
+    "stationCount": 399,
+    "originalNames": [
+      "música regional",
+      "regional music",
+      "musica regional"
+    ]
+  },
+  {
+    "key": "easy listening",
+    "nameZh": "轻松聆听",
+    "stationCount": 392,
+    "originalNames": [
+      "easy listening",
+      "лëгкая музыка",
+      "easy-listening"
+    ]
+  },
+  {
+    "key": "retro",
+    "nameZh": "复古音乐",
+    "stationCount": 384,
+    "originalNames": [
+      "retro",
+      "retro music",
+      "ретро",
+      "música retro"
+    ]
+  },
+  {
+    "key": "techno",
+    "nameZh": "科技舞曲",
+    "stationCount": 381,
+    "originalNames": [
+      "techno"
+    ]
+  },
+  {
+    "key": "ambient",
+    "nameZh": "氛围音乐",
+    "stationCount": 379,
+    "originalNames": [
+      "ambient",
+      "ambient music"
+    ]
+  },
+  {
+    "key": "gospel",
+    "nameZh": "福音音乐",
+    "stationCount": 372,
+    "originalNames": [
+      "gospel",
+      "christian-gospel",
+      "gospel music"
+    ]
+  },
+  {
+    "key": "edm",
+    "nameZh": "电子舞曲",
+    "stationCount": 364,
+    "originalNames": [
+      "edm",
+      "electronic dance music"
+    ]
+  },
+  {
+    "key": "60s",
+    "nameZh": "六十年代音乐",
+    "stationCount": 356,
+    "originalNames": [
+      "60s",
+      "anni 60"
+    ]
+  },
+  {
+    "key": "regional radio",
+    "nameZh": "地区广播",
+    "stationCount": 356,
+    "originalNames": [
+      "regional radio"
+    ]
+  },
+  {
+    "key": "disco",
+    "nameZh": "迪斯科",
+    "stationCount": 352,
+    "originalNames": [
+      "disco",
+      "music disco"
+    ]
+  },
+  {
+    "key": "funk",
+    "nameZh": "放克",
+    "stationCount": 352,
+    "originalNames": [
+      "funk",
+      "funky",
+      "фанк"
+    ]
+  },
+  {
+    "key": "world music",
+    "nameZh": "世界音乐",
+    "stationCount": 350,
+    "originalNames": [
+      "world music",
+      "world",
+      "етно",
+      "этно",
+      "worldmusic"
+    ]
+  },
+  {
+    "key": "lounge",
+    "nameZh": "休闲沙龙音乐",
+    "stationCount": 347,
+    "originalNames": [
+      "lounge",
+      "lounge music"
+    ]
+  },
+  {
+    "key": "grupera",
+    "nameZh": "格鲁佩拉音乐",
+    "stationCount": 346,
+    "originalNames": [
+      "grupera"
+    ]
+  },
+  {
+    "key": "alternative rock",
+    "nameZh": "另类摇滚",
+    "stationCount": 332,
+    "originalNames": [
+      "alternative rock"
+    ]
+  },
+  {
+    "key": "blues",
+    "nameZh": "布鲁斯",
+    "stationCount": 331,
+    "originalNames": [
+      "blues",
+      "блюз",
+      "blues music"
+    ]
+  },
+  {
+    "key": "rap",
+    "nameZh": "说唱",
+    "stationCount": 329,
+    "originalNames": [
+      "rap",
+      "рэп"
+    ]
+  },
+  {
+    "key": "ballads",
+    "nameZh": "抒情歌曲",
+    "stationCount": 323,
+    "originalNames": [
+      "baladas en español",
+      "baladas",
+      "balada en español",
+      "balada",
+      "ballads",
+      "balladen"
+    ]
+  },
+  {
+    "key": "full service",
+    "nameZh": "综合服务广播",
+    "stationCount": 320,
+    "originalNames": [
+      "full service"
+    ]
+  },
+  {
+    "key": "romantic music",
+    "nameZh": "浪漫音乐",
+    "stationCount": 312,
+    "originalNames": [
+      "musica romantica",
+      "romantic",
+      "música romántica",
+      "romántica",
+      "románticas",
+      "romantic music",
+      "романтическая"
+    ]
+  },
+  {
+    "key": "traditional mexican music",
+    "nameZh": "墨西哥传统音乐",
+    "stationCount": 305,
+    "originalNames": [
+      "traditional mexican music",
+      "música tradicional mexicana",
+      "musica tradicional mexicana"
+    ]
+  },
+  {
+    "key": "contemporary hits",
+    "nameZh": "当代热门歌曲",
+    "stationCount": 300,
+    "originalNames": [
+      "contemporary hits",
+      "contemporary hits radio",
+      "chr",
+      "contemporary hit radio"
+    ]
+  },
+  {
+    "key": "relaxation",
+    "nameZh": "放松音乐",
+    "stationCount": 298,
+    "originalNames": [
+      "relax",
+      "relaxing",
+      "relaxation",
+      "relaxation music",
+      "расслабляющая",
+      "релакс"
+    ]
+  },
+  {
+    "key": "banda",
+    "nameZh": "班达音乐",
+    "stationCount": 295,
+    "originalNames": [
+      "banda"
+    ]
+  },
+  {
+    "key": "commercial",
+    "nameZh": "商业广播",
+    "stationCount": 294,
+    "originalNames": [
+      "commercial"
+    ]
+  },
+  {
+    "key": "youth",
+    "nameZh": "青年节目",
+    "stationCount": 292,
+    "originalNames": [
+      "juvenil",
+      "youth",
+      "youth programming"
+    ]
+  },
+  {
+    "key": "college radio",
+    "nameZh": "学院广播",
+    "stationCount": 285,
+    "originalNames": [
+      "college radio",
+      "student radio",
+      "college",
+      "campus radio"
+    ]
+  },
+  {
+    "key": "live programming",
+    "nameZh": "直播节目",
+    "stationCount": 278,
+    "originalNames": [
+      "programas en vivo"
+    ]
+  },
+  {
+    "key": "salsa",
+    "nameZh": "萨尔萨音乐",
+    "stationCount": 277,
+    "originalNames": [
+      "salsa"
+    ]
+  },
+  {
+    "key": "urban",
+    "nameZh": "都市音乐",
+    "stationCount": 276,
+    "originalNames": [
+      "urban",
+      "urbano",
+      "música urbana",
+      "urban music"
+    ]
+  },
+  {
+    "key": "electro",
+    "nameZh": "电气音乐",
+    "stationCount": 271,
+    "originalNames": [
+      "electro"
+    ]
+  },
+  {
+    "key": "smooth jazz",
+    "nameZh": "柔和爵士",
+    "stationCount": 262,
+    "originalNames": [
+      "smooth jazz",
+      "smoothjazz"
+    ]
+  },
+  {
+    "key": "christmas music",
+    "nameZh": "圣诞音乐",
+    "stationCount": 260,
+    "originalNames": [
+      "christmas music",
+      "christmas",
+      "weihnachten",
+      "коледа",
+      "коледна музика",
+      "коледно радио"
+    ]
+  },
+  {
+    "key": "trance",
+    "nameZh": "迷幻舞曲",
+    "stationCount": 260,
+    "originalNames": [
+      "trance",
+      "music trance"
+    ]
+  },
+  {
+    "key": "hot adult contemporary",
+    "nameZh": "热门成人当代音乐",
+    "stationCount": 258,
+    "originalNames": [
+      "hot adult contemporary",
+      "hot ac"
+    ]
+  },
+  {
+    "key": "hard rock",
+    "nameZh": "硬摇滚",
+    "stationCount": 254,
+    "originalNames": [
+      "hard rock",
+      "hardrock",
+      "hard-rock"
+    ]
+  },
+  {
+    "key": "reggae",
+    "nameZh": "雷鬼",
+    "stationCount": 254,
+    "originalNames": [
+      "reggae",
+      "реггей"
+    ]
+  },
+  {
+    "key": "deep house",
+    "nameZh": "深度浩室",
+    "stationCount": 248,
+    "originalNames": [
+      "deep house",
+      "deephouse",
+      "deep-house"
+    ]
+  },
+  {
+    "key": "news and music",
+    "nameZh": "新闻与音乐",
+    "stationCount": 241,
+    "originalNames": [
+      "música y noticias",
+      "noticias y música"
+    ]
+  },
+  {
+    "key": "tropical",
+    "nameZh": "热带拉丁音乐",
+    "stationCount": 237,
+    "originalNames": [
+      "tropical",
+      "música tropical",
+      "tropical music",
+      "musica tropical"
+    ]
+  },
+  {
+    "key": "mainstream",
+    "nameZh": "主流音乐",
+    "stationCount": 236,
+    "originalNames": [
+      "mainstream",
+      "mainstream music"
+    ]
+  },
+  {
+    "key": "latin pop",
+    "nameZh": "拉丁流行音乐",
+    "stationCount": 235,
+    "originalNames": [
+      "latin pop",
+      "pop latino"
+    ]
+  },
+  {
+    "key": "schlager",
+    "nameZh": "施拉格流行歌谣",
+    "stationCount": 234,
+    "originalNames": [
+      "schlager"
+    ]
+  },
+  {
+    "key": "reggaeton",
+    "nameZh": "雷鬼顿",
+    "stationCount": 233,
+    "originalNames": [
+      "reggaeton",
+      "reguetón"
+    ]
+  },
+  {
+    "key": "cumbia",
+    "nameZh": "昆比亚音乐",
+    "stationCount": 226,
+    "originalNames": [
+      "cumbia"
+    ]
+  },
+  {
+    "key": "university radio",
+    "nameZh": "大学广播",
+    "stationCount": 223,
+    "originalNames": [
+      "university radio",
+      "university",
+      "radio universitaria"
+    ]
+  },
+  {
+    "key": "traffic",
+    "nameZh": "交通资讯",
+    "stationCount": 220,
+    "originalNames": [
+      "traffic",
+      "traffic radio broadcast",
+      "traffic information",
+      "交通",
+      "交通广播"
+    ]
+  },
+  {
+    "key": "latin music",
+    "nameZh": "拉丁音乐",
+    "stationCount": 219,
+    "originalNames": [
+      "musica latina",
+      "latin music",
+      "musica latinoamericana"
+    ]
+  },
+  {
+    "key": "love songs",
+    "nameZh": "情歌",
+    "stationCount": 217,
+    "originalNames": [
+      "love songs",
+      "love",
+      "amor",
+      "lovesongs",
+      "love-songs"
+    ]
+  },
+  {
+    "key": "nostalgia",
+    "nameZh": "怀旧音乐",
+    "stationCount": 209,
+    "originalNames": [
+      "nostalgie",
+      "flashback",
+      "nostalgia"
+    ]
+  },
+  {
+    "key": "instrumental",
+    "nameZh": "器乐",
+    "stationCount": 202,
+    "originalNames": [
+      "instrumental",
+      "instrumental music",
+      "música instrumental"
+    ]
+  },
+  {
+    "key": "local music",
+    "nameZh": "本地音乐",
+    "stationCount": 199,
+    "originalNames": [
+      "local music"
+    ]
+  },
+  {
+    "key": "heavy metal",
+    "nameZh": "重金属",
+    "stationCount": 193,
+    "originalNames": [
+      "heavy metal",
+      "heavy-metal"
+    ]
+  },
+  {
+    "key": "contemporary music",
+    "nameZh": "当代音乐",
+    "stationCount": 182,
+    "originalNames": [
+      "contemporary",
+      "música actual",
+      "contemporary music",
+      "современная музыка"
+    ]
+  },
+  {
+    "key": "catholic",
+    "nameZh": "天主教",
+    "stationCount": 167,
+    "originalNames": [
+      "catholic",
+      "catholic radio",
+      "天主"
+    ]
+  },
+  {
+    "key": "pop dance",
+    "nameZh": "流行舞曲",
+    "stationCount": 166,
+    "originalNames": [
+      "pop dance",
+      "pop-dance"
+    ]
+  },
+  {
+    "key": "punk",
+    "nameZh": "朋克",
+    "stationCount": 162,
+    "originalNames": [
+      "punk",
+      "панк"
+    ]
+  },
+  {
+    "key": "2010s",
+    "nameZh": "二〇一〇年代音乐",
+    "stationCount": 161,
+    "originalNames": [
+      "2010s",
+      "10s",
+      "2010er",
+      "2010's",
+      "2010s music"
+    ]
+  },
+  {
+    "key": "club",
+    "nameZh": "俱乐部音乐",
+    "stationCount": 161,
+    "originalNames": [
+      "club",
+      "clubbing",
+      "клубная",
+      "клуб"
+    ]
+  },
+  {
+    "key": "kids",
+    "nameZh": "儿童节目",
+    "stationCount": 161,
+    "originalNames": [
+      "kids",
+      "children",
+      "детское",
+      "детям"
+    ]
+  },
+  {
+    "key": "soft rock",
+    "nameZh": "软摇滚",
+    "stationCount": 157,
+    "originalNames": [
+      "soft rock",
+      "softrock",
+      "софт-рок"
+    ]
+  },
+  {
+    "key": "indie rock",
+    "nameZh": "独立摇滚",
+    "stationCount": 154,
+    "originalNames": [
+      "indie rock",
+      "indie-rock",
+      "indierock",
+      "инди-рок"
+    ]
+  },
+  {
+    "key": "norteño",
+    "nameZh": "诺特尼奥音乐",
+    "stationCount": 152,
+    "originalNames": [
+      "norteño",
+      "norteña"
+    ]
+  },
+  {
+    "key": "drum and bass",
+    "nameZh": "鼓打贝斯",
+    "stationCount": 148,
+    "originalNames": [
+      "drum and bass",
+      "drum & bass",
+      "dnb",
+      "drum'n'bass",
+      "drumandbass"
+    ]
+  },
+  {
+    "key": "vallenato",
+    "nameZh": "瓦耶纳托音乐",
+    "stationCount": 148,
+    "originalNames": [
+      "vallenato"
+    ]
+  },
+  {
+    "key": "banda norteña",
+    "nameZh": "北部班达音乐",
+    "stationCount": 147,
+    "originalNames": [
+      "banda norteña"
+    ]
+  },
+  {
+    "key": "eurodance",
+    "nameZh": "欧洲舞曲",
+    "stationCount": 147,
+    "originalNames": [
+      "eurodance"
+    ]
+  },
+  {
+    "key": "experimental",
+    "nameZh": "实验音乐",
+    "stationCount": 146,
+    "originalNames": [
+      "experimental"
+    ]
+  },
+  {
+    "key": "progressive rock",
+    "nameZh": "前卫摇滚",
+    "stationCount": 136,
+    "originalNames": [
+      "progressive rock",
+      "prog rock",
+      "progressive-rock"
+    ]
+  },
+  {
+    "key": "adult hits",
+    "nameZh": "成人热门歌曲",
+    "stationCount": 135,
+    "originalNames": [
+      "adult hits"
+    ]
+  },
+  {
+    "key": "greek music",
+    "nameZh": "希腊音乐",
+    "stationCount": 134,
+    "originalNames": [
+      "greek music"
+    ]
+  },
+  {
+    "key": "party",
+    "nameZh": "派对音乐",
+    "stationCount": 133,
+    "originalNames": [
+      "party"
+    ]
+  },
+  {
+    "key": "politics",
+    "nameZh": "政治",
+    "stationCount": 133,
+    "originalNames": [
+      "politics",
+      "политика"
+    ]
+  },
+  {
+    "key": "comedy",
+    "nameZh": "喜剧",
+    "stationCount": 129,
+    "originalNames": [
+      "comedy",
+      "humour",
+      "юмор",
+      "comedy music",
+      "анекдот"
+    ]
+  },
+  {
+    "key": "remixes",
+    "nameZh": "混音音乐",
+    "stationCount": 128,
+    "originalNames": [
+      "dj remix",
+      "dj mixes",
+      "remixes",
+      "remixed"
+    ]
+  },
+  {
+    "key": "downtempo",
+    "nameZh": "慢节奏电子音乐",
+    "stationCount": 124,
+    "originalNames": [
+      "downtempo"
+    ]
+  },
+  {
+    "key": "crossover",
+    "nameZh": "跨界音乐",
+    "stationCount": 123,
+    "originalNames": [
+      "crossover"
+    ]
+  },
+  {
+    "key": "greek folk",
+    "nameZh": "希腊民间音乐",
+    "stationCount": 120,
+    "originalNames": [
+      "greek folk",
+      "greek folk music",
+      "greek traditional"
+    ]
+  },
+  {
+    "key": "new wave",
+    "nameZh": "新浪潮音乐",
+    "stationCount": 119,
+    "originalNames": [
+      "new wave",
+      "new-wave"
+    ]
+  },
+  {
+    "key": "soundtracks",
+    "nameZh": "原声配乐",
+    "stationCount": 115,
+    "originalNames": [
+      "soundtracks",
+      "soundtrack",
+      "film music",
+      "movie soundtracks",
+      "ost"
+    ]
+  },
+  {
+    "key": "education",
+    "nameZh": "教育",
+    "stationCount": 114,
+    "originalNames": [
+      "education",
+      "educational",
+      "教育"
+    ]
+  },
+  {
+    "key": "50s",
+    "nameZh": "五十年代音乐",
+    "stationCount": 112,
+    "originalNames": [
+      "50s",
+      "1950s",
+      "50's",
+      "50s music"
+    ]
+  },
+  {
+    "key": "merengue",
+    "nameZh": "梅伦格音乐",
+    "stationCount": 112,
+    "originalNames": [
+      "merengue"
+    ]
+  },
+  {
+    "key": "non-commercial",
+    "nameZh": "非商业广播",
+    "stationCount": 112,
+    "originalNames": [
+      "non-commercial",
+      "noncommercial",
+      "non commercial"
+    ]
+  },
+  {
+    "key": "pop ballads",
+    "nameZh": "流行抒情歌曲",
+    "stationCount": 112,
+    "originalNames": [
+      "balada pop",
+      "pop ballads"
+    ]
+  },
+  {
+    "key": "greek pop",
+    "nameZh": "希腊流行音乐",
+    "stationCount": 110,
+    "originalNames": [
+      "greek pop"
+    ]
+  },
+  {
+    "key": "bible",
+    "nameZh": "圣经",
+    "stationCount": 109,
+    "originalNames": [
+      "bible",
+      "biblia"
+    ]
+  },
+  {
+    "key": "tech house",
+    "nameZh": "科技浩室",
+    "stationCount": 107,
+    "originalNames": [
+      "tech house",
+      "techhouse"
+    ]
+  },
+  {
+    "key": "discography",
+    "nameZh": "音乐人作品集",
+    "stationCount": 103,
+    "originalNames": [
+      "discography"
+    ]
+  },
+  {
+    "key": "television",
+    "nameZh": "电视节目",
+    "stationCount": 100,
+    "originalNames": [
+      "tv",
+      "电视",
+      "television"
+    ]
+  },
+  {
+    "key": "sertanejo",
+    "nameZh": "巴西乡村音乐",
+    "stationCount": 97,
+    "originalNames": [
+      "sertanejo",
+      "sertaneja"
+    ]
+  },
+  {
+    "key": "sports news",
+    "nameZh": "体育新闻",
+    "stationCount": 96,
+    "originalNames": [
+      "sports news"
+    ]
+  },
+  {
+    "key": "ranchera",
+    "nameZh": "墨西哥牧场歌曲",
+    "stationCount": 95,
+    "originalNames": [
+      "ranchera",
+      "rancheras"
+    ]
+  },
+  {
+    "key": "christian contemporary",
+    "nameZh": "当代基督教音乐",
+    "stationCount": 90,
+    "originalNames": [
+      "christian contemporary",
+      "contemporary christian"
+    ]
+  },
+  {
+    "key": "italian pop",
+    "nameZh": "意大利流行音乐",
+    "stationCount": 90,
+    "originalNames": [
+      "italian pop"
+    ]
+  },
+  {
+    "key": "ambient and relaxation music",
+    "nameZh": "氛围与放松音乐",
+    "stationCount": 88,
+    "originalNames": [
+      "ambient and relaxation music"
+    ]
+  },
+  {
+    "key": "old time radio",
+    "nameZh": "经典广播节目",
+    "stationCount": 87,
+    "originalNames": [
+      "old time radio",
+      "otr",
+      "old-time radio"
+    ]
+  },
+  {
+    "key": "lifestyle",
+    "nameZh": "生活方式",
+    "stationCount": 86,
+    "originalNames": [
+      "lifestyle",
+      "生活"
+    ]
+  },
+  {
+    "key": "orthodox christian",
+    "nameZh": "东正教",
+    "stationCount": 86,
+    "originalNames": [
+      "orthodox christian",
+      "orthodox",
+      "orthodoxy",
+      "православие"
+    ]
+  },
+  {
+    "key": "trap",
+    "nameZh": "陷阱说唱",
+    "stationCount": 86,
+    "originalNames": [
+      "trap"
+    ]
+  },
+  {
+    "key": "dj",
+    "nameZh": "DJ 音乐",
+    "stationCount": 84,
+    "originalNames": [
+      "dj",
+      "music dj"
+    ]
+  },
+  {
+    "key": "hardcore",
+    "nameZh": "硬核音乐",
+    "stationCount": 84,
+    "originalNames": [
+      "hardcore"
+    ]
+  },
+  {
+    "key": "mariachi",
+    "nameZh": "墨西哥流浪者音乐",
+    "stationCount": 84,
+    "originalNames": [
+      "mariachi"
+    ]
+  },
+  {
+    "key": "rock and roll",
+    "nameZh": "摇滚乐",
+    "stationCount": 84,
+    "originalNames": [
+      "rock n roll",
+      "rock'n'roll",
+      "rock 'n' roll",
+      "rock and roll",
+      "rock & roll",
+      "рок-н-ролл"
+    ]
+  },
+  {
+    "key": "alternative / indie",
+    "nameZh": "另类与独立音乐",
+    "stationCount": 83,
+    "originalNames": [
+      "alternative / indie",
+      "alternative/indie"
+    ]
+  },
+  {
+    "key": "local information",
+    "nameZh": "本地资讯",
+    "stationCount": 82,
+    "originalNames": [
+      "local information"
+    ]
+  },
+  {
+    "key": "classic pop",
+    "nameZh": "经典流行音乐",
+    "stationCount": 81,
+    "originalNames": [
+      "pop clásico",
+      "classic pop"
+    ]
+  },
+  {
+    "key": "decades",
+    "nameZh": "跨年代音乐",
+    "stationCount": 81,
+    "originalNames": [
+      "decades"
+    ]
+  },
+  {
+    "key": "club dance",
+    "nameZh": "俱乐部舞曲",
+    "stationCount": 80,
+    "originalNames": [
+      "club dance"
+    ]
+  },
+  {
+    "key": "romantic ballads",
+    "nameZh": "浪漫抒情歌曲",
+    "stationCount": 80,
+    "originalNames": [
+      "balada romántica"
+    ]
+  },
+  {
+    "key": "islamic",
+    "nameZh": "伊斯兰教",
+    "stationCount": 79,
+    "originalNames": [
+      "islamic",
+      "islam",
+      "islamic music",
+      "اسلامي",
+      "اسلام",
+      "مسلم"
+    ]
+  },
+  {
+    "key": "piano",
+    "nameZh": "钢琴音乐",
+    "stationCount": 79,
+    "originalNames": [
+      "piano",
+      "piano music"
+    ]
+  },
+  {
+    "key": "blues rock",
+    "nameZh": "布鲁斯摇滚",
+    "stationCount": 77,
+    "originalNames": [
+      "blues rock",
+      "bluesrock",
+      "blues-rock"
+    ]
+  },
+  {
+    "key": "weather",
+    "nameZh": "天气",
+    "stationCount": 77,
+    "originalNames": [
+      "weather"
+    ]
+  },
+  {
+    "key": "adult album alternative",
+    "nameZh": "成人专辑另类音乐",
+    "stationCount": 75,
+    "originalNames": [
+      "adult album alternative",
+      "adult alternative"
+    ]
+  },
+  {
+    "key": "mpb",
+    "nameZh": "巴西流行音乐",
+    "stationCount": 75,
+    "originalNames": [
+      "mpb"
+    ]
+  },
+  {
+    "key": "public service",
+    "nameZh": "公共服务广播",
+    "stationCount": 75,
+    "originalNames": [
+      "public service"
+    ]
+  },
+  {
+    "key": "african music",
+    "nameZh": "非洲音乐",
+    "stationCount": 74,
+    "originalNames": [
+      "african music"
+    ]
+  },
+  {
+    "key": "j-pop",
+    "nameZh": "日本流行音乐",
+    "stationCount": 74,
+    "originalNames": [
+      "j-pop"
+    ]
+  },
+  {
+    "key": "chillout+lounge",
+    "nameZh": "舒缓与沙龙音乐",
+    "stationCount": 73,
+    "originalNames": [
+      "chillout+lounge"
+    ]
+  },
+  {
+    "key": "punk rock",
+    "nameZh": "朋克摇滚",
+    "stationCount": 72,
+    "originalNames": [
+      "punk rock",
+      "punkrock"
+    ]
+  },
+  {
+    "key": "local talk",
+    "nameZh": "本地谈话节目",
+    "stationCount": 71,
+    "originalNames": [
+      "local talk"
+    ]
+  },
+  {
+    "key": "freeform",
+    "nameZh": "自由形式节目",
+    "stationCount": 70,
+    "originalNames": [
+      "freeform",
+      "free form",
+      "free-form"
+    ]
+  },
+  {
+    "key": "live sports",
+    "nameZh": "体育直播",
+    "stationCount": 70,
+    "originalNames": [
+      "live sports"
+    ]
+  },
+  {
+    "key": "lo-fi",
+    "nameZh": "低保真音乐",
+    "stationCount": 70,
+    "originalNames": [
+      "lofi",
+      "lo-fi"
+    ]
+  },
+  {
+    "key": "brazilian music",
+    "nameZh": "巴西音乐",
+    "stationCount": 69,
+    "originalNames": [
+      "brazilian music",
+      "brazilian"
+    ]
+  },
+  {
+    "key": "classic country",
+    "nameZh": "经典乡村音乐",
+    "stationCount": 69,
+    "originalNames": [
+      "classic country"
+    ]
+  },
+  {
+    "key": "italian music",
+    "nameZh": "意大利音乐",
+    "stationCount": 68,
+    "originalNames": [
+      "musica italiana",
+      "italian music"
+    ]
+  },
+  {
+    "key": "new age",
+    "nameZh": "新世纪音乐",
+    "stationCount": 68,
+    "originalNames": [
+      "new age",
+      "newage"
+    ]
+  },
+  {
+    "key": "hardstyle",
+    "nameZh": "硬派舞曲",
+    "stationCount": 67,
+    "originalNames": [
+      "hardstyle",
+      "hard style"
+    ]
+  },
+  {
+    "key": "italo disco",
+    "nameZh": "意大利迪斯科",
+    "stationCount": 67,
+    "originalNames": [
+      "italo disco",
+      "italo-disco",
+      "italodisco"
+    ]
+  },
+  {
+    "key": "world news",
+    "nameZh": "国际新闻",
+    "stationCount": 67,
+    "originalNames": [
+      "world news",
+      "international news",
+      "国际新闻"
+    ]
+  },
+  {
+    "key": "anime",
+    "nameZh": "动漫音乐",
+    "stationCount": 66,
+    "originalNames": [
+      "anime"
+    ]
+  },
+  {
+    "key": "bollywood",
+    "nameZh": "宝莱坞音乐",
+    "stationCount": 66,
+    "originalNames": [
+      "bollywood",
+      "bollywood music"
+    ]
+  },
+  {
+    "key": "dubstep",
+    "nameZh": "回响贝斯",
+    "stationCount": 65,
+    "originalNames": [
+      "dubstep"
+    ]
+  },
+  {
+    "key": "news talk music",
+    "nameZh": "新闻、谈话与音乐",
+    "stationCount": 65,
+    "originalNames": [
+      "news talk music"
+    ]
+  },
+  {
+    "key": "sports talk",
+    "nameZh": "体育谈话节目",
+    "stationCount": 63,
+    "originalNames": [
+      "sports talk",
+      "sportstalk"
+    ]
+  },
+  {
+    "key": "industrial",
+    "nameZh": "工业音乐",
+    "stationCount": 62,
+    "originalNames": [
+      "industrial",
+      "industrial music"
+    ]
+  },
+  {
+    "key": "meditation",
+    "nameZh": "冥想音乐",
+    "stationCount": 62,
+    "originalNames": [
+      "meditation",
+      "meditation music"
+    ]
+  },
+  {
+    "key": "singer-songwriter",
+    "nameZh": "创作歌手音乐",
+    "stationCount": 62,
+    "originalNames": [
+      "singer-songwriter",
+      "авторская песня",
+      "singer songwriter"
+    ]
+  },
+  {
+    "key": "dancehall",
+    "nameZh": "舞厅雷鬼",
+    "stationCount": 61,
+    "originalNames": [
+      "dancehall",
+      "dance hall"
+    ]
+  },
+  {
+    "key": "dub",
+    "nameZh": "回响音乐",
+    "stationCount": 61,
+    "originalNames": [
+      "dub"
+    ]
+  },
+  {
+    "key": "groove",
+    "nameZh": "律动音乐",
+    "stationCount": 61,
+    "originalNames": [
+      "groove"
+    ]
+  },
+  {
+    "key": "k-pop",
+    "nameZh": "韩国流行音乐",
+    "stationCount": 61,
+    "originalNames": [
+      "k-pop"
+    ]
+  },
+  {
+    "key": "minimal",
+    "nameZh": "极简音乐",
+    "stationCount": 61,
+    "originalNames": [
+      "minimal"
+    ]
+  },
+  {
+    "key": "urban contemporary",
+    "nameZh": "都市当代音乐",
+    "stationCount": 61,
+    "originalNames": [
+      "urban contemporary"
+    ]
+  },
+  {
+    "key": "dj sets",
+    "nameZh": "DJ 演出录音",
+    "stationCount": 60,
+    "originalNames": [
+      "dj sets"
+    ]
+  },
+  {
+    "key": "traditional",
+    "nameZh": "传统音乐",
+    "stationCount": 60,
+    "originalNames": [
+      "traditional",
+      "traditional music"
+    ]
+  },
+  {
+    "key": "christian music",
+    "nameZh": "基督教音乐",
+    "stationCount": 59,
+    "originalNames": [
+      "christian music"
+    ]
+  },
+  {
+    "key": "synthpop",
+    "nameZh": "合成器流行音乐",
+    "stationCount": 59,
+    "originalNames": [
+      "synthpop",
+      "synth-pop",
+      "synth pop"
+    ]
+  },
+  {
+    "key": "afrobeats",
+    "nameZh": "非洲流行音乐",
+    "stationCount": 58,
+    "originalNames": [
+      "afrobeats"
+    ]
+  },
+  {
+    "key": "bachata",
+    "nameZh": "巴恰塔音乐",
+    "stationCount": 58,
+    "originalNames": [
+      "bachata"
+    ]
+  },
+  {
+    "key": "economics",
+    "nameZh": "经济",
+    "stationCount": 58,
+    "originalNames": [
+      "economics",
+      "economic news",
+      "经济"
+    ]
+  },
+  {
+    "key": "grunge",
+    "nameZh": "垃圾摇滚",
+    "stationCount": 58,
+    "originalNames": [
+      "grunge"
+    ]
+  },
+  {
+    "key": "interviews",
+    "nameZh": "访谈",
+    "stationCount": 58,
+    "originalNames": [
+      "entrevistas",
+      "interviews"
+    ]
+  },
+  {
+    "key": "sierreño",
+    "nameZh": "墨西哥山地音乐",
+    "stationCount": 58,
+    "originalNames": [
+      "sierreño"
+    ]
+  },
+  {
+    "key": "americana",
+    "nameZh": "美式根源音乐",
+    "stationCount": 57,
+    "originalNames": [
+      "americana"
+    ]
+  },
+  {
+    "key": "swing",
+    "nameZh": "摇摆爵士",
+    "stationCount": 57,
+    "originalNames": [
+      "swing"
+    ]
+  },
+  {
+    "key": "indie pop",
+    "nameZh": "独立流行音乐",
+    "stationCount": 56,
+    "originalNames": [
+      "indie pop",
+      "indiepop",
+      "indie-pop"
+    ]
+  },
+  {
+    "key": "cinema",
+    "nameZh": "电影",
+    "stationCount": 55,
+    "originalNames": [
+      "movie",
+      "movies",
+      "cinema",
+      "cinema music",
+      "кино",
+      "电影"
+    ]
+  },
+  {
+    "key": "post-punk",
+    "nameZh": "后朋克",
+    "stationCount": 55,
+    "originalNames": [
+      "post-punk",
+      "post punk",
+      "postpunk"
+    ]
+  },
+  {
+    "key": "progressive house",
+    "nameZh": "前卫浩室",
+    "stationCount": 54,
+    "originalNames": [
+      "progressive house"
+    ]
+  },
+  {
+    "key": "talk show",
+    "nameZh": "脱口秀",
+    "stationCount": 54,
+    "originalNames": [
+      "talk show",
+      "talkshow"
+    ]
+  },
+  {
+    "key": "the best of 80's",
+    "nameZh": "八十年代精选音乐",
+    "stationCount": 54,
+    "originalNames": [
+      "the best of 80's"
+    ]
+  },
+  {
+    "key": "underground",
+    "nameZh": "地下音乐",
+    "stationCount": 54,
+    "originalNames": [
+      "underground",
+      "underground music"
+    ]
+  },
+  {
+    "key": "2020s",
+    "nameZh": "二〇二〇年代音乐",
+    "stationCount": 52,
+    "originalNames": [
+      "2020s"
+    ]
+  },
+  {
+    "key": "rock en español",
+    "nameZh": "西班牙语摇滚",
+    "stationCount": 52,
+    "originalNames": [
+      "rock en español"
+    ]
+  },
+  {
+    "key": "electro house",
+    "nameZh": "电气浩室",
+    "stationCount": 51,
+    "originalNames": [
+      "electro house"
+    ]
+  },
+  {
+    "key": "football",
+    "nameZh": "足球",
+    "stationCount": 51,
+    "originalNames": [
+      "football",
+      "soccer"
+    ]
+  },
+  {
+    "key": "podcast",
+    "nameZh": "播客",
+    "stationCount": 51,
+    "originalNames": [
+      "podcast",
+      "podcasts",
+      "播客"
+    ]
+  },
+  {
+    "key": "ska",
+    "nameZh": "斯卡音乐",
+    "stationCount": 51,
+    "originalNames": [
+      "ska"
+    ]
+  },
+  {
+    "key": "volksmusik",
+    "nameZh": "德语民间音乐",
+    "stationCount": 51,
+    "originalNames": [
+      "volksmusik"
+    ]
+  },
+  {
+    "key": "worship",
+    "nameZh": "敬拜音乐",
+    "stationCount": 50,
+    "originalNames": [
+      "worship",
+      "praise"
+    ]
+  },
+  {
+    "key": "opera",
+    "nameZh": "歌剧",
+    "stationCount": 49,
+    "originalNames": [
+      "opera"
+    ]
+  },
+  {
+    "key": "psychedelic",
+    "nameZh": "迷幻音乐",
+    "stationCount": 49,
+    "originalNames": [
+      "psychedelic"
+    ]
+  },
+  {
+    "key": "spiritual",
+    "nameZh": "灵性音乐与节目",
+    "stationCount": 49,
+    "originalNames": [
+      "spiritual",
+      "espiritual"
+    ]
+  },
+  {
+    "key": "jungle",
+    "nameZh": "丛林音乐",
+    "stationCount": 48,
+    "originalNames": [
+      "jungle"
+    ]
+  },
+  {
+    "key": "rap hiphop rnb",
+    "nameZh": "说唱、嘻哈与节奏布鲁斯",
+    "stationCount": 48,
+    "originalNames": [
+      "rap hiphop rnb"
+    ]
+  },
+  {
+    "key": "soft adult contemporary",
+    "nameZh": "柔和成人当代音乐",
+    "stationCount": 48,
+    "originalNames": [
+      "soft adult contemporary"
+    ]
+  },
+  {
+    "key": "soulful house",
+    "nameZh": "灵魂浩室",
+    "stationCount": 47,
+    "originalNames": [
+      "soulful house"
+    ]
+  },
+  {
+    "key": "radio drama",
+    "nameZh": "广播剧",
+    "stationCount": 46,
+    "originalNames": [
+      "drama",
+      "radio drama",
+      "radiodrama"
+    ]
+  },
+  {
+    "key": "acoustic",
+    "nameZh": "原声音乐",
+    "stationCount": 45,
+    "originalNames": [
+      "acoustic"
+    ]
+  },
+  {
+    "key": "club house",
+    "nameZh": "俱乐部浩室",
+    "stationCount": 45,
+    "originalNames": [
+      "club house",
+      "clubhouse"
+    ]
+  },
+  {
+    "key": "current affairs",
+    "nameZh": "时事",
+    "stationCount": 45,
+    "originalNames": [
+      "current affairs"
+    ]
+  },
+  {
+    "key": "indigenous",
+    "nameZh": "原住民文化",
+    "stationCount": 45,
+    "originalNames": [
+      "indigenous",
+      "indigenous music"
+    ]
+  },
+  {
+    "key": "local programming",
+    "nameZh": "本地节目",
+    "stationCount": 45,
+    "originalNames": [
+      "local programming"
+    ]
+  },
+  {
+    "key": "new music",
+    "nameZh": "新歌",
+    "stationCount": 45,
+    "originalNames": [
+      "new music"
+    ]
+  },
+  {
+    "key": "non-stop music",
+    "nameZh": "连续音乐节目",
+    "stationCount": 45,
+    "originalNames": [
+      "non-stop music"
+    ]
+  },
+  {
+    "key": "nu disco",
+    "nameZh": "新迪斯科",
+    "stationCount": 45,
+    "originalNames": [
+      "nu disco",
+      "nu-disco",
+      "nudisco"
+    ]
+  },
+  {
+    "key": "quran",
+    "nameZh": "古兰经诵读",
+    "stationCount": 45,
+    "originalNames": [
+      "quran",
+      "القرآن الكريم",
+      "راديو القرآن",
+      "القرآن",
+      "قران",
+      "قران كريم"
+    ]
+  },
+  {
+    "key": "multicultural",
+    "nameZh": "多元文化",
+    "stationCount": 44,
+    "originalNames": [
+      "multicultural"
+    ]
+  },
+  {
+    "key": "darkwave",
+    "nameZh": "暗潮音乐",
+    "stationCount": 43,
+    "originalNames": [
+      "darkwave",
+      "dark wave"
+    ]
+  },
+  {
+    "key": "literature",
+    "nameZh": "文学",
+    "stationCount": 43,
+    "originalNames": [
+      "literature",
+      "литература"
+    ]
+  },
+  {
+    "key": "political talk",
+    "nameZh": "政治谈话节目",
+    "stationCount": 42,
+    "originalNames": [
+      "political talk"
+    ]
+  },
+  {
+    "key": "black metal",
+    "nameZh": "黑金属",
+    "stationCount": 41,
+    "originalNames": [
+      "black metal"
+    ]
+  },
+  {
+    "key": "bluegrass",
+    "nameZh": "蓝草音乐",
+    "stationCount": 41,
+    "originalNames": [
+      "bluegrass",
+      "bluegrass music"
+    ]
+  },
+  {
+    "key": "video game music",
+    "nameZh": "电子游戏音乐",
+    "stationCount": 40,
+    "originalNames": [
+      "video game music"
+    ]
+  },
+  {
+    "key": "20s",
+    "nameZh": "二十年代音乐",
+    "stationCount": 39,
+    "originalNames": [
+      "20s",
+      "1920s",
+      "20's"
+    ]
+  },
+  {
+    "key": "big band",
+    "nameZh": "大乐队爵士",
+    "stationCount": 39,
+    "originalNames": [
+      "big band",
+      "big-band"
+    ]
+  },
+  {
+    "key": "conservative talk",
+    "nameZh": "保守派谈话节目",
+    "stationCount": 39,
+    "originalNames": [
+      "conservative talk"
+    ]
+  },
+  {
+    "key": "death metal",
+    "nameZh": "死亡金属",
+    "stationCount": 39,
+    "originalNames": [
+      "death metal",
+      "death-metal"
+    ]
+  },
+  {
+    "key": "electropop",
+    "nameZh": "电子流行音乐",
+    "stationCount": 39,
+    "originalNames": [
+      "electropop",
+      "electro pop",
+      "electro-pop"
+    ]
+  },
+  {
+    "key": "health",
+    "nameZh": "健康",
+    "stationCount": 39,
+    "originalNames": [
+      "health"
+    ]
+  },
+  {
+    "key": "sleep",
+    "nameZh": "助眠音乐",
+    "stationCount": 39,
+    "originalNames": [
+      "sleep"
+    ]
+  },
+  {
+    "key": "ebm",
+    "nameZh": "电子身体音乐",
+    "stationCount": 38,
+    "originalNames": [
+      "ebm"
+    ]
+  },
+  {
+    "key": "40s",
+    "nameZh": "四十年代音乐",
+    "stationCount": 37,
+    "originalNames": [
+      "1940s",
+      "40s",
+      "40's"
+    ]
+  },
+  {
+    "key": "70 80 hits",
+    "nameZh": "七八十年代热门歌曲",
+    "stationCount": 37,
+    "originalNames": [
+      "70 80 hits",
+      "70-80 hits"
+    ]
+  },
+  {
+    "key": "90s y más",
+    "nameZh": "九十年代及之后的音乐",
+    "stationCount": 37,
+    "originalNames": [
+      "90s y más"
+    ]
+  },
+  {
+    "key": "active rock",
+    "nameZh": "活跃摇滚",
+    "stationCount": 37,
+    "originalNames": [
+      "active rock"
+    ]
+  },
+  {
+    "key": "minimal techno",
+    "nameZh": "极简科技舞曲",
+    "stationCount": 36,
+    "originalNames": [
+      "minimal techno"
+    ]
+  },
+  {
+    "key": "psytrance",
+    "nameZh": "精神迷幻舞曲",
+    "stationCount": 36,
+    "originalNames": [
+      "psytrance",
+      "psy-trance"
+    ]
+  },
+  {
+    "key": "slow",
+    "nameZh": "慢节奏音乐",
+    "stationCount": 36,
+    "originalNames": [
+      "slow"
+    ]
+  },
+  {
+    "key": "arts",
+    "nameZh": "艺术",
+    "stationCount": 35,
+    "originalNames": [
+      "arts",
+      "文艺"
+    ]
+  },
+  {
+    "key": "classic jazz",
+    "nameZh": "经典爵士",
+    "stationCount": 35,
+    "originalNames": [
+      "classic jazz"
+    ]
+  },
+  {
+    "key": "disco funk",
+    "nameZh": "迪斯科放克",
+    "stationCount": 35,
+    "originalNames": [
+      "disco funk"
+    ]
+  },
+  {
+    "key": "folk rock",
+    "nameZh": "民谣摇滚",
+    "stationCount": 35,
+    "originalNames": [
+      "folk rock",
+      "фолк-рок"
+    ]
+  },
+  {
+    "key": "soft music",
+    "nameZh": "柔和音乐",
+    "stationCount": 35,
+    "originalNames": [
+      "soft music"
+    ]
+  },
+  {
+    "key": "holiday",
+    "nameZh": "节日音乐",
+    "stationCount": 34,
+    "originalNames": [
+      "holiday",
+      "holiday music"
+    ]
+  },
+  {
+    "key": "soft pop",
+    "nameZh": "柔和流行音乐",
+    "stationCount": 34,
+    "originalNames": [
+      "soft pop"
+    ]
+  },
+  {
+    "key": "synthwave",
+    "nameZh": "合成器波音乐",
+    "stationCount": 34,
+    "originalNames": [
+      "synthwave"
+    ]
+  },
+  {
+    "key": "vocal",
+    "nameZh": "人声音乐",
+    "stationCount": 34,
+    "originalNames": [
+      "vocal"
+    ]
+  },
+  {
+    "key": "bossa nova",
+    "nameZh": "巴萨诺瓦音乐",
+    "stationCount": 33,
+    "originalNames": [
+      "bossa nova",
+      "bossanova"
+    ]
+  },
+  {
+    "key": "new country",
+    "nameZh": "新乡村音乐",
+    "stationCount": 33,
+    "originalNames": [
+      "new country"
+    ]
+  },
+  {
+    "key": "storytelling",
+    "nameZh": "故事",
+    "stationCount": 33,
+    "originalNames": [
+      "storytelling",
+      "рассказы"
+    ]
+  },
+  {
+    "key": "80s rock",
+    "nameZh": "八十年代摇滚",
+    "stationCount": 32,
+    "originalNames": [
+      "80s rock"
+    ]
+  },
+  {
+    "key": "art rock",
+    "nameZh": "艺术摇滚",
+    "stationCount": 32,
+    "originalNames": [
+      "art rock",
+      "artrock"
+    ]
+  },
+  {
+    "key": "chiptune",
+    "nameZh": "芯片音乐",
+    "stationCount": 32,
+    "originalNames": [
+      "chiptune"
+    ]
+  },
+  {
+    "key": "jazz fusion",
+    "nameZh": "融合爵士",
+    "stationCount": 32,
+    "originalNames": [
+      "jazz fusion"
+    ]
+  },
+  {
+    "key": "nu jazz",
+    "nameZh": "新爵士",
+    "stationCount": 32,
+    "originalNames": [
+      "nu-jazz",
+      "nu jazz",
+      "nujazz"
+    ]
+  },
+  {
+    "key": "soca",
+    "nameZh": "索卡音乐",
+    "stationCount": 32,
+    "originalNames": [
+      "soca"
+    ]
+  },
+  {
+    "key": "70s disco",
+    "nameZh": "七十年代迪斯科",
+    "stationCount": 31,
+    "originalNames": [
+      "70s disco"
+    ]
+  },
+  {
+    "key": "discofox",
+    "nameZh": "迪斯科狐步音乐",
+    "stationCount": 31,
+    "originalNames": [
+      "discofox"
+    ]
+  },
+  {
+    "key": "government",
+    "nameZh": "政府信息",
+    "stationCount": 31,
+    "originalNames": [
+      "government"
+    ]
+  },
+  {
+    "key": "metalcore",
+    "nameZh": "金属核",
+    "stationCount": 31,
+    "originalNames": [
+      "metalcore"
+    ]
+  },
+  {
+    "key": "non-profit",
+    "nameZh": "非营利广播",
+    "stationCount": 31,
+    "originalNames": [
+      "non-profit",
+      "nonprofit",
+      "non profit"
+    ]
+  },
+  {
+    "key": "recorded programming",
+    "nameZh": "录播节目",
+    "stationCount": 31,
+    "originalNames": [
+      "programas grabados"
+    ]
+  },
+  {
+    "key": "sertanejo raiz",
+    "nameZh": "传统巴西乡村音乐",
+    "stationCount": 31,
+    "originalNames": [
+      "sertanejo raiz"
+    ]
+  },
+  {
+    "key": "business",
+    "nameZh": "商业",
+    "stationCount": 29,
+    "originalNames": [
+      "business"
+    ]
+  },
+  {
+    "key": "workout",
+    "nameZh": "运动音乐",
+    "stationCount": 29,
+    "originalNames": [
+      "workout",
+      "workout music"
+    ]
+  },
+  {
+    "key": "30s",
+    "nameZh": "三十年代音乐",
+    "stationCount": 28,
+    "originalNames": [
+      "1930s",
+      "30s",
+      "30's"
+    ]
+  },
+  {
+    "key": "baroque",
+    "nameZh": "巴洛克音乐",
+    "stationCount": 28,
+    "originalNames": [
+      "baroque"
+    ]
+  },
+  {
+    "key": "glam rock",
+    "nameZh": "华丽摇滚",
+    "stationCount": 28,
+    "originalNames": [
+      "glam rock",
+      "glamrock"
+    ]
+  },
+  {
+    "key": "modern rock",
+    "nameZh": "现代摇滚",
+    "stationCount": 28,
+    "originalNames": [
+      "modern rock"
+    ]
+  },
+  {
+    "key": "roots",
+    "nameZh": "根源音乐",
+    "stationCount": 28,
+    "originalNames": [
+      "roots"
+    ]
+  },
+  {
+    "key": "russian rock",
+    "nameZh": "俄罗斯摇滚",
+    "stationCount": 28,
+    "originalNames": [
+      "russian rock",
+      "русский рок",
+      "russian-rock"
+    ]
+  },
+  {
+    "key": "celtic",
+    "nameZh": "凯尔特音乐",
+    "stationCount": 27,
+    "originalNames": [
+      "celtic"
+    ]
+  },
+  {
+    "key": "classical piano",
+    "nameZh": "古典钢琴",
+    "stationCount": 27,
+    "originalNames": [
+      "classical piano"
+    ]
+  },
+  {
+    "key": "cultural news",
+    "nameZh": "文化新闻",
+    "stationCount": 27,
+    "originalNames": [
+      "cultural news"
+    ]
+  },
+  {
+    "key": "eurodisco",
+    "nameZh": "欧洲迪斯科",
+    "stationCount": 27,
+    "originalNames": [
+      "euro disco",
+      "eurodisco"
+    ]
+  },
+  {
+    "key": "funky house",
+    "nameZh": "放克浩室",
+    "stationCount": 27,
+    "originalNames": [
+      "funky house"
+    ]
+  },
+  {
+    "key": "hard techno",
+    "nameZh": "硬科技舞曲",
+    "stationCount": 27,
+    "originalNames": [
+      "hard techno",
+      "hardtechno"
+    ]
+  },
+  {
+    "key": "psychedelic rock",
+    "nameZh": "迷幻摇滚",
+    "stationCount": 27,
+    "originalNames": [
+      "psychedelic rock"
+    ]
+  },
+  {
+    "key": "rave",
+    "nameZh": "锐舞音乐",
+    "stationCount": 27,
+    "originalNames": [
+      "rave"
+    ]
+  },
+  {
+    "key": "afrobeat",
+    "nameZh": "非洲节奏音乐",
+    "stationCount": 26,
+    "originalNames": [
+      "afrobeat",
+      "afro beat"
+    ]
+  },
+  {
+    "key": "guitar",
+    "nameZh": "吉他音乐",
+    "stationCount": 26,
+    "originalNames": [
+      "guitar"
+    ]
+  },
+  {
+    "key": "mainstream rock",
+    "nameZh": "主流摇滚",
+    "stationCount": 26,
+    "originalNames": [
+      "mainstream rock"
+    ]
+  },
+  {
+    "key": "nature",
+    "nameZh": "自然声音",
+    "stationCount": 26,
+    "originalNames": [
+      "nature"
+    ]
+  },
+  {
+    "key": "tango",
+    "nameZh": "探戈音乐",
+    "stationCount": 26,
+    "originalNames": [
+      "tango"
+    ]
+  },
+  {
+    "key": "technology",
+    "nameZh": "科技",
+    "stationCount": 26,
+    "originalNames": [
+      "technology"
+    ]
+  },
+  {
+    "key": "afro house",
+    "nameZh": "非洲浩室",
+    "stationCount": 25,
+    "originalNames": [
+      "afro house",
+      "afrohouse",
+      "afro-house"
+    ]
+  },
+  {
+    "key": "breakbeat",
+    "nameZh": "碎拍音乐",
+    "stationCount": 25,
+    "originalNames": [
+      "breakbeat"
+    ]
+  },
+  {
+    "key": "britpop",
+    "nameZh": "英式流行摇滚",
+    "stationCount": 25,
+    "originalNames": [
+      "britpop",
+      "brit pop"
+    ]
+  },
+  {
+    "key": "calm",
+    "nameZh": "宁静音乐",
+    "stationCount": 25,
+    "originalNames": [
+      "calm"
+    ]
+  },
+  {
+    "key": "disco polo",
+    "nameZh": "波兰迪斯科",
+    "stationCount": 25,
+    "originalNames": [
+      "disco polo",
+      "discopolo"
+    ]
+  },
+  {
+    "key": "country rock",
+    "nameZh": "乡村摇滚",
+    "stationCount": 24,
+    "originalNames": [
+      "country rock",
+      "country-rock"
+    ]
+  },
+  {
+    "key": "progressive trance",
+    "nameZh": "前卫迷幻舞曲",
+    "stationCount": 24,
+    "originalNames": [
+      "progressive trance"
+    ]
+  },
+  {
+    "key": "rockabilly",
+    "nameZh": "乡村摇滚乐",
+    "stationCount": 24,
+    "originalNames": [
+      "rockabilly"
+    ]
+  },
+  {
+    "key": "samba",
+    "nameZh": "桑巴音乐",
+    "stationCount": 24,
+    "originalNames": [
+      "samba"
+    ]
+  },
+  {
+    "key": "surf rock",
+    "nameZh": "冲浪摇滚",
+    "stationCount": 24,
+    "originalNames": [
+      "surf",
+      "surf rock",
+      "surfrock"
+    ]
+  },
+  {
+    "key": "bolero",
+    "nameZh": "波莱罗音乐",
+    "stationCount": 23,
+    "originalNames": [
+      "bolero"
+    ]
+  },
+  {
+    "key": "idm",
+    "nameZh": "智能舞曲",
+    "stationCount": 23,
+    "originalNames": [
+      "idm"
+    ]
+  },
+  {
+    "key": "nu metal",
+    "nameZh": "新金属",
+    "stationCount": 23,
+    "originalNames": [
+      "nu metal",
+      "nu-metal",
+      "numetal"
+    ]
+  },
+  {
+    "key": "orchestral",
+    "nameZh": "管弦乐",
+    "stationCount": 23,
+    "originalNames": [
+      "orchestral"
+    ]
+  },
+  {
+    "key": "uk garage",
+    "nameZh": "英国车库音乐",
+    "stationCount": 23,
+    "originalNames": [
+      "uk garage"
+    ]
+  },
+  {
+    "key": "urban adult contemporary",
+    "nameZh": "都市成人当代音乐",
+    "stationCount": 23,
+    "originalNames": [
+      "urban adult contemporary"
+    ]
+  },
+  {
+    "key": "agriculture",
+    "nameZh": "农业",
+    "stationCount": 22,
+    "originalNames": [
+      "agriculture"
+    ]
+  },
+  {
+    "key": "alternative pop",
+    "nameZh": "另类流行音乐",
+    "stationCount": 22,
+    "originalNames": [
+      "alternative pop"
+    ]
+  },
+  {
+    "key": "amapiano",
+    "nameZh": "阿马皮亚诺音乐",
+    "stationCount": 22,
+    "originalNames": [
+      "amapiano"
+    ]
+  },
+  {
+    "key": "chanson",
+    "nameZh": "香颂",
+    "stationCount": 22,
+    "originalNames": [
+      "chanson"
+    ]
+  },
+  {
+    "key": "fusion",
+    "nameZh": "融合音乐",
+    "stationCount": 22,
+    "originalNames": [
+      "fusion"
+    ]
+  },
+  {
+    "key": "southern rock",
+    "nameZh": "南方摇滚",
+    "stationCount": 22,
+    "originalNames": [
+      "southern rock",
+      "southernrock"
+    ]
+  },
+  {
+    "key": "tamil music",
+    "nameZh": "泰米尔音乐",
+    "stationCount": 22,
+    "originalNames": [
+      "tamil music"
+    ]
+  },
+  {
+    "key": "90s dance",
+    "nameZh": "九十年代舞曲",
+    "stationCount": 21,
+    "originalNames": [
+      "90s dance"
+    ]
+  },
+  {
+    "key": "drone",
+    "nameZh": "持续音音乐",
+    "stationCount": 21,
+    "originalNames": [
+      "drone"
+    ]
+  },
+  {
+    "key": "piano jazz",
+    "nameZh": "钢琴爵士",
+    "stationCount": 21,
+    "originalNames": [
+      "piano jazz"
+    ]
+  },
+  {
+    "key": "russian pop",
+    "nameZh": "俄罗斯流行音乐",
+    "stationCount": 21,
+    "originalNames": [
+      "russian pop",
+      "русская популярная музыка"
+    ]
+  },
+  {
+    "key": "stoner rock",
+    "nameZh": "石人摇滚",
+    "stationCount": 21,
+    "originalNames": [
+      "stoner rock",
+      "stonerrock"
+    ]
+  },
+  {
+    "key": "thrash metal",
+    "nameZh": "鞭笞金属",
+    "stationCount": 21,
+    "originalNames": [
+      "thrash metal"
+    ]
+  },
+  {
+    "key": "phonk",
+    "nameZh": "冯克音乐",
+    "stationCount": 20,
+    "originalNames": [
+      "phonk"
+    ]
+  },
+  {
+    "key": "police scanner",
+    "nameZh": "警务无线电监听",
+    "stationCount": 20,
+    "originalNames": [
+      "police scanner"
+    ]
+  },
+  {
+    "key": "power metal",
+    "nameZh": "力量金属",
+    "stationCount": 20,
+    "originalNames": [
+      "power metal"
+    ]
+  },
+  {
+    "key": "radio reading service",
+    "nameZh": "广播阅读服务",
+    "stationCount": 20,
+    "originalNames": [
+      "radio reading service"
+    ]
+  },
+  {
+    "key": "yoga",
+    "nameZh": "瑜伽音乐",
+    "stationCount": 20,
+    "originalNames": [
+      "yoga"
+    ]
+  },
+  {
+    "key": "caribbean music",
+    "nameZh": "加勒比音乐",
+    "stationCount": 19,
+    "originalNames": [
+      "caribbean music"
+    ]
+  },
+  {
+    "key": "classic hip hop",
+    "nameZh": "经典嘻哈",
+    "stationCount": 19,
+    "originalNames": [
+      "classic hip hop"
+    ]
+  },
+  {
+    "key": "cool jazz",
+    "nameZh": "冷爵士",
+    "stationCount": 19,
+    "originalNames": [
+      "cool jazz"
+    ]
+  },
+  {
+    "key": "covers",
+    "nameZh": "翻唱音乐",
+    "stationCount": 19,
+    "originalNames": [
+      "covers",
+      "каверы"
+    ]
+  },
+  {
+    "key": "happy hardcore",
+    "nameZh": "快乐硬核舞曲",
+    "stationCount": 19,
+    "originalNames": [
+      "happy hardcore"
+    ]
+  },
+  {
+    "key": "latin jazz",
+    "nameZh": "拉丁爵士",
+    "stationCount": 19,
+    "originalNames": [
+      "latin jazz",
+      "latin-jazz"
+    ]
+  },
+  {
+    "key": "latin urban",
+    "nameZh": "拉丁都市音乐",
+    "stationCount": 19,
+    "originalNames": [
+      "latino urbano",
+      "latin urban"
+    ]
+  },
+  {
+    "key": "vaporwave",
+    "nameZh": "蒸汽波音乐",
+    "stationCount": 19,
+    "originalNames": [
+      "vaporwave"
+    ]
+  },
+  {
+    "key": "boogie",
+    "nameZh": "布吉音乐",
+    "stationCount": 18,
+    "originalNames": [
+      "boogie"
+    ]
+  },
+  {
+    "key": "business news",
+    "nameZh": "商业新闻",
+    "stationCount": 18,
+    "originalNames": [
+      "business news"
+    ]
+  },
+  {
+    "key": "children's music",
+    "nameZh": "儿童音乐",
+    "stationCount": 18,
+    "originalNames": [
+      "childrens music",
+      "children's music",
+      "children music"
+    ]
+  },
+  {
+    "key": "gothic rock",
+    "nameZh": "哥特摇滚",
+    "stationCount": 18,
+    "originalNames": [
+      "gothic rock",
+      "gothic-rock"
+    ]
+  },
+  {
+    "key": "melodic house",
+    "nameZh": "旋律浩室",
+    "stationCount": 18,
+    "originalNames": [
+      "melodic house"
+    ]
+  },
+  {
+    "key": "organic house",
+    "nameZh": "有机浩室",
+    "stationCount": 18,
+    "originalNames": [
+      "organic house"
+    ]
+  },
+  {
+    "key": "poetry",
+    "nameZh": "诗歌",
+    "stationCount": 18,
+    "originalNames": [
+      "poetry",
+      "поэзия",
+      "стихи"
+    ]
+  },
+  {
+    "key": "shoegaze",
+    "nameZh": "盯鞋摇滚",
+    "stationCount": 18,
+    "originalNames": [
+      "shoegaze"
+    ]
+  },
+  {
+    "key": "tourism",
+    "nameZh": "旅游",
+    "stationCount": 18,
+    "originalNames": [
+      "tourism"
+    ]
+  },
+  {
+    "key": "breaks",
+    "nameZh": "碎拍舞曲",
+    "stationCount": 17,
+    "originalNames": [
+      "breaks"
+    ]
+  },
+  {
+    "key": "chill house",
+    "nameZh": "舒缓浩室",
+    "stationCount": 17,
+    "originalNames": [
+      "chill house",
+      "chillhouse"
+    ]
+  },
+  {
+    "key": "classic soul",
+    "nameZh": "经典灵魂乐",
+    "stationCount": 17,
+    "originalNames": [
+      "classic soul"
+    ]
+  },
+  {
+    "key": "experimental electronic music",
+    "nameZh": "实验电子音乐",
+    "stationCount": 17,
+    "originalNames": [
+      "experimental electronic music"
+    ]
+  },
+  {
+    "key": "french chanson",
+    "nameZh": "法国香颂",
+    "stationCount": 17,
+    "originalNames": [
+      "french chansons"
+    ]
+  },
+  {
+    "key": "garage punk",
+    "nameZh": "车库朋克",
+    "stationCount": 17,
+    "originalNames": [
+      "garage punk"
+    ]
+  },
+  {
+    "key": "healing",
+    "nameZh": "疗愈音乐",
+    "stationCount": 17,
+    "originalNames": [
+      "healing",
+      "healing music"
+    ]
+  },
+  {
+    "key": "history",
+    "nameZh": "历史",
+    "stationCount": 17,
+    "originalNames": [
+      "history"
+    ]
+  },
+  {
+    "key": "jewish",
+    "nameZh": "犹太文化",
+    "stationCount": 17,
+    "originalNames": [
+      "jewish",
+      "jewish music"
+    ]
+  },
+  {
+    "key": "local government",
+    "nameZh": "地方政府信息",
+    "stationCount": 17,
+    "originalNames": [
+      "local government"
+    ]
+  },
+  {
+    "key": "mantra",
+    "nameZh": "曼陀罗吟诵",
+    "stationCount": 17,
+    "originalNames": [
+      "mantra"
+    ]
+  },
+  {
+    "key": "mellow",
+    "nameZh": "柔和音乐氛围",
+    "stationCount": 17,
+    "originalNames": [
+      "mellow"
+    ]
+  },
+  {
+    "key": "moombahton",
+    "nameZh": "穆巴顿舞曲",
+    "stationCount": 17,
+    "originalNames": [
+      "moombahton"
+    ]
+  },
+  {
+    "key": "noise",
+    "nameZh": "噪音音乐",
+    "stationCount": 17,
+    "originalNames": [
+      "noise",
+      "noise music"
+    ]
+  },
+  {
+    "key": "pop folk",
+    "nameZh": "流行民谣",
+    "stationCount": 17,
+    "originalNames": [
+      "pop folk",
+      "pop-folk",
+      "pop - folk",
+      "поп-фолк"
+    ]
+  },
+  {
+    "key": "rare groove",
+    "nameZh": "稀有律动音乐",
+    "stationCount": 17,
+    "originalNames": [
+      "rare groove"
+    ]
+  },
+  {
+    "key": "roots reggae",
+    "nameZh": "根源雷鬼",
+    "stationCount": 17,
+    "originalNames": [
+      "roots reggae"
+    ]
+  },
+  {
+    "key": "slow rock",
+    "nameZh": "慢摇滚",
+    "stationCount": 17,
+    "originalNames": [
+      "slow rock"
+    ]
+  },
+  {
+    "key": "southern gospel",
+    "nameZh": "南方福音音乐",
+    "stationCount": 17,
+    "originalNames": [
+      "southern gospel"
+    ]
+  },
+  {
+    "key": "summer",
+    "nameZh": "夏日音乐",
+    "stationCount": 17,
+    "originalNames": [
+      "summer"
+    ]
+  },
+  {
+    "key": "church",
+    "nameZh": "教会节目",
+    "stationCount": 16,
+    "originalNames": [
+      "church"
+    ]
+  },
+  {
+    "key": "creative commons",
+    "nameZh": "知识共享音乐",
+    "stationCount": 16,
+    "originalNames": [
+      "creative commons"
+    ]
+  },
+  {
+    "key": "fire scanner",
+    "nameZh": "消防无线电监听",
+    "stationCount": 16,
+    "originalNames": [
+      "fire scanner"
+    ]
+  },
+  {
+    "key": "japanese music",
+    "nameZh": "日本音乐",
+    "stationCount": 16,
+    "originalNames": [
+      "japanese music"
+    ]
+  },
+  {
+    "key": "romanian pop",
+    "nameZh": "罗马尼亚流行音乐",
+    "stationCount": 16,
+    "originalNames": [
+      "romanian pop"
+    ]
+  },
+  {
+    "key": "zouk",
+    "nameZh": "祖克音乐",
+    "stationCount": 16,
+    "originalNames": [
+      "zouk"
+    ]
+  },
+  {
+    "key": "atmospheric",
+    "nameZh": "氛围音乐风格",
+    "stationCount": 15,
+    "originalNames": [
+      "atmospheric"
+    ]
+  },
+  {
+    "key": "choral",
+    "nameZh": "合唱音乐",
+    "stationCount": 15,
+    "originalNames": [
+      "choral"
+    ]
+  },
+  {
+    "key": "deep ambient",
+    "nameZh": "深度氛围音乐",
+    "stationCount": 15,
+    "originalNames": [
+      "deep ambient"
+    ]
+  },
+  {
+    "key": "focus",
+    "nameZh": "专注音乐",
+    "stationCount": 15,
+    "originalNames": [
+      "focus",
+      "focus music"
+    ]
+  },
+  {
+    "key": "freestyle",
+    "nameZh": "自由风格舞曲",
+    "stationCount": 15,
+    "originalNames": [
+      "freestyle"
+    ]
+  },
+  {
+    "key": "local weather",
+    "nameZh": "本地天气",
+    "stationCount": 15,
+    "originalNames": [
+      "local weather"
+    ]
+  },
+  {
+    "key": "national radio",
+    "nameZh": "全国广播",
+    "stationCount": 15,
+    "originalNames": [
+      "national radio",
+      "国家台"
+    ]
+  },
+  {
+    "key": "seasonal",
+    "nameZh": "时令节目",
+    "stationCount": 15,
+    "originalNames": [
+      "seasonal"
+    ]
+  },
+  {
+    "key": "symphony",
+    "nameZh": "交响乐",
+    "stationCount": 15,
+    "originalNames": [
+      "symphony"
+    ]
+  },
+  {
+    "key": "travel",
+    "nameZh": "旅行",
+    "stationCount": 15,
+    "originalNames": [
+      "travel"
+    ]
+  },
+  {
+    "key": "bebop",
+    "nameZh": "比博普爵士",
+    "stationCount": 14,
+    "originalNames": [
+      "bebop"
+    ]
+  },
+  {
+    "key": "classic italian pop",
+    "nameZh": "意大利经典流行音乐",
+    "stationCount": 14,
+    "originalNames": [
+      "classic italian pop"
+    ]
+  },
+  {
+    "key": "country pop",
+    "nameZh": "乡村流行音乐",
+    "stationCount": 14,
+    "originalNames": [
+      "country pop"
+    ]
+  },
+  {
+    "key": "dark ambient",
+    "nameZh": "黑暗氛围音乐",
+    "stationCount": 14,
+    "originalNames": [
+      "dark ambient"
+    ]
+  },
+  {
+    "key": "doom metal",
+    "nameZh": "厄运金属",
+    "stationCount": 14,
+    "originalNames": [
+      "doom metal"
+    ]
+  },
+  {
+    "key": "female vocalists",
+    "nameZh": "女声音乐",
+    "stationCount": 14,
+    "originalNames": [
+      "female vocalists"
+    ]
+  },
+  {
+    "key": "forró",
+    "nameZh": "福罗音乐",
+    "stationCount": 14,
+    "originalNames": [
+      "forró"
+    ]
+  },
+  {
+    "key": "free jazz",
+    "nameZh": "自由爵士",
+    "stationCount": 14,
+    "originalNames": [
+      "free jazz"
+    ]
+  },
+  {
+    "key": "lgbt",
+    "nameZh": "性少数群体文化",
+    "stationCount": 14,
+    "originalNames": [
+      "lgbt"
+    ]
+  },
+  {
+    "key": "public health",
+    "nameZh": "公共卫生",
+    "stationCount": 14,
+    "originalNames": [
+      "public health"
+    ]
+  },
+  {
+    "key": "royalty free music",
+    "nameZh": "免版税音乐",
+    "stationCount": 14,
+    "originalNames": [
+      "royalty free"
+    ]
+  },
+  {
+    "key": "russian chanson",
+    "nameZh": "俄罗斯香颂",
+    "stationCount": 14,
+    "originalNames": [
+      "шансон",
+      "русский шансон",
+      "russian chanson"
+    ]
+  },
+  {
+    "key": "garage rock",
+    "nameZh": "车库摇滚",
+    "stationCount": 13,
+    "originalNames": [
+      "garage rock"
+    ]
+  },
+  {
+    "key": "regional news",
+    "nameZh": "地区新闻",
+    "stationCount": 13,
+    "originalNames": [
+      "regional news"
+    ]
+  },
+  {
+    "key": "science",
+    "nameZh": "科学",
+    "stationCount": 13,
+    "originalNames": [
+      "science",
+      "наука",
+      "научно-познавательное"
+    ]
+  },
+  {
+    "key": "television audio",
+    "nameZh": "电视伴音",
+    "stationCount": 10,
+    "originalNames": [
+      "电视伴音",
+      "television audio"
+    ]
+  },
+  {
+    "key": "audiobooks",
+    "nameZh": "有声书",
+    "stationCount": 9,
+    "originalNames": [
+      "audiobooks",
+      "аудиокниги",
+      "audio books"
+    ]
+  },
+  {
+    "key": "sermons",
+    "nameZh": "布道",
+    "stationCount": 9,
+    "originalNames": [
+      "sermons",
+      "проповеди"
+    ]
+  },
+  {
+    "key": "80s hits",
+    "nameZh": "八十年代热门歌曲",
+    "stationCount": 6,
+    "originalNames": [
+      "80s hits",
+      "хиты 80-х"
+    ]
+  },
+  {
+    "key": "90s hits",
+    "nameZh": "九十年代热门歌曲",
+    "stationCount": 5,
+    "originalNames": [
+      "хиты 90-х",
+      "90s hits"
+    ]
+  },
+  {
+    "key": "books",
+    "nameZh": "读书",
+    "stationCount": 5,
+    "originalNames": [
+      "books",
+      "读书"
+    ]
+  },
+  {
+    "key": "soviet pop",
+    "nameZh": "苏联流行音乐",
+    "stationCount": 3,
+    "originalNames": [
+      "советская эстрада"
+    ]
+  },
+  {
+    "key": "70-90-х",
+    "nameZh": "七十至九十年代音乐",
+    "stationCount": 2,
+    "originalNames": [
+      "70-90-х"
+    ]
+  },
+  {
+    "key": "roots music",
+    "nameZh": "根源音乐",
+    "stationCount": 2,
+    "originalNames": [
+      "roots music"
+    ]
+  },
+  {
+    "key": "russian punk",
+    "nameZh": "俄罗斯朋克",
+    "stationCount": 2,
+    "originalNames": [
+      "russian punk",
+      "русский панк"
+    ]
+  },
+  {
+    "key": "careers",
+    "nameZh": "职场",
+    "stationCount": 1,
+    "originalNames": [
+      "职场"
+    ]
+  },
+  {
+    "key": "financial news",
+    "nameZh": "财经新闻",
+    "stationCount": 1,
+    "originalNames": [
+      "财经"
+    ]
+  },
+  {
+    "key": "science fiction stories",
+    "nameZh": "科幻故事",
+    "stationCount": 1,
+    "originalNames": [
+      "фантастика"
+    ]
+  },
+  {
+    "key": "television drama",
+    "nameZh": "电视剧",
+    "stationCount": 1,
+    "originalNames": [
+      "电视剧"
+    ]
+  }
+]

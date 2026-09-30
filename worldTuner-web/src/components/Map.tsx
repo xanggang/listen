@@ -6,10 +6,11 @@ import { useLocale } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { Map as MapTilerMap, MapStyle, config } from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
+import { loadStationFeatures } from '@/lib/map-stations';
 import { useStationStore } from '@/app/store/useStationStore';
 
 interface MapProps {
-  onChange?: (stationId: number) => void;
+  onChange?: (stationId: string) => void;
 }
 
 interface PulseAnimation {
@@ -17,7 +18,9 @@ interface PulseAnimation {
   lastFrame: number;
 }
 
-/** 只为正在播放的单个点位更新光圈，限制到约 30 帧每秒。 */
+/**
+ * 只为正在播放的单个点位更新光圈，限制到约 30 帧每秒。
+ */
 function animatePlayingPulse(globe: MapTilerMap, pulse: PulseAnimation, timestamp: number): void {
   if (pulse.frame === null) return;
   if (timestamp - pulse.lastFrame >= 32) {
@@ -27,15 +30,19 @@ function animatePlayingPulse(globe: MapTilerMap, pulse: PulseAnimation, timestam
     pulse.lastFrame = timestamp;
   }
   pulse.frame = requestAnimationFrame(
-    /** 下一帧继续更新正在播放点位的光圈。 */
+    /**
+ * 下一帧继续更新正在播放点位的光圈。
+ */
     (nextTimestamp) => animatePlayingPulse(globe, pulse, nextTimestamp),
   );
 }
 
-/** 根据播放状态切换高亮点位，并在暂停或无地图坐标时停止动画。 */
-function syncPlayingStation(globe: MapTilerMap, stationId: number | null, pulse: PulseAnimation): void {
+/**
+ * 根据播放状态切换高亮点位，并在暂停或无地图坐标时停止动画。
+ */
+function syncPlayingStation(globe: MapTilerMap, stationId: string | null, pulse: PulseAnimation): void {
   if (!globe.getLayer('active-station-halo')) return;
-  const filter: ['==', ['get', 'id'], number] = ['==', ['get', 'id'], stationId ?? -1];
+  const filter: ['==', ['get', 'id'], string] = ['==', ['get', 'id'], stationId ?? ''];
   globe.setFilter('active-station-halo', filter);
   globe.setFilter('active-station-core', filter);
   if (stationId === null && pulse.frame !== null) {
@@ -43,13 +50,17 @@ function syncPlayingStation(globe: MapTilerMap, stationId: number | null, pulse:
     pulse.frame = null;
   } else if (stationId !== null && pulse.frame === null) {
     pulse.frame = requestAnimationFrame(
-      /** 开始当前电台的第一帧扩散动画。 */
+      /**
+ * 开始当前电台的第一帧扩散动画。
+ */
       (timestamp) => animatePlayingPulse(globe, pulse, timestamp),
     );
   }
 }
 
-/** 按经纬度生成与安卓端一致的 30 度辅助线，不写入电台数据。 */
+/**
+ * 按经纬度生成与安卓端一致的 30 度辅助线，不写入电台数据。
+ */
 function createGraticule(): GeoJSON.FeatureCollection<GeoJSON.LineString> {
   const features: GeoJSON.Feature<GeoJSON.LineString>[] = [];
   for (let longitude = -180; longitude <= 180; longitude += 30) {
@@ -69,36 +80,9 @@ function createGraticule(): GeoJSON.FeatureCollection<GeoJSON.LineString> {
   return { type: 'FeatureCollection', features };
 }
 
-/** 按需读取静态快照，只解析 id 与坐标，不把完整文件打进页面脚本。 */
-async function loadStationFeatures(signal: AbortSignal): Promise<GeoJSON.FeatureCollection<GeoJSON.Point>> {
-  const response = await fetch('/data.json', { signal, cache: 'force-cache' });
-  if (!response.ok) throw new Error('Station snapshot unavailable');
-  const payload: unknown = await response.json();
-  if (typeof payload !== 'object' || payload === null || !('data' in payload)) {
-    throw new Error('Invalid station snapshot');
-  }
-  const records = payload.data;
-  if (!Array.isArray(records)) throw new Error('Invalid station snapshot');
-  const features: GeoJSON.Feature<GeoJSON.Point>[] = [];
-  for (const value of records) {
-    if (typeof value !== 'object' || value === null || Array.isArray(value)) continue;
-    const point = value as Record<string, unknown>;
-    const { id, geoLat, geoLong } = point;
-    if (
-      typeof id !== 'number' || !Number.isSafeInteger(id) || id <= 0 ||
-      typeof geoLat !== 'number' || !Number.isFinite(geoLat) || Math.abs(geoLat) > 90 ||
-      typeof geoLong !== 'number' || !Number.isFinite(geoLong) || Math.abs(geoLong) > 180
-    ) continue;
-    features.push({
-      type: 'Feature',
-      properties: { id },
-      geometry: { type: 'Point', coordinates: [geoLong, geoLat] },
-    });
-  }
-  return { type: 'FeatureCollection', features };
-}
-
-/** 地图加载完成后同步空间、辅助线及普通/播放点位配色，避免重复添加 Cubemap 图层。 */
+/**
+ * 地图加载完成后同步空间、辅助线及普通/播放点位配色，避免重复添加 Cubemap 图层。
+ */
 function applyGlobeTheme(globe: MapTilerMap, dark: boolean): void {
   globe.setSpace({ color: dark ? '#0e1321' : '#f8fafc' });
   const color = dark ? '#00f2fe' : '#0284c7';
@@ -114,18 +98,22 @@ function applyGlobeTheme(globe: MapTilerMap, dark: boolean): void {
   }
 }
 
-/** 绘制安卓端同款卫星地球、独立电台点位及当前播放光圈。 */
+/**
+ * 绘制安卓端同款卫星地球、独立电台点位及当前播放光圈。
+ */
 export default function Map({ onChange }: MapProps) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapTilerMap | null>(null);
   const mapReady = useRef(false);
   const onChangeRef = useRef(onChange);
   const pulse = useRef<PulseAnimation>({ frame: null, lastFrame: 0 });
-  const stationIds = useRef<Set<number>>(new Set());
+  const stationIds = useRef<Set<string>>(new Set());
   const [hudVisible, setHudVisible] = useState(true);
   const [pointsError, setPointsError] = useState(false);
   const playingStationId = useStationStore(
-    /** 暂停或尚未选台时清除地图上的播放标记。 */
+    /**
+ * 暂停或尚未选台时清除地图上的播放标记。
+ */
     (state) => state.isPlaying ? state.currentStation?.id ?? null : null,
   );
   const playingStationIdRef = useRef(playingStationId);
@@ -135,7 +123,9 @@ export default function Map({ onChange }: MapProps) {
   playingStationIdRef.current = playingStationId;
 
   useEffect(
-    /** 初始化一次地球；卸载时同步释放 WebGL 资源和事件。 */
+    /**
+ * 初始化一次地球；卸载时同步释放 WebGL 资源和事件。
+ */
     () => {
       if (!container.current || map.current) return;
       const pointsController = new AbortController();
@@ -199,7 +189,7 @@ export default function Map({ onChange }: MapProps) {
           id: 'active-station-halo',
           type: 'circle',
           source: 'stations',
-          filter: ['==', ['get', 'id'], -1],
+          filter: ['==', ['get', 'id'], ''],
           paint: {
             'circle-color': accent,
             'circle-radius': 10,
@@ -211,7 +201,7 @@ export default function Map({ onChange }: MapProps) {
           id: 'active-station-core',
           type: 'circle',
           source: 'stations',
-          filter: ['==', ['get', 'id'], -1],
+          filter: ['==', ['get', 'id'], ''],
           paint: {
             'circle-color': '#ffffff',
             'circle-radius': 6,
@@ -221,34 +211,31 @@ export default function Map({ onChange }: MapProps) {
         });
         mapReady.current = true;
         applyGlobeTheme(globe, dark);
-        // 点位文件加载完成后一次性更新图层；组件卸载则取消请求。
-        void loadStationFeatures(pointsController.signal)
-          .then(
-            /** 地球仍存活时才替换空图层，保持每个电台独立点位。 */
-            (features) => {
-              if (map.current !== globe) return;
-              const source = globe.getSource('stations');
-              if (source && 'setData' in source && typeof source.setData === 'function') {
-                (source as { setData: (data: GeoJSON.FeatureCollection<GeoJSON.Point>) => void })
-                  .setData(features);
-              }
-              // 只记录真实快照点位，避免为地图上不存在的电台持续绘制动画。
-              loadedStationIds.clear();
-              for (const feature of features.features) {
-                loadedStationIds.add(Number(feature.properties?.id));
-              }
-              const id = playingStationIdRef.current;
-              syncPlayingStation(globe, id !== null && loadedStationIds.has(id) ? id : null, pulseState);
-            },
-          )
-          .catch(
-            /** 静态快照失效时保留地球并显示轻量提示。 */
-            () => { if (!pointsController.signal.aborted) setPointsError(true); },
-          );
+        // 当前库点位分批到达就更新图层，地图和详情始终使用同一数据源。
+        void loadStationFeatures(pointsController.signal,
+          // 每批保留独立点位并同步播放光圈；卸载后不再更新地图。
+          (features) => {
+            if (map.current !== globe) return;
+            const source = globe.getSource('stations');
+            if (source && 'setData' in source && typeof source.setData === 'function') {
+              (source as { setData: (data: GeoJSON.FeatureCollection<GeoJSON.Point>) => void }).setData(features);
+            }
+            loadedStationIds.clear();
+            for (const feature of features.features) {
+              const id = feature.properties?.id;
+              if (typeof id === 'string') loadedStationIds.add(id);
+            }
+            const id = playingStationIdRef.current;
+            syncPlayingStation(globe, id !== null && loadedStationIds.has(id) ? id : null, pulseState);
+          },
+        ).catch(
+          // 点位请求失败时保留地球并显示提示，主动卸载不会显示错误。
+          () => { if (!pointsController.signal.aborted) setPointsError(true); },
+        );
         // 点击点位只回传 id，播放器再从 API 获取完整电台详情。
         globe.on('click', 'station-points', (event) => {
-          const id = Number(event.features?.[0]?.properties?.id);
-          if (Number.isSafeInteger(id) && id > 0) onChangeRef.current?.(id);
+          const id = event.features?.[0]?.properties?.id;
+          if (typeof id === 'string' && /^\d{19}$/.test(id)) onChangeRef.current?.(id);
         });
         // 鼠标进入或离开电台时只改变指针，不增加地图控件。
         globe.on('mouseenter', 'station-points', () => {
@@ -260,7 +247,9 @@ export default function Map({ onChange }: MapProps) {
       });
       // 视角放大或倾斜后淡出装饰环，避免遮挡地图内容。
       globe.on('move', () => setHudVisible(globe.getZoom() <= 1.35 && globe.getPitch() <= 20));
-      /** 页面卸载时释放地图实例。 */
+      /**
+ * 页面卸载时释放地图实例。
+ */
       return () => {
         pointsController.abort();
         if (pulseState.frame !== null) cancelAnimationFrame(pulseState.frame);
@@ -275,7 +264,9 @@ export default function Map({ onChange }: MapProps) {
   );
 
   useEffect(
-    /** 播放、暂停或切台时只更新播放点位，不重建地球和普通点位。 */
+    /**
+ * 播放、暂停或切台时只更新播放点位，不重建地球和普通点位。
+ */
     () => {
       const globe = map.current;
       if (!globe || !mapReady.current) return;
@@ -288,7 +279,9 @@ export default function Map({ onChange }: MapProps) {
   );
 
   useEffect(
-    /** 主题变化时保留地球视角，只替换空间、辅助线和点位配色。 */
+    /**
+ * 主题变化时保留地球视角，只替换空间、辅助线和点位配色。
+ */
     () => {
       const globe = map.current;
       if (!globe || !mapReady.current || !globe.isStyleLoaded() || !resolvedTheme) return;

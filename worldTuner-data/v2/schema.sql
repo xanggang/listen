@@ -72,7 +72,9 @@ CREATE INDEX idx_station_source_station ON station_source(station_id, source);
 CREATE TABLE tag (
   id TEXT PRIMARY KEY NOT NULL CHECK (length(id) = 19 AND id NOT GLOB '*[^0-9]*'),
   name TEXT NOT NULL CHECK (length(trim(name)) > 0),
-  normalized_name TEXT NOT NULL CHECK (length(trim(normalized_name)) > 0)
+  normalized_name TEXT NOT NULL CHECK (length(trim(normalized_name)) > 0),
+  -- 中文展示名；待审或尚未翻译的标签保持 NULL。
+  name_zh TEXT CHECK (name_zh IS NULL OR length(trim(name_zh)) > 0)
 );
 CREATE INDEX idx_tag_normalized_name ON tag(normalized_name);
 

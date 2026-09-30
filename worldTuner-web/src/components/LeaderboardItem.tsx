@@ -1,28 +1,37 @@
 'use client';
 
+import type { Station } from '@/types';
 import type { PlayableStation } from '@/types/playable-station';
 import { useLocale } from 'next-intl';
 import { useStationStore } from '@/app/store/useStationStore';
 import { useLibraryStore } from '@/app/store/useLibraryStore';
 
 interface LeaderboardItemProps {
-  item: PlayableStation;
+  item: PlayableStation | Station;
   rank?: number;
 }
 
-/** 统一绘制发现页和榜单页的电台行，播放动作使用全局播放器。 */
+/**
+ * 统一绘制发现页和榜单页的电台行，播放动作使用全局播放器。
+ */
 export default function LeaderboardItem({ item, rank }: LeaderboardItemProps) {
   const locale = useLocale();
   const playStation = useStationStore(
-    /** 只订阅选台动作，避免播放状态刷新整个列表。 */
+    /**
+ * 只订阅选台动作，避免播放状态刷新整个列表。
+ */
     (state) => state.playStation,
   );
   const favorite = useLibraryStore(
-    /** 只订阅此电台的收藏状态，其他电台变化不触发本行刷新。 */
+    /**
+ * 只订阅此电台的收藏状态，其他电台变化不触发本行刷新。
+ */
     (state) => state.favorites.some((station) => station.id === item.id),
   );
   const toggleFavorite = useLibraryStore(
-    /** 只订阅本地收藏动作。 */
+    /**
+ * 只订阅本地收藏动作。
+ */
     (state) => state.toggleFavorite,
   );
 
@@ -36,7 +45,9 @@ export default function LeaderboardItem({ item, rank }: LeaderboardItemProps) {
       {rank !== undefined && <span className="station-row__rank">{rank}</span>}
       <div className="station-row__art">
         {item.favicon ? <img src={item.favicon} alt="" onError={
-          /** 外部图标失效时隐藏图片并显示占位背景。 */
+          /**
+ * 外部图标失效时隐藏图片并显示占位背景。
+ */
           (event) => { event.currentTarget.style.display = 'none'; }
         } /> : <span className="iconfont icon-bofang" aria-hidden="true" />}
       </div>
@@ -52,7 +63,9 @@ export default function LeaderboardItem({ item, rank }: LeaderboardItemProps) {
           : (locale === 'zh' ? `收藏 ${item.name}` : `Add ${item.name} to favorites`)}
         aria-pressed={favorite}
         onClick={
-          /** 收藏仅写入当前浏览器，不调用 API。 */
+          /**
+ * 收藏仅写入当前浏览器，不调用 API。
+ */
           () => toggleFavorite(item)
         }
       >

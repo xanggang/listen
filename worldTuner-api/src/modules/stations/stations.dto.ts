@@ -1,31 +1,52 @@
-import type { StationRow } from './stations.types.ts';
+import type { StationRow, StreamRow } from './stations.types.ts';
 
-const aliases = {
-  url_resolved: 'urlResolved',
-  lastchangetime_iso8601: 'lastchangetimeIso8601',
-  lastchecktime_iso8601: 'lastchecktimeIso8601',
-  lastcheckoktime_iso8601: 'lastcheckoktimeIso8601',
-  lastlocalchecktime_iso8601: 'lastlocalchecktimeIso8601',
-  clicktimestamp_iso8601: 'clicktimestampIso8601',
-  ssl_error: 'sslError',
-  geo_lat: 'geoLat',
-  geo_long: 'geoLong',
-  geo_distance: 'geoDistance',
-  has_extended_info: 'hasExtendedInfo',
-} as const;
+/**
+ * 生成电台展示 DTO；ID 保持字符串，未知来源统计保持 null，缺流时 URL 为空。
+ */
+export function stationDto(row: StationRow) {
+  return {
+    id: row.id,
+    name: row.name,
+    website: row.website,
+    favicon: row.favicon,
+    place: row.place,
+    countryId: row.country_id,
+    country: row.country,
+    countrycode: row.countrycode,
+    geoLat: row.geo_lat,
+    geoLong: row.geo_long,
+    votes: row.votes,
+    clickcount: row.clickcount,
+    sourceType: row.source_type,
+    catalogStatus: row.catalog_status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    url: row.url,
+    urlResolved: row.url_resolved,
+    codec: row.codec,
+    bitrate: row.bitrate,
+    hls: row.hls,
+    lastcheckok: row.lastcheckok,
+    tags: row.tags,
+    language: row.language,
+    languagecodes: row.languagecodes,
+  };
+}
 
-export type StationDto = {
-  [
-    K in keyof StationRow as K extends keyof typeof aliases ? (typeof aliases)[K] : K
-  ]: StationRow[K];
-};
-// Mapping is deliberately centralized; storage columns never leak into route handlers.
-/** 将数据库列映射到 v1 电台契约，保留空值及现有 Web 字段命名。 */
-export function stationDto(row: StationRow): StationDto {
-  return Object.fromEntries(
-    Object.entries(row).map(
-      /** 逐项转换已知列名；未重命名的契约字段保留原名。 */
-      ([key, value]) => [(aliases as Record<string, string>)[key] ?? key, value],
-    ),
-  ) as StationDto;
+/**
+ * 将播放流字段映射为客户端字段，保留未知检查状态和 HLS 的 null。
+ */
+export function streamDto(row: StreamRow) {
+  return {
+    id: row.id,
+    url: row.url,
+    urlResolved: row.resolved_url,
+    codec: row.codec,
+    bitrate: row.bitrate,
+    hls: row.is_hls,
+    isPrimary: row.is_primary === 1,
+    lastcheckok: row.last_check_ok,
+    lastCheckedAt: row.last_checked_at,
+    resolvedAt: row.resolved_at,
+  };
 }

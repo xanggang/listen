@@ -1,39 +1,62 @@
-import type { CatalogItem, CatalogKind } from './catalog.types.ts';
-// SQL identifiers come exclusively from this fixed map, never request input.
-const tables: Record<CatalogKind, string> = {
-  languages: 'languages',
-  tags: 'tags',
-  countries: 'countries',
-};
+import type { SqlDatabase } from '../../database/database.ts';
+import type { CatalogKind, CatalogItem } from './catalog.types.ts';
+import { publicStation } from '../../database/catalog-policy.ts';
+
+// 固定映射限定表名和关系字段；外部输入永远不作为 SQL 标识符。
+const tables = { languages: 'language', tags: 'tag', countries: 'country' } as const;
+const relations = {
+  languages: ['station_language', 'language_id'],
+  tags: ['station_tag', 'tag_id'],
+} as const;
+
+/**
+ * 按公开电台关联统计分类数量，过滤零关联分类，国家和语种使用 code 字段。
+ */
+function catalogSql(kind: CatalogKind): string {
+  const table = tables[kind];
+  const code = kind === 'tags' ? '' : ', x.code';
+  const join =
+    kind === 'countries'
+      ? 'JOIN station s ON s.country_id = x.id'
+      : `JOIN ${relations[kind][0]} r ON r.${relations[kind][1]} = x.id JOIN station s ON s.id = r.station_id`;
+  return `SELECT x.id, x.name${code}, COUNT(*) AS stationcount FROM ${table} x ${join} WHERE ${publicStation}`;
+}
 export class CatalogRepository {
-  private db: D1Database;
-  /** 注入当前请求使用的 D1 连接，不保留 HTTP 上下文。 */
-  constructor(db: D1Database) {
+  private readonly db: SqlDatabase;
+  /**
+   * 注入统一连接；分类业务不依赖 Worker 或 Node 的运行环境。
+   */
+  constructor(db: SqlDatabase) {
     this.db = db;
   }
-  /** 按电台数量及 id 稳定排序读取字典，表名仅来自固定映射。 */
-  async list(kind: CatalogKind, limit: number) {
+
+  /**
+   * 返回按公开关联数量排序的分类，不依赖来源库预计算的 stationcount。
+   */
+  async list(kind: CatalogKind, limit: number): Promise<CatalogItem[]> {
     const { results } = await this.db
-      .prepare(`SELECT * FROM ${tables[kind]} ORDER BY stationcount DESC, id ASC LIMIT ?`)
+      .prepare(`${catalogSql(kind)} GROUP BY x.id ORDER BY stationcount DESC, x.id ASC LIMIT ?`)
       .bind(limit)
       .all<CatalogItem>();
     return results;
   }
   /**
-   * 按标签名称搜索并分页，LIKE 通配符按字面匹配，排序与字典列表一致。
+   * 使用字面名称匹配分页检索标签，分类数量与电台可见性采用相同口径。
    */
-  async searchTags(query: string, limit: number, offset: number) {
+  async searchTags(query: string, limit: number, offset: number): Promise<CatalogItem[]> {
     const escaped = query.replace(/[\\%_]/g, '\\$&');
     const { results } = await this.db
       .prepare(
-        "SELECT * FROM tags WHERE (? = '' OR name LIKE ? ESCAPE '\\') ORDER BY stationcount DESC, id ASC LIMIT ? OFFSET ?",
+        `${catalogSql('tags')} AND (? = '' OR x.name LIKE ? ESCAPE '\\') GROUP BY x.id ORDER BY stationcount DESC, x.id ASC LIMIT ? OFFSET ?`,
       )
       .bind(query, `%${escaped}%`, limit, offset)
       .all<CatalogItem>();
     return results;
   }
-  /** 按字典主键读取名称，用于把筛选 id 转换为现有存储格式。 */
-  findName(kind: CatalogKind, id: number) {
+  /**
+   * 按实体 ID 校验分类存在性，业务层不再依赖名称做模糊关联。
+   */
+  findName(kind: CatalogKind, id: string) {
     return this.db
       .prepare(`SELECT name FROM ${tables[kind]} WHERE id = ?`)
       .bind(id)

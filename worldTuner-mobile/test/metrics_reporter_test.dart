@@ -24,7 +24,7 @@ void main() {
       client: MockClient(
         // 记录上报正文，不访问真实 Worker。
         (request) async {
-          expect(request.url.path, '/api/v1/metrics/visit');
+          expect(request.url.path, '/api/metrics/visit');
           payloads.add(jsonDecode(request.body) as Map<String, dynamic>);
           return http.Response('{"data":{"recorded":true}}', 200);
         },

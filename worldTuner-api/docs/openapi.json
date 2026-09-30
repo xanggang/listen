@@ -1,571 +1,24 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Listen API",
+    "title": "worldTuner API",
     "version": "1.0.0",
-    "description": "Guest catalog API with a minimal anonymous visit endpoint. Numeric IDs and legacy names retained for compatibility. Unknown/repeated parameters rejected. Offset capped at 100000. No user authentication."
+    "description": "统一新库 API，支持 Cloudflare D1 和 SQLite。仅 /api 路径，无旧表或旧接口兼容。匿名游客，无用户体系；拒绝未知/重复参数。所有实体 ID 是 19 位字符串。"
   },
   "servers": [
     {
-      "url": "http://localhost:8787/api/v1"
+      "url": "http://localhost:8787/api"
     }
   ],
   "paths": {
-    "/metrics/visit": {
-      "post": {
-        "operationId": "recordAnonymousVisit",
-        "tags": ["metrics"],
-        "description": "Records one page view. The server derives UTC day/month hashes and stores no raw visitor ID. No account or authentication is involved; the result is approximate usage analytics.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["visitorId", "source", "page"],
-                "properties": {
-                  "visitorId": { "type": "string", "format": "uuid", "description": "Random anonymous UUID stored only on the client." },
-                  "source": { "type": "string", "enum": ["web", "android"] },
-                  "page": {
-                    "type": "string",
-                    "enum": ["welcome", "map", "discover", "search", "charts", "settings", "vip", "player"]
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Visit accepted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": { "data": { "type": "object", "properties": { "recorded": { "type": "boolean" } } } }
-                }
-              }
-            }
-          },
-          "400": { "description": "Invalid or unexpected field" },
-          "413": { "description": "Request body exceeds 1024 characters" },
-          "415": { "description": "JSON content type required" },
-          "429": { "description": "Metrics write rate limit exceeded" }
-        }
-      }
-    },
-    "/stations": {
-      "get": {
-        "operationId": "listStations",
-        "tags": [
-          "stations"
-        ],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1,
-              "maximum": 10000
-            }
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 20,
-              "maximum": 100
-            }
-          },
-          {
-            "name": "languagesId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "name": "tagsId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "name": "countriesId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "name": "keyword",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "maxLength": 100
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "data"
-                  ],
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "required": [
-                        "list",
-                        "page",
-                        "pageSize",
-                        "hasMore",
-                        "nextPage"
-                      ],
-                      "properties": {
-                        "list": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/Station"
-                          }
-                        },
-                        "page": {
-                          "type": "integer"
-                        },
-                        "pageSize": {
-                          "type": "integer"
-                        },
-                        "hasMore": {
-                          "type": "boolean"
-                        },
-                        "nextPage": {
-                          "type": "integer",
-                          "nullable": true
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/stations/{id}": {
-      "get": {
-        "operationId": "getStation",
-        "tags": [
-          "stations"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "minimum": 1
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "data"
-                  ],
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/Station"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/languages": {
-      "get": {
-        "operationId": "listLanguages",
-        "tags": [
-          "catalog"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1000,
-              "maximum": 1000
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "data"
-                  ],
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "integer"
-                          },
-                          "name": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "stationcount": {
-                            "type": "integer",
-                            "nullable": true
-                          },
-                          "iso_639": {
-                            "type": "string",
-                            "nullable": true
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/tags": {
-      "get": {
-        "operationId": "listTags",
-        "tags": [
-          "catalog"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 30,
-              "maximum": 1000
-            }
-          },
-          {
-            "name": "q",
-            "in": "query",
-            "description": "按标签名称进行不区分大小写的字面子串搜索，最多 100 字符。",
-            "schema": {
-              "type": "string",
-              "maxLength": 100
-            }
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "从排序后的第几项开始读取；与 limit 配合分页。",
-            "schema": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 100000,
-              "default": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "data"
-                  ],
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "integer"
-                          },
-                          "name": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "stationcount": {
-                            "type": "integer",
-                            "nullable": true
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/countries": {
-      "get": {
-        "operationId": "listCountries",
-        "tags": [
-          "catalog"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 30,
-              "maximum": 1000
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "data"
-                  ],
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "integer"
-                          },
-                          "name": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "stationcount": {
-                            "type": "integer",
-                            "nullable": true
-                          },
-                          "iso_3166_1": {
-                            "type": "string",
-                            "nullable": true
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Request failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/health": {
       "get": {
         "operationId": "health",
+        "description": "存活探测，不检查数据库。",
+        "parameters": [],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "成功响应",
             "content": {
               "application/json": {
                 "schema": {
@@ -590,15 +43,816 @@
               }
             }
           },
-          "429": {
-            "description": "Request failed",
+          "400": {
+            "description": "无效参数",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiError"
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
+          },
+          "429": {
+            "description": "请求超限",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部错误或数据源不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stations": {
+      "get": {
+        "operationId": "listStations",
+        "description": "公开电台，按票数倒序和 ID 升序分页；offset 不超过 100000。分类按关联 ID 精确匹配，keyword 字面搜索名称、地点、国家、标签和语种。",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000,
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "tagsId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          },
+          {
+            "name": "languagesId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          },
+          {
+            "name": "countriesId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StationPage"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "无效参数",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "请求超限",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部错误或数据源不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stations/{id}": {
+      "get": {
+        "operationId": "stationDetail",
+        "description": "隐藏、不可用和不存在的电台均为 404。HTTP(S) 流优先非失败，其次首选，最后 ID；默认 URL 与 streams 第一项一致。",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Station"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "streams": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/Stream"
+                              }
+                            },
+                            "links": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "$ref": "#/components/schemas/EntityId"
+                                  },
+                                  "platform": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "无效参数",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "请求超限",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "电台不可见或不存在"
+          },
+          "500": {
+            "description": "内部错误或数据源不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/map/stations": {
+      "get": {
+        "operationId": "mapStations",
+        "description": "ID 升序游标分页，排除隐藏、不可用及无坐标记录；点位不聚合，nextCursor 为 null 表示完成。",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5000,
+              "default": 2000
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "list": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "name",
+                              "geoLat",
+                              "geoLong"
+                            ],
+                            "properties": {
+                              "id": {
+                                "$ref": "#/components/schemas/EntityId"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "geoLat": {
+                                "type": "number",
+                                "minimum": -90,
+                                "maximum": 90
+                              },
+                              "geoLong": {
+                                "type": "number",
+                                "minimum": -180,
+                                "maximum": 180
+                              }
+                            }
+                          }
+                        },
+                        "nextCursor": {
+                          "type": "string",
+                          "pattern": "^[0-9]{19}$",
+                          "example": "0363513228099059713",
+                          "description": "19 位十进制字符串，保留前导零，禁止转换为 Number。",
+                          "nullable": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "无效参数",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "请求超限",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部错误或数据源不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tags": {
+      "get": {
+        "operationId": "listTags",
+        "description": "按公开电台关联数量倒序、ID 升序排列；只返回有公开电台的分类。标签 q 按字面子串匹配。",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 30
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CatalogItem"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "无效参数",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "请求超限",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部错误或数据源不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/countries": {
+      "get": {
+        "operationId": "listCountries",
+        "description": "按公开电台关联数量倒序、ID 升序排列；只返回有公开电台的分类。标签 q 按字面子串匹配。",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CatalogItem"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "无效参数",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "请求超限",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部错误或数据源不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/languages": {
+      "get": {
+        "operationId": "listLanguages",
+        "description": "按公开电台关联数量倒序、ID 升序排列；只返回有公开电台的分类。标签 q 按字面子串匹配。",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 1000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功响应",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CatalogItem"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "无效参数",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "请求超限",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部错误或数据源不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metrics/visit": {
+      "post": {
+        "operationId": "recordAnonymousVisit",
+        "tags": [
+          "metrics"
+        ],
+        "description": "Records one page view. The server derives UTC day/month hashes and stores no raw visitor ID. No account or authentication is involved; the result is approximate usage analytics.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "visitorId",
+                  "source",
+                  "page"
+                ],
+                "properties": {
+                  "visitorId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Random anonymous UUID stored only on the client."
+                  },
+                  "source": {
+                    "type": "string",
+                    "enum": [
+                      "web",
+                      "android"
+                    ]
+                  },
+                  "page": {
+                    "type": "string",
+                    "enum": [
+                      "welcome",
+                      "map",
+                      "discover",
+                      "search",
+                      "charts",
+                      "settings",
+                      "vip",
+                      "player"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Visit accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "recorded": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or unexpected field"
+          },
+          "413": {
+            "description": "Request body exceeds 1024 characters"
+          },
+          "415": {
+            "description": "JSON content type required"
+          },
+          "429": {
+            "description": "Metrics write rate limit exceeded"
+          }
+        }
+      }
+    },
+    "/map/snapshot": {
+      "get": {
+        "operationId": "mapSnapshot",
+        "description": "全部公开且有有效坐标的电台，不分页、不聚合。四字段元组，坐标保留五位小数。默认 TTL 300 秒，支持 gzip、弱 ETag；不接受查询参数。",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "schema": {
+              "type": "string"
+            },
+            "description": "上次 ETag；支持多标签与 *。"
+          },
+          {
+            "in": "header",
+            "name": "Accept-Encoding",
+            "schema": {
+              "type": "string"
+            },
+            "description": "接受 gzip 时压缩，gzip;q=0 返回 identity。"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "全量点位；ETag 校验和剩余缓存 TTL。",
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Content-Encoding": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "gzip"
+                  ]
+                },
+                "description": "仅 gzip 正文包含此头。"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "count",
+                        "points"
+                      ],
+                      "properties": {
+                        "count": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "points": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "minItems": 4,
+                            "maxItems": 4,
+                            "description": "固定顺序：[19 位字符串 ID, name, longitude, latitude]；OAS 3.0 不支持位置类型校验。",
+                            "items": {
+                              "oneOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "number"
+                                }
+                              ]
+                            },
+                            "example": [
+                              "0363513228099059713",
+                              "Radio",
+                              -87.90647,
+                              43.0389
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "内容未改变，无正文；复用现有快照并更新缓存有效期。",
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "不接受查询参数。"
+          },
+          "429": {
+            "description": "读取限流。"
+          },
+          "503": {
+            "description": "数据源暂时不可用，不缓存失败响应。"
           }
         }
       }
@@ -606,33 +860,38 @@
   },
   "components": {
     "schemas": {
+      "EntityId": {
+        "type": "string",
+        "pattern": "^[0-9]{19}$",
+        "example": "0363513228099059713",
+        "description": "19 位十进制字符串，保留前导零，禁止转换为 Number。"
+      },
       "Station": {
         "type": "object",
+        "required": [
+          "id",
+          "name",
+          "url",
+          "urlResolved",
+          "geoLat",
+          "geoLong",
+          "catalogStatus"
+        ],
         "properties": {
           "id": {
-            "type": "integer"
-          },
-          "changeuuid": {
-            "type": "string",
-            "nullable": true
-          },
-          "stationuuid": {
-            "type": "string",
-            "nullable": true
+            "$ref": "#/components/schemas/EntityId"
           },
           "name": {
+            "type": "string"
+          },
+          "countryId": {
             "type": "string",
+            "pattern": "^[0-9]{19}$",
+            "example": "0363513228099059713",
+            "description": "19 位十进制字符串，保留前导零，禁止转换为 Number。",
             "nullable": true
           },
-          "url": {
-            "type": "string",
-            "nullable": true
-          },
-          "urlResolved": {
-            "type": "string",
-            "nullable": true
-          },
-          "homepage": {
+          "website": {
             "type": "string",
             "nullable": true
           },
@@ -640,7 +899,7 @@
             "type": "string",
             "nullable": true
           },
-          "tags": {
+          "place": {
             "type": "string",
             "nullable": true
           },
@@ -652,11 +911,19 @@
             "type": "string",
             "nullable": true
           },
-          "iso_3166_2": {
+          "url": {
             "type": "string",
             "nullable": true
           },
-          "state": {
+          "urlResolved": {
+            "type": "string",
+            "nullable": true
+          },
+          "codec": {
+            "type": "string",
+            "nullable": true
+          },
+          "tags": {
             "type": "string",
             "nullable": true
           },
@@ -668,15 +935,101 @@
             "type": "string",
             "nullable": true
           },
+          "geoLat": {
+            "type": "number",
+            "nullable": true
+          },
+          "geoLong": {
+            "type": "number",
+            "nullable": true
+          },
           "votes": {
             "type": "number",
             "nullable": true
           },
-          "lastchangetime": {
-            "type": "string",
+          "clickcount": {
+            "type": "number",
             "nullable": true
           },
-          "lastchangetimeIso8601": {
+          "bitrate": {
+            "type": "number",
+            "nullable": true
+          },
+          "sourceType": {
+            "type": "string",
+            "enum": [
+              "radio_browser",
+              "radio_garden",
+              "both"
+            ]
+          },
+          "catalogStatus": {
+            "type": "string",
+            "enum": [
+              "active",
+              "unverified"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hls": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "nullable": true
+          },
+          "lastcheckok": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "nullable": true
+          }
+        }
+      },
+      "StationPage": {
+        "type": "object",
+        "properties": {
+          "list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Station"
+            }
+          },
+          "page": {
+            "type": "integer"
+          },
+          "pageSize": {
+            "type": "integer"
+          },
+          "hasMore": {
+            "type": "boolean"
+          },
+          "nextPage": {
+            "type": "integer",
+            "nullable": true
+          }
+        }
+      },
+      "Stream": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/EntityId"
+          },
+          "url": {
+            "type": "string"
+          },
+          "urlResolved": {
             "type": "string",
             "nullable": true
           },
@@ -689,115 +1042,59 @@
             "nullable": true
           },
           "hls": {
-            "type": "number",
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
             "nullable": true
+          },
+          "isPrimary": {
+            "type": "boolean"
           },
           "lastcheckok": {
-            "type": "number",
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
             "nullable": true
           },
-          "lastchecktime": {
+          "lastCheckedAt": {
             "type": "string",
             "nullable": true
           },
-          "lastchecktimeIso8601": {
+          "resolvedAt": {
             "type": "string",
-            "nullable": true
-          },
-          "lastcheckoktime": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastcheckoktimeIso8601": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastlocalchecktime": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastlocalchecktimeIso8601": {
-            "type": "string",
-            "nullable": true
-          },
-          "clicktimestamp": {
-            "type": "string",
-            "nullable": true
-          },
-          "clicktimestampIso8601": {
-            "type": "string",
-            "nullable": true
-          },
-          "clickcount": {
-            "type": "number",
-            "nullable": true
-          },
-          "clicktrend": {
-            "type": "number",
-            "nullable": true
-          },
-          "sslError": {
-            "type": "number",
-            "nullable": true
-          },
-          "geoLat": {
-            "type": "number",
-            "nullable": true
-          },
-          "geoLong": {
-            "type": "number",
-            "nullable": true
-          },
-          "geoDistance": {
-            "type": "number",
-            "nullable": true
-          },
-          "hasExtendedInfo": {
-            "type": "number",
             "nullable": true
           }
-        },
+        }
+      },
+      "CatalogItem": {
+        "type": "object",
         "required": [
           "id",
-          "changeuuid",
-          "stationuuid",
           "name",
-          "url",
-          "urlResolved",
-          "homepage",
-          "favicon",
-          "tags",
-          "country",
-          "countrycode",
-          "iso_3166_2",
-          "state",
-          "language",
-          "languagecodes",
-          "votes",
-          "lastchangetime",
-          "lastchangetimeIso8601",
-          "codec",
-          "bitrate",
-          "hls",
-          "lastcheckok",
-          "lastchecktime",
-          "lastchecktimeIso8601",
-          "lastcheckoktime",
-          "lastcheckoktimeIso8601",
-          "lastlocalchecktime",
-          "lastlocalchecktimeIso8601",
-          "clicktimestamp",
-          "clicktimestampIso8601",
-          "clickcount",
-          "clicktrend",
-          "sslError",
-          "geoLat",
-          "geoLong",
-          "geoDistance",
-          "hasExtendedInfo"
-        ]
+          "stationcount"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/EntityId"
+          },
+          "name": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "stationcount": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
       },
-      "ApiError": {
+      "Error": {
         "type": "object",
         "properties": {
           "error": {

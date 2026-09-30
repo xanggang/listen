@@ -1,7 +1,9 @@
 import { ApiError } from '../../shared/errors.ts';
-import { integer, validateParams } from '../../shared/validation.ts';
+import { entityId, integer, validateParams } from '../../shared/validation.ts';
 
-/** 验证分页、筛选和关键词，限制页大小与深分页成本。 */
+/**
+ * 验证分页、筛选和关键词，限制页大小与深分页成本。
+ */
 export function parseStationQuery(params: URLSearchParams) {
   validateParams(params, ['page', 'pageSize', 'languagesId', 'tagsId', 'countriesId', 'keyword']);
   const page = integer(params.get('page'), 'page', 1, 10000);
@@ -18,11 +20,11 @@ export function parseStationQuery(params: URLSearchParams) {
     offset,
     keyword,
     languagesId: params.has('languagesId')
-      ? integer(params.get('languagesId'), 'languagesId')
+      ? entityId(params.get('languagesId'), 'languagesId')
       : undefined,
-    tagsId: params.has('tagsId') ? integer(params.get('tagsId'), 'tagsId') : undefined,
+    tagsId: params.has('tagsId') ? entityId(params.get('tagsId'), 'tagsId') : undefined,
     countriesId: params.has('countriesId')
-      ? integer(params.get('countriesId'), 'countriesId')
+      ? entityId(params.get('countriesId'), 'countriesId')
       : undefined,
   };
 }

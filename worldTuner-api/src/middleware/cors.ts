@@ -13,6 +13,6 @@ export const corsPolicy: MiddlewareHandler<AppEnv> =
           ? origin
           : undefined,
       allowMethods: ['GET', 'POST', 'OPTIONS'],
-      allowHeaders: ['Content-Type'],
-      exposeHeaders: ['X-Request-Id', 'Retry-After'],
+      allowHeaders: ['Content-Type', 'If-None-Match'],
+      exposeHeaders: ['X-Request-Id', 'Retry-After', 'ETag'],
     })(c, next);

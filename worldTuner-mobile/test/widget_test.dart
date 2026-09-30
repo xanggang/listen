@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:worldtuner_mobile/features/map/map_point.dart';
 import 'package:worldtuner_mobile/features/stations/station.dart';
@@ -12,9 +13,11 @@ void main() {
       {"id":3,"name":"C","geoLat":null,"geoLong":45}
     ]}
     ''';
-    final points = MapPoint.parseSnapshot(json);
+    final points = MapPoint.parseRows(
+      (jsonDecode(json) as Map<String, dynamic>)['data'] as List<dynamic>,
+    );
     expect(points.length, 1);
-    expect(points.single.id, 1);
+    expect(points.single.id, '1');
     expect(points.single.latitude, 12.5);
   });
 

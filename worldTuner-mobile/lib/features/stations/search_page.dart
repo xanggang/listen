@@ -49,9 +49,9 @@ class _SearchPageState extends State<SearchPage> {
   late Future<List<CatalogItem>> _countries;
   String _keyword = '';
   int _category = 0;
-  int? _tagId;
-  int? _languageId;
-  int? _countryId;
+  String? _tagId;
+  String? _languageId;
+  String? _countryId;
   int? _nextPage = 1;
   int _generation = 0;
   bool _loading = false;
@@ -207,7 +207,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   // 返回当前分类的快捷字典与已选 id；全部类别没有二级选项。
-  (Future<List<CatalogItem>>, int?)? _currentCatalog() {
+  (Future<List<CatalogItem>>, String?)? _currentCatalog() {
     return switch (_category) {
       1 => (_tags, _tagId),
       2 => (_countries, _countryId),

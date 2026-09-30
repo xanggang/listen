@@ -170,9 +170,14 @@
       closest = feature;
       closestDistance = distance;
     }
-    const id = Number(closest && closest.properties && closest.properties.id);
-    if (!Number.isSafeInteger(id) || id <= 0) return;
+    const id = closest && closest.properties && closest.properties.id;
+    if (!validStationId(id)) return;
     send('select', { id });
+  }
+
+  // ID 保持字符串；雪花 ID 不可转为 Number，否则点选和播放特效会指向错误电台。
+  function validStationId(id) {
+    return typeof id === 'string' && /^(?:[0-9]{19}|[1-9][0-9]{0,15})$/.test(id);
   }
 
   // 将全部有效经纬度逐个更新为 GeoJSON，不合并相邻或重合的电台。
@@ -181,7 +186,8 @@
     pendingStations = stations;
     if (!ready) return;
     const features = stations
-      .filter((station) => Number.isSafeInteger(station.id) &&
+      // 仅接受字符串 ID 和有效坐标，避免进入 GeoJSON 后丢失 ID 精度。
+      .filter((station) => validStationId(station.id) &&
         Number.isFinite(station.latitude) && Number.isFinite(station.longitude))
       .map((station) => ({
         type: 'Feature',
@@ -196,7 +202,7 @@
 
   // 播放点位随状态移动或清空；坐标来自 Flutter 已校验的电台和地图快照。
   function setActiveStation(station) {
-    const valid = station && Number.isSafeInteger(station.id) && station.id > 0 &&
+    const valid = station && validStationId(station.id) &&
       Number.isFinite(station.latitude) && station.latitude >= -90 && station.latitude <= 90 &&
       Number.isFinite(station.longitude) && station.longitude >= -180 && station.longitude <= 180;
     activeStation = valid ? station : null;

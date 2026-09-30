@@ -37,7 +37,7 @@ void main() {
     final library = StationLibrary(SharedPreferencesAsync());
     await library.load();
     const station = Station(
-      id: 42,
+      id: '42',
       name: 'Example Radio',
       url: 'https://example.com/stream',
     );
@@ -46,11 +46,11 @@ void main() {
 
     final restored = StationLibrary(SharedPreferencesAsync());
     await restored.load();
-    expect(restored.isFavorite(42), isTrue);
+    expect(restored.isFavorite('42'), isTrue);
     expect(restored.recent.single.name, 'Example Radio');
 
     await restored.toggleFavorite(station);
-    expect(restored.isFavorite(42), isFalse);
+    expect(restored.isFavorite('42'), isFalse);
   });
 
   test('one broken saved station does not hide valid favorites', () async {
@@ -63,6 +63,6 @@ void main() {
 
     final library = StationLibrary(prefs);
     await library.load();
-    expect(library.favorites.map((station) => station.id), [42]);
+    expect(library.favorites.map((station) => station.id), ['42']);
   });
 }

@@ -1,3 +1,4 @@
+import { mapRoutes } from '../modules/map/map.routes.ts';
 import { Hono } from 'hono';
 import type { AppEnv } from '../types.ts';
 import { stationRoutes } from '../modules/stations/stations.routes.ts';
@@ -7,10 +8,12 @@ import { countriesRoutes } from '../modules/catalog/countries.routes.ts';
 import { healthRoutes } from '../modules/health/health.routes.ts';
 import { metricsRoutes } from '../modules/metrics/metrics.routes.ts';
 
-export const v1 = new Hono<AppEnv>();
-v1.route('/health', healthRoutes);
-v1.route('/stations', stationRoutes);
-v1.route('/languages', languagesRoutes);
-v1.route('/tags', tagsRoutes);
-v1.route('/countries', countriesRoutes);
-v1.route('/metrics', metricsRoutes);
+export const apiRoutes = new Hono<AppEnv>();
+apiRoutes.route('/health', healthRoutes);
+apiRoutes.route('/stations', stationRoutes);
+apiRoutes.route('/languages', languagesRoutes);
+apiRoutes.route('/tags', tagsRoutes);
+apiRoutes.route('/countries', countriesRoutes);
+apiRoutes.route('/metrics', metricsRoutes);
+
+apiRoutes.route('/map', mapRoutes);

@@ -17,5 +17,5 @@
       "persist": true
     }
   },
-  "services": [{ "binding": "LISTEN_API", "service": "listen-api" }]
+  "services": [{ "binding": "LISTEN_API", "service": "worldtuner-api" }]
 }
