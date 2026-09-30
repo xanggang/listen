@@ -81,5 +81,6 @@ sqlite3 -readonly radio-garden/data/radio-garden.sqlite "SELECT COUNT(DISTINCT c
 - `src/api/client.mjs`：统一请求 Radio Garden API、处理重试和响应错误。
 - `src/crawler.mjs`：读取地点 ID、解析频道关系、跳过成功项并控制请求间隔。
 - `src/store.mjs`：保存 SQLite 原始数据、频道关系、进度和错误日志。
+- `processing/import-v2.mjs`：把已采集的 Radio Garden 频道整理并导入本地 V2 数据库，使用方法见 [数据处理说明](processing/README.md)。
 
 地点 `size` 是 Radio Garden 提供的源字段，不代表本地已采集频道数；实际数量请查询 `place_channels`。
