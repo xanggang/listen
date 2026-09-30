@@ -48,7 +48,7 @@ function verifySchema(db) {
  * @param {object} metadata 此次操作的来源、规则与计划。
  * @returns {string} 已写入且通过数量及完整性验证的备份绝对路径。
  */
-function backupTags(db, path, metadata) {
+export function backupTags(db, path, metadata) {
   const file = resolve(path);
   // 先独占创建文件，避免 SQLite 打开时复用已有备份。
   closeSync(openSync(file, 'wx'));
