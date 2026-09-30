@@ -1,5 +1,3 @@
 node_modules/
 **/data/*.sqlite*
-**/.browser-profile/
-**/data/browser-status.png
 **/data/*.tmp

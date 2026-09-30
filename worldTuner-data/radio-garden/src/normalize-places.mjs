@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 
@@ -6,35 +6,21 @@ const dataDirectory = new URL('../data/', import.meta.url);
 const sourceNames = ['places-core-columnar', 'places-details-columnar'];
 
 /**
- * 从本地 JSON 文件或采集数据库读取一对原始响应；缺少任意一份时明确报错。
- * @param {'files' | 'sqlite'} source 原始响应的存放位置。
- * @param {URL} directory Radio Garden 数据目录，供测试使用。
- * @returns {Promise<unknown[]>} 依次返回 core 和 details 响应。
+ * 从采集数据库读取一对成功的地点总览响应；缺少任意一份时明确报错。
+ * @param {DatabaseSync} db Radio Garden 专用 SQLite 连接。
+ * @returns {unknown[]} 依次返回 core 和 details 原始响应。
  */
-export async function readColumnarResponses(source, directory = dataDirectory) {
-  if (source === 'files') {
-    const responses = [];
-    for (const name of sourceNames) {
-      responses.push(JSON.parse(await readFile(new URL(`${name}.json`, directory), 'utf8')));
-    }
-    return responses;
+export function readColumnarResponses(db) {
+  const responses = [];
+  const lookup = db.prepare(
+    "SELECT response_json FROM api_responses WHERE endpoint = ? AND entity_id = 'all' AND status = 'success'",
+  );
+  for (const name of sourceNames) {
+    const row = lookup.get(name);
+    if (!row?.response_json) throw new Error(`采集数据库缺少 ${name} 的成功响应。`);
+    responses.push(JSON.parse(row.response_json));
   }
-  if (source !== 'sqlite') throw new Error(`不支持的数据来源：${source}`);
-  const db = new DatabaseSync(fileURLToPath(new URL('radio-garden.sqlite', directory)), {
-    readOnly: true,
-  });
-  try {
-    return sourceNames.map((name) => {
-      // 只读取成功采集的原始响应，避免将失败或空记录当作地点数据。
-      const row = db.prepare(
-        "SELECT response_json FROM api_responses WHERE endpoint = ? AND entity_id = 'all' AND status = 'success'",
-      ).get(name);
-      if (!row?.response_json) throw new Error(`采集数据库缺少 ${name} 的成功响应。`);
-      return JSON.parse(row.response_json);
-    });
-  } finally {
-    db.close();
-  }
+  return responses;
 }
 
 /**
@@ -156,18 +142,16 @@ export function saveNormalizedPlaces(db, normalized) {
 }
 
 /**
- * 执行本地离线归一化；参数只允许选择原始数据来源，不访问网络或生产数据库。
+ * 仅从本数据源 SQLite 读取原始响应并原子重建地点表，不访问网络或生产数据库。
  */
-async function main() {
-  const argument = process.argv[2];
-  if (argument && argument !== '--source=files' && argument !== '--source=sqlite') {
-    throw new Error('用法：npm run normalize:radio-garden -- [--source=files|--source=sqlite]');
-  }
-  const source = argument === '--source=sqlite' ? 'sqlite' : 'files';
-  const [core, details] = await readColumnarResponses(source);
-  const normalized = normalizePlaces(core, details);
-  const db = new DatabaseSync(fileURLToPath(new URL('radio-garden.sqlite', dataDirectory)));
+function main() {
+  if (process.argv.length > 2) throw new Error('用法：npm run normalize:radio-garden');
+  const databasePath = fileURLToPath(new URL('radio-garden.sqlite', dataDirectory));
+  if (!existsSync(databasePath)) throw new Error('请先运行 npm run fetch:radio-garden 采集地点总览。');
+  const db = new DatabaseSync(databasePath);
   try {
+    const [core, details] = readColumnarResponses(db);
+    const normalized = normalizePlaces(core, details);
     const count = saveNormalizedPlaces(db, normalized);
     const countries = db.prepare('SELECT COUNT(DISTINCT country) AS count FROM radio_garden_places').get().count;
     console.log(`已整理 ${count} 个地点、${countries} 个国家或地区，版本 ${normalized.version}。`);
@@ -178,8 +162,10 @@ async function main() {
 
 // 仅在直接执行此文件时运行命令行入口，测试导入时不触碰本地数据库。
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  main().catch((error) => {
+  try {
+    main();
+  } catch (error) {
     console.error(`地点整理失败：${error.message}`);
     process.exitCode = 1;
-  });
+  }
 }

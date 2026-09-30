@@ -7,37 +7,77 @@ import {
   saveNormalizedPlaces,
 } from '../src/normalize-places.mjs';
 
-// 验证真实快照的列对齐关系、国家字典索引及经纬度顺序。
-test('现有 columnar 快照可还原地点和国家', async () => {
-  const [core, details] = await readColumnarResponses('files');
-  const result = normalizePlaces(core, details);
-  assert.equal(result.places.length, 11490);
-  assert.deepEqual(result.places[0], {
-    id: 'MQfEnBji',
-    title: 'Moscow',
-    country: 'Russia',
-    longitude: 37.6173,
-    latitude: 55.755825,
-    size: 344,
-    boost: 0,
-    sourceIndex: 0,
-  });
-  assert.equal(new Set(result.places.map((place) => place.country)).size, 225);
+const core = {
+  apiVersion: 1,
+  version: 'v1',
+  data: {
+    version: 'v1',
+    ids: ['Place001', 'Place002'],
+    lngs: [37.6173, 13.405],
+    lats: [55.755825, 52.52],
+    sizes: [344, 120],
+    boosts: [0, 1],
+  },
+};
+const details = {
+  apiVersion: 1,
+  version: 'v1',
+  data: {
+    version: 'v1',
+    titles: ['Moscow', 'Berlin'],
+    countryIdx: [0, 1],
+    countries: ['Russia', 'Germany'],
+  },
+};
+
+// 原始 API 响应只从专用 SQLite 读取，并按相同列下标还原地点。
+test('SQLite 中的 columnar 响应可还原地点和国家', () => {
+  const db = new DatabaseSync(':memory:');
+  try {
+    db.exec('CREATE TABLE api_responses (endpoint TEXT, entity_id TEXT, status TEXT, response_json TEXT)');
+    const insert = db.prepare("INSERT INTO api_responses VALUES (?, 'all', 'success', ?)");
+    insert.run('places-core-columnar', JSON.stringify(core));
+    insert.run('places-details-columnar', JSON.stringify(details));
+    const [storedCore, storedDetails] = readColumnarResponses(db);
+    const result = normalizePlaces(storedCore, storedDetails);
+    assert.deepEqual(result.places[0], {
+      id: 'Place001',
+      title: 'Moscow',
+      country: 'Russia',
+      longitude: 37.6173,
+      latitude: 55.755825,
+      size: 344,
+      boost: 0,
+      sourceIndex: 0,
+    });
+    assert.equal(result.places.length, 2);
+  } finally {
+    db.close();
+  }
 });
 
-// 版本错位与无效国家下标必须在写库前失败，避免静默生成错误地理信息。
-test('拒绝版本不一致和越界的国家索引', async () => {
-  const [core, details] = await readColumnarResponses('files');
+// 任一总览响应缺失时直接中止，避免用不完整的地点数据继续采集。
+test('缺少地点总览响应时明确报错', () => {
+  const db = new DatabaseSync(':memory:');
+  try {
+    db.exec('CREATE TABLE api_responses (endpoint TEXT, entity_id TEXT, status TEXT, response_json TEXT)');
+    assert.throws(() => readColumnarResponses(db), /缺少 places-core-columnar/);
+  } finally {
+    db.close();
+  }
+});
+
+// 版本错位与越界国家下标必须在写库前失败。
+test('拒绝版本不一致和越界国家索引', () => {
   assert.throws(() => normalizePlaces(core, { ...details, version: 'different' }), /version 不一致/);
   const invalid = {
     ...details,
-    data: { ...details.data, countryIdx: [...details.data.countryIdx] },
+    data: { ...details.data, countryIdx: [details.data.countries.length, 1] },
   };
-  invalid.data.countryIdx[0] = invalid.data.countries.length;
   assert.throws(() => normalizePlaces(core, invalid), /国家索引/);
 });
 
-// 重复执行只替换该归一化表，不触碰原始响应及地点频道关系。
+// 重复执行只替换地点表，异常时保留原有地点和其他表。
 test('归一化结果可原子重建且保留其他表', () => {
   const db = new DatabaseSync(':memory:');
   try {

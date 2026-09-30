@@ -1,24 +1,19 @@
-import { readFile } from 'node:fs/promises';
 import { setTimeout as delay } from 'node:timers/promises';
 
-const idsUrl = new URL('../data/placesIDs.js', import.meta.url);
-
 /**
- * 将地点清单中的 JSON 数组安全解析为唯一、合法的 Radio Garden ID。
- * @returns {Promise<string[]>} 按源文件顺序去重的地点 ID。
+ * 从已整理的地点表读取 ID；采集频道前必须先完成地点总览归一化。
+ * @param {import('node:sqlite').DatabaseSync} db Radio Garden 专用数据库。
+ * @returns {string[]} 按来源下标排列的地点 ID。
  */
-export async function readPlaceIds() {
-  const source = await readFile(idsUrl, 'utf8');
-  const match = source.match(/^\s*export\s+const\s+ids\s*=\s*(\[[\s\S]*\])\s*;?\s*$/);
-  if (!match) throw new Error('placesIDs.js 必须是 export const ids = [...] 格式。');
-  const values = JSON.parse(match[1]);
-  if (
-    !Array.isArray(values) ||
-    values.some((id) => typeof id !== 'string' || !/^[\w-]+$/.test(id))
-  ) {
-    throw new Error('placesIDs.js 包含不合法的 ID。');
+export function readPlaceIds(db) {
+  const table = db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'radio_garden_places'").get();
+  if (!table) throw new Error('缺少地点表；请先运行 npm run normalize:radio-garden。');
+  const ids = [];
+  for (const row of db.prepare('SELECT id FROM radio_garden_places ORDER BY source_index').iterate()) {
+    ids.push(row.id);
   }
-  return [...new Set(values)];
+  if (!ids.length) throw new Error('地点表为空；请先运行 npm run normalize:radio-garden。');
+  return ids;
 }
 
 /**
@@ -65,15 +60,13 @@ export function extractChannels(payload, placeId) {
  * @param {object} options 阶段请求和保存所需依赖。
  * @param {string} options.endpoint 台账中的接口类型。
  * @param {string[]} options.ids 当前阶段的实体 ID。
- * @param {import('playwright').Page} options.page 可见持久化 Chrome 页面。
  * @param {import('node:sqlite').DatabaseSync} options.db Radio Garden 专用 SQLite。
- * @param {(page: import('playwright').Page, id: string) => Promise<object>} options.request 单个实体请求。
+ * @param {(id: string) => Promise<object>} options.request 单个实体的 API 请求。
  * @param {(record: object) => Promise<void>} options.saveSuccess 成功记录落盘函数。
  * @param {(failure: object) => Promise<void>} options.saveFailure 失败日志写入函数。
  * @param {(endpoint: string, id: string) => boolean} options.isComplete 已完成检查。
  * @param {number} options.limit 此次最多处理的 ID 数量。
  * @param {number} options.delayMs 请求间隔毫秒。
- * @param {(id: string, index: number) => object[]} [options.relations] 成功后需要写入的关系。
  * @param {(db: import('node:sqlite').DatabaseSync) => Promise<object>} options.progress 进度落盘函数。
  * @returns {Promise<{completed: number, skipped: number, failed: number}>} 本次阶段结果。
  */
@@ -89,9 +82,9 @@ export async function runBatch(options) {
       continue;
     }
     try {
-      const result = await options.request(options.page, id);
+      const result = await options.request(id);
       const record = { endpoint: options.endpoint, entityId: id, ...result };
-      const relations = options.relations?.(id, index) ?? result.relations ?? [];
+      const relations = result.relations ?? [];
       await options.saveSuccess(record, relations, result);
       completed++;
     } catch (error) {

@@ -56,31 +56,32 @@ async function main() {
   const db = openStore();
   try {
     let ids;
-    if (phase === 'places') ids = await readPlaceIds();
+    if (phase === 'places') ids = readPlaceIds(db);
     else ids = listChannelIds(db);
     if (!ids.length && phase !== 'places') {
       throw new Error('没有已发现的频道 ID；请先运行 --phase places。');
     }
     const endpoint = endpoints[phase];
+    // places 请求在保存前解析频道关系；其余阶段直接返回 API 结果。
     const request =
       phase === 'places'
-        ? async (_page, placeId) => {
+        ? async (placeId) => {
             const response = await getPlaceChannels(placeId);
             const relations = extractChannels(response.data, placeId);
             return { ...response, relations };
           }
         : phase === 'details'
-          ? async (_page, channelId) => getChannelDetails(channelId)
-          : async (_page, channelId) => getStreamRedirect(channelId);
+          ? async (channelId) => getChannelDetails(channelId)
+          : async (channelId) => getStreamRedirect(channelId);
     console.log(
       `Radio Garden 直接接口阶段 ${phase}：本次最多处理 ${Math.min(ids.length, limit)}/${ids.length} 个 ID。`,
     );
     const result = await runBatch({
       endpoint,
       ids,
-      page: null,
       db,
       request,
+      // streams 只保存 Location；其他阶段保存成功的 JSON 原文和地点关系。
       saveSuccess:
         phase === 'streams'
           ? async (_record, _relations, original) => saveRedirect(db, original)

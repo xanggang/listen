@@ -1,95 +1,85 @@
-# Radio Garden 数据源
+# Radio Garden 数据采集
 
-使用可见 Chrome 会话访问两个 places 接口。通过 Playwright 的独立持久化配置保留会话；如果出现 Cloudflare 验证页，用户手动完成，脚本最多等待 10 分钟。不会自动点击验证或保证后续请求免于验证。
+本目录通过 Radio Garden API 采集地点、频道和播放流地址，保存到独立的 `data/radio-garden.sqlite`。它是本地数据采集程序，不提供客户端 API，也不下载音频或修改 Radio Browser、D1 数据库。
 
-采集程序使用独立的 `data/radio-garden.sqlite`，成功 API 响应原文和关联数据只保存到该 SQLite，不再新写响应 JSON 文件；错误诊断写入 `log/api-errors.jsonl`，进度元数据写入 `data/`。不使用或改写 `worldTuner-api` 的迁移及 Radio Browser 数据库。以前运行留下的 JSON 数据文件不会被脚本更新或删除。
+接口结构参考：[Radio Garden OpenAPI](https://jonasrmichel.github.io/radio-garden-openapi/)。实际采集字段以本目录代码和保存的原始响应为准。
+
+## 数据流程
+
+```text
+places-core-columnar + places-details-columnar
+  └─ api_responses（原始 JSON）
+       └─ normalize → radio_garden_places（地点 ID、名称、国家、经纬度）
+            └─ places → place_channels（地点与频道关系）
+                 ├─ details → api_responses（频道详情）
+                 └─ streams → api_responses（播放重定向地址）
+```
+
+`places` 阶段直接读取 `radio_garden_places` 的地点 ID。`details` 和 `streams` 都从 `place_channels` 读取去重后的频道 ID，因此必须先完成 `places` 阶段。
 
 ## 运行
 
-需要 Node.js >= 22.18 和已安装的 Google Chrome。在 `worldTuner-data/` 执行：
+要求 Node.js **22.18+**。以下命令均在 `worldTuner-data/` 目录执行，不需要 Chrome 或 Playwright。
 
 ```bash
-npm ci
+# 1. 获取两份地点总览原始响应。
 npm run fetch:radio-garden
-```
 
-只顺序访问以下两个接口，间隔 1 秒，参数均为 `s=1&hl=zh-Hans`：
-
-- `https://radio.garden/api/ara/content/places-core-columnar?s=1&hl=zh-Hans`
-- `https://radio.garden/api/ara/content/places-details-columnar?s=1&hl=zh-Hans`
-
-浏览器窗口会自动打开；需要验证时在窗口中手动操作，成功取得两个响应后自动关闭。超时或关闭窗口将结束运行，可重新执行。独立配置保存在 `.browser-profile/` 并排除 Git，不读取日常 Chrome 配置。
-
-## 输出
-
-`places-core-columnar` 与 `places-details-columnar` 的成功响应原文保存到 `data/radio-garden.sqlite` 的 `api_responses` 表，进度摘要只将 URL、状态、时间和字节数写入 `data/browser-fetch-result.json`。请求失败写入 `log/api-errors.jsonl`。此前采集遗留的 `places-*.json` 等文件不会被新脚本更新或删除。
-
-首次浏览器实测成功：核心与详情各包含 11,490 个地点，两份版本一致；详情包含 225 个国家条目。响应原文现在保存在独立 SQLite 中。
-
-## 整理地点与位置
-
-在 `worldTuner-data/` 运行：
-
-```bash
+# 2. 从原始响应整理地点、国家和坐标。
 npm run normalize:radio-garden
-```
 
-默认读取已有的 `radio-garden/data/places-core-columnar.json` 和 `places-details-columnar.json`。如果两个原始响应已保存在独立 SQLite 的 `api_responses` 中，可用 `npm run normalize:radio-garden -- --source=sqlite`。命令只在本地运算，不请求网络，也不修改 API/D1 数据库。
-
-两份响应的地点列按**同一下标**对应：`ids[i]`、`lngs[i]`、`lats[i]`、`sizes[i]`、`boosts[i]`、`titles[i]`、`countryIdx[i]` 组成一个地点；国家或地区名称为 `countries[countryIdx[i]]`。坐标顺序是**经度、纬度**。命令会校验版本、列长度、地点 ID、国家索引和坐标范围，成功后原子重建独立 SQLite 中的 `radio_garden_places` 表。重复执行可更新快照；`source_version` 记录来源版本。`size` 与 `boost` 保留源值，不将 `size` 当作已采集频道数。`skipRides` 的用途未在参考文档中定义，暂不参与地点映射。
-
-查询示例（可用 `sqlite3 radio-garden/data/radio-garden.sqlite` 执行）：
-
-```sql
-SELECT id, title, country, latitude, longitude FROM radio_garden_places LIMIT 10;
-SELECT country, COUNT(*) AS place_count FROM radio_garden_places GROUP BY country ORDER BY place_count DESC;
-SELECT p.id, p.title, COUNT(pc.channel_id) AS collected_channels
-FROM radio_garden_places AS p
-LEFT JOIN place_channels AS pc ON pc.place_id = p.id
-GROUP BY p.id ORDER BY collected_channels DESC LIMIT 10;
-```
-
-当前这份 `hl=zh-Hans` 快照中的 `titles` 和 `countries` 实际上主要是英文。它只提供地点、国家或地区名称和坐标，没有行政区代码或城市所属省州字段；需要这些字段时应另用地理数据源补全，并保留 Radio Garden 的原始名称与坐标用于核对。
-
-国家或地区中文名称由独立的[地名本地化命令](../geo-localization/README.md)生成，不在采集脚本中处理。
-
-## 第二步：前五个地点页面测试
-
-在 `worldTuner-data/` 运行 `npm run fetch:radio-garden:pages`。脚本将 `data/placesIDs.js` 的 `export const ids = [...]` 作为 JSON 数组读取，不执行该文件，仅选前五个 ID，顺序请求 `page/{id}?s=1&hl=zh-Hans`，间隔一秒。
-
-原始响应保存到独立 SQLite 的 `place_page` 记录，请求进度元数据写入 `data/pages-fetch-result.json`。再次执行会重新请求这五项并更新 SQLite；尚未启用全量或断点续传。遇到 Cloudflare 验证时等待手动操作，其他 HTTP 错误中止并记入日志。
-
-2026-09-28 实测五项均返回 HTTP 200，对应 Moscow、Berlin、Vienna、Milan、Cologne，响应 `data.map` 与请求 ID 一致。此接口返回地点页面及多个推荐区块，不是完整电台目录；样本中的首个电台区块仅包含 7 项（含浏览入口），不能把 `data.count` 当作本次下载的电台数量。
-
-## 全量采集程序
-
-在 `worldTuner-data/` 执行：
-
-```bash
-npm run sync:radio-garden -- --phase places --limit 5
-npm run sync:radio-garden -- --phase places
-npm run sync:radio-garden -- --phase details
-npm run sync:radio-garden -- --phase streams
-```
-
-上面的 `sync:radio-garden` 使用可见 Chrome。保留原脚本的同时，新增纯接口版：
-
-```bash
+# 3. 先用少量地点检查接口，再采集全部频道关系。
 npm run sync:radio-garden:api -- --phase places --limit 5
 npm run sync:radio-garden:api -- --phase places
+
+# 4. 采集频道详情和播放地址。
 npm run sync:radio-garden:api -- --phase details
 npm run sync:radio-garden:api -- --phase streams
 ```
 
-接口版使用 Node 原生 `fetch`，直接 GET Radio Garden API，不启动浏览器；暂时网络错误和 5xx 最多重试三次，403/Cloudflare 验证页记入错误日志，不解析或保存验证页。两套程序共用本数据源的 SQLite 和成功进度，可任选其一续跑。
+`fetch:radio-garden` 使用 Node 原生 `fetch` 顺序请求 `places-core-columnar`、`places-details-columnar`，并保存成功响应原文。`normalize:radio-garden` 校验两份响应版本、列长度和坐标后，原子重建地点表。`places` 请求每个地点的频道列表；`details` 获取频道详情；`streams` 只读取 listen 接口的 3xx `Location`，不跟随跳转或下载音频。
 
-`places` 请求每个地点的 `/page/{placeId}/channels`，原样写入 SQLite 并从频道 URL 建立地点关系；`details` 按已发现的去重频道 ID 请求 `/channel/{channelId}`，原样写入 SQLite；`streams` 单独请求 listen endpoint，禁用重定向跟随，将重定向结果写入 SQLite，不读取音频流。以上阶段不再把响应数据写入独立 JSON 文件。
+`sync:radio-garden:api` 支持 `--limit N` 和 `--delay-ms N`，默认每次请求间隔 1000 毫秒。`--limit` 只取候选 ID 列表前 N 项，其中已完成的会跳过；重新运行会继续处理未成功的项。HTTP 403 或 Cloudflare 验证页会记录为失败，不尝试绕过验证。失败可查看 `log/api-errors.jsonl`，网络恢复后重新运行同一命令即可重试。
 
-独立 SQLite 中 `api_responses` 表只保存成功响应原文、HTTP 状态和时间；`place_channels` 保存地点与频道关系。请求失败追加到 `log/api-errors.jsonl`，每行包含时间、接口阶段、实体 ID、请求 URL、HTTP 状态、错误类型、Cloudflare 判定、关键响应头和最多 2000 字符的响应正文片段，不写入 SQLite；旧版本已写入 SQLite 的失败记录会在启动时迁移到该日志并清除。成功记录会自动跳过，失败项没有成功记录，因此重跑时会再次请求。`data/sync-progress.json` 和 `data/pages-fetch-result.json` 提供进度记录。默认串行、每次间隔一秒，可使用 `--limit N` 小批量执行或 `--delay-ms N` 调整间隔。
+需要国家或地区中文名称时，地点整理完成后运行[地名本地化命令](../geo-localization/README.md)：
 
-2026-09-28 试跑 `/page/MQfEnBji/channels` 时，Chrome 导航和命令行请求均等待至连接超时；该轮没有产生频道列表记录。已实现对 `href`、`url` 和嵌套 `page.url` 的频道 ID 提取；遇到数量字段与结构不匹配时会记录失败，避免静默当作空列表。直接接口版提供后续重试路径，执行五地点命令可确认接口当前是否恢复。
+```bash
+npm run localize:radio-garden:countries
+```
 
-直接接口版首次试跑时，SQLite 中前五个地点已有成功记录并被跳过；对第六个地点 `3QbMs4L3` 的 Node `fetch` 连续三次得到 `fetch failed`。该失败会保存在 `log/api-errors.jsonl`，前五个地点响应和频道关联保留，可在网络恢复后继续用接口版重试。
+## 数据存在哪里
 
+endpoint 类型：
+> stream_redirect 重定向地址
+> places_channels 地点和频道
+> channel_details 频道详情
 
-## 数据整理
+| 表或文件 | 内容 |
+| --- | --- |
+| `data/radio-garden.sqlite` → `api_responses` | 成功的原始响应、HTTP 状态和采集时间；`stream_redirect` 行含最终流地址 |
+| `data/radio-garden.sqlite` → `radio_garden_places` | 整理后的地点 ID、名称、国家、经纬度及来源版本 |
+| `data/radio-garden.sqlite` → `place_channels` | 地点与频道的对应关系和频道标题 |
+| `data/radio-garden.sqlite` → `radio_garden_country_names` | 可选的国家或地区中文名映射，由本地化命令生成 |
+| `data/sync-progress.json` | 各频道采集阶段的成功数量和关系数量摘要 |
+| `log/api-errors.jsonl` | 失败请求及诊断信息；失败响应不作为成功数据写入 SQLite |
+
+`api_responses` 使用 `(endpoint, entity_id)` 唯一标识成功记录。常见 `endpoint` 为 `places-core-columnar`、`places-details-columnar`、`places_channels`、`channel_details`、`stream_redirect`。地点总览的 `entity_id` 是 `all`；频道阶段的 ID 来自地点频道关系。
+
+从 `worldTuner-data/` 目录查询当前进度：
+
+```bash
+sqlite3 -readonly radio-garden/data/radio-garden.sqlite "SELECT endpoint, COUNT(*) AS completed FROM api_responses WHERE status = 'success' GROUP BY endpoint ORDER BY endpoint;"
+sqlite3 -readonly radio-garden/data/radio-garden.sqlite "SELECT COUNT(*) AS places FROM radio_garden_places;"
+sqlite3 -readonly radio-garden/data/radio-garden.sqlite "SELECT COUNT(DISTINCT channel_id) AS channels FROM place_channels;"
+```
+
+## 代码入口
+
+- `src/fetch-places.mjs`：请求两份地点总览原始响应。
+- `src/normalize-places.mjs`：从 SQLite 读取原始响应，校验并整理地点。
+- `src/sync-api.mjs`：运行 `places`、`details`、`streams` 三个频道阶段。
+- `src/api/client.mjs`：统一请求 Radio Garden API、处理重试和响应错误。
+- `src/crawler.mjs`：读取地点 ID、解析频道关系、跳过成功项并控制请求间隔。
+- `src/store.mjs`：保存 SQLite 原始数据、频道关系、进度和错误日志。
+
+地点 `size` 是 Radio Garden 提供的源字段，不代表本地已采集频道数；实际数量请查询 `place_channels`。

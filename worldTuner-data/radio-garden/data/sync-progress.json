@@ -1,15 +1,25 @@
 {
-  "updated_at": "2026-09-29T08:41:19.887Z",
+  "updated_at": "2026-09-29T10:09:56.518Z",
   "counts": [
     {
       "endpoint": "channel_details",
       "status": "success",
-      "count": 33737
+      "count": 34244
+    },
+    {
+      "endpoint": "places-core-columnar",
+      "status": "success",
+      "count": 1
+    },
+    {
+      "endpoint": "places-details-columnar",
+      "status": "success",
+      "count": 1
     },
     {
       "endpoint": "places_channels",
       "status": "success",
-      "count": 11465
+      "count": 11551
     },
     {
       "endpoint": "stream_redirect",
@@ -17,5 +27,5 @@
       "count": 34246
     }
   ],
-  "place_channel_relations": 34246
+  "place_channel_relations": 34338
 }
