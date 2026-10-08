@@ -81,6 +81,7 @@ CREATE INDEX idx_tag_normalized_name ON tag(normalized_name);
 CREATE TABLE language (
   id TEXT PRIMARY KEY NOT NULL CHECK (length(id) = 19 AND id NOT GLOB '*[^0-9]*'),
   name TEXT NOT NULL CHECK (length(trim(name)) > 0),
+  name_zh TEXT CHECK (name_zh IS NULL OR length(trim(name_zh)) > 0),
   code TEXT
 );
 CREATE INDEX idx_language_code ON language(code);

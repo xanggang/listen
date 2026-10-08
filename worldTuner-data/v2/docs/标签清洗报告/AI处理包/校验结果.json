@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "input_count": 10803,
+  "result_count": 10803,
+  "unique_result_ids": 10803,
+  "action_counts": {
+    "keep": 8257,
+    "merge": 783,
+    "drop": 1669,
+    "split": 94
+  },
+  "confidence_counts": {
+    "high": 1795,
+    "medium": 1108,
+    "low": 7900
+  },
+  "target_name_count": 8301,
+  "targets_with_zh": 1953,
+  "targets_without_zh": 7298,
+  "low_unknown_count": 7298,
+  "errors": [],
+  "warnings": []
+}

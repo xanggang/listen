@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "associationsChecked": 107768,
+  "exactBackupMappingMatch": true,
+  "originalStandardTagsUnchanged": 419,
+  "otherTableCountsUnchanged": true,
+  "integrityCheck": "ok",
+  "foreignKeyErrors": 0,
+  "remainingWithoutChinese": 7298
+}

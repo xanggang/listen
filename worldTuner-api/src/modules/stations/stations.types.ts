@@ -23,6 +23,7 @@ export interface StationRow {
   lastcheckok: number | null;
   tags: string | null;
   language: string | null;
+  languagezh: string | null;
   languagecodes: string | null;
 }
 export interface StreamRow {

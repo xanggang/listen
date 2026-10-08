@@ -10,6 +10,7 @@ const defaultSource = fileURLToPath(new URL('../data/radio-browser.sqlite', impo
 const defaultTarget = fileURLToPath(new URL('../../v2/data/worldtuner-v2.sqlite', import.meta.url));
 const tagRulesPath = new URL('./tag-cleaning-rules.json', import.meta.url);
 const tagTranslationsPath = new URL('./tag-names.zh-CN.json', import.meta.url);
+const languageTranslationsPath = new URL('./language-names.zh-CN.json', import.meta.url);
 const stationFields = ['name', 'website', 'favicon', 'country_id', 'place', 'votes', 'clickcount'];
 
 /**
@@ -25,6 +26,16 @@ export function playbackKey(stream) {
 /** 清理来源文本；数字零与布尔值由调用方单独处理。 */
 function clean(value) {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+/** 将语言英文展示名统一为首字母大写；代码和匹配键仍保持小写。 */
+function displayLanguageName(value) {
+  return value
+    .trim()
+    .toLowerCase()
+    .split(/\s+/u)
+    .map((part) => (part ? part[0].toUpperCase() + part.slice(1) : part))
+    .join(' ');
 }
 
 /** 验证可选非负整数；异常的来源统计或码率视为缺失。 */
@@ -187,6 +198,7 @@ export function importRadioBrowser(
   const nextId = createSnowflakeIdGenerator({ workerId: options.workerId });
   const tagRules = JSON.parse(readFileSync(tagRulesPath, 'utf8'));
   const tagTranslations = JSON.parse(readFileSync(tagTranslationsPath, 'utf8'));
+  const languageTranslations = JSON.parse(readFileSync(languageTranslationsPath, 'utf8'));
   const tagAliases = new Map();
   for (const [targetName, names] of Object.entries(tagRules.aliases)) {
     for (const name of names) tagAliases.set(normalizeTag(name), targetName);
@@ -301,7 +313,9 @@ export function importRadioBrowser(
     const insertStationTag = target.prepare(
       'INSERT OR IGNORE INTO station_tag (station_id, tag_id) VALUES (?, ?)',
     );
-    const insertLanguage = target.prepare('INSERT INTO language (id, name, code) VALUES (?, ?, ?)');
+    const insertLanguage = target.prepare(
+      'INSERT INTO language (id, name, name_zh, code) VALUES (?, ?, ?, ?)',
+    );
     const insertStationLanguage = target.prepare(
       'INSERT OR IGNORE INTO station_language (station_id, language_id) VALUES (?, ?)',
     );
@@ -464,7 +478,10 @@ export function importRadioBrowser(
               names.length === codes.length
                 ? names[codes.findIndex((item) => item.toLowerCase() === code)]
                 : null;
-            insertLanguage.run(languageId, name || code, code);
+            const englishName =
+              languageTranslations.abbreviations[code] ?? displayLanguageName(name || code);
+            const chineseName = languageTranslations.zh[englishName] ?? null;
+            insertLanguage.run(languageId, englishName, chineseName, code);
             languageIds.set(code, languageId);
             stats.languages++;
           }

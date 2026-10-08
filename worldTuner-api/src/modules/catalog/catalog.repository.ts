@@ -15,11 +15,12 @@ const relations = {
 function catalogSql(kind: CatalogKind): string {
   const table = tables[kind];
   const code = kind === 'tags' ? '' : ', x.code';
+  const chinese = kind === 'languages' ? ', x.name_zh' : '';
   const join =
     kind === 'countries'
       ? 'JOIN station s ON s.country_id = x.id'
       : `JOIN ${relations[kind][0]} r ON r.${relations[kind][1]} = x.id JOIN station s ON s.id = r.station_id`;
-  return `SELECT x.id, x.name${code}, COUNT(*) AS stationcount FROM ${table} x ${join} WHERE ${publicStation}`;
+  return `SELECT x.id, x.name${chinese}${code}, COUNT(*) AS stationcount FROM ${table} x ${join} WHERE ${publicStation}`;
 }
 export class CatalogRepository {
   private readonly db: SqlDatabase;

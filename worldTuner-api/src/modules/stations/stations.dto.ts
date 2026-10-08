@@ -29,6 +29,7 @@ export function stationDto(row: StationRow) {
     lastcheckok: row.lastcheckok,
     tags: row.tags,
     language: row.language,
+    languageZh: row.languagezh,
     languagecodes: row.languagecodes,
   };
 }
