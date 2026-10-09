@@ -74,7 +74,8 @@ CREATE TABLE tag (
   name TEXT NOT NULL CHECK (length(trim(name)) > 0),
   normalized_name TEXT NOT NULL CHECK (length(trim(normalized_name)) > 0),
   -- 中文展示名；待审或尚未翻译的标签保持 NULL。
-  name_zh TEXT CHECK (name_zh IS NULL OR length(trim(name_zh)) > 0)
+  name_zh TEXT CHECK (name_zh IS NULL OR length(trim(name_zh)) > 0),
+  name_en TEXT CHECK (name_en IS NULL OR length(trim(name_en)) > 0)
 );
 CREATE INDEX idx_tag_normalized_name ON tag(normalized_name);
 
@@ -82,7 +83,8 @@ CREATE TABLE language (
   id TEXT PRIMARY KEY NOT NULL CHECK (length(id) = 19 AND id NOT GLOB '*[^0-9]*'),
   name TEXT NOT NULL CHECK (length(trim(name)) > 0),
   name_zh TEXT CHECK (name_zh IS NULL OR length(trim(name_zh)) > 0),
-  code TEXT
+  code TEXT,
+  name_en TEXT CHECK (name_en IS NULL OR length(trim(name_en)) > 0)
 );
 CREATE INDEX idx_language_code ON language(code);
 -- 语言代码是 Radio Browser 导入时的匹配键；NULL 仍可用于无代码的语种。

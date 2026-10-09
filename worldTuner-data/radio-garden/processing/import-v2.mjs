@@ -1,3 +1,4 @@
+import { ensureCatalogNames } from '../../v2/src/catalog-names.mjs';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -99,6 +100,8 @@ export function importRadioGarden(
     }
     target.exec('BEGIN IMMEDIATE');
     targetTransaction = true;
+    // 同一导入事务升级展示字段，既有人工译名不覆盖。
+    ensureCatalogNames(target);
 
     const countryCodes = new Map(
       source
@@ -243,7 +246,9 @@ export function importRadioGarden(
   }
 }
 
-/** 解析本地数据库路径并执行一次 Radio Garden 导入，不访问网络。 */
+/**
+ * 解析本地数据库路径并执行一次 Radio Garden 导入，不访问网络。
+ */
 function main() {
   const { values } = parseArgs({
     options: {

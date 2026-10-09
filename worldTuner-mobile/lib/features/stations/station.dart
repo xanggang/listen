@@ -22,6 +22,8 @@ class Station {
     this.favicon,
     this.country,
     this.language,
+    this.languageEn,
+    this.languageZh,
     this.codec,
     this.votes,
     this.geoLat,
@@ -40,6 +42,8 @@ class Station {
   final String? favicon;
   final String? country;
   final String? language;
+  final String? languageEn;
+  final String? languageZh;
   final String? codec;
   final int? votes;
   final double? geoLat;
@@ -49,6 +53,10 @@ class Station {
   final String? tags;
   final String? sourceType;
   final String? catalogStatus;
+
+  // 电台语种按界面语言展示，旧收藏没有翻译字段时保留原文兜底。
+  String? displayLanguage(String locale) =>
+      _localizedName(locale, language, languageEn, languageZh);
 
   // 优先使用数据库解析过的流地址；无效地址由播放器报告错误。
   String get streamUrl => urlResolved?.isNotEmpty == true ? urlResolved! : url;
@@ -65,6 +73,8 @@ class Station {
       favicon: json['favicon'] as String?,
       country: json['country'] as String?,
       language: json['language'] as String?,
+      languageEn: json['languageEn'] as String?,
+      languageZh: json['languageZh'] as String?,
       codec: json['codec'] as String?,
       votes: (json['votes'] as num?)?.toInt(),
       geoLat: (json['geoLat'] as num?)?.toDouble(),
@@ -86,6 +96,8 @@ class Station {
     'favicon': favicon,
     'country': country,
     'language': language,
+    'languageEn': languageEn,
+    'languageZh': languageZh,
     'codec': codec,
     'votes': votes,
     'geoLat': geoLat,
@@ -127,19 +139,56 @@ class CatalogItem {
     required this.id,
     required this.name,
     this.stationCount,
+    this.nameEn,
+    this.nameZh,
     this.code,
   });
 
   final String id;
   final String name;
+  final String? nameEn;
+  final String? nameZh;
   final int? stationCount;
   final String? code;
+
+  // 中文优先中文译名，英文优先英文展示名；空白按缺失处理，ID 不受影响。
+  String displayName(String locale) =>
+      _localizedName(locale, name, nameEn, nameZh) ?? '';
+
+  // 搜索同时匹配原名、中英文展示名，不因界面语言而限制可搜索的名称。
+  bool matches(String query) {
+    final keyword = query.trim().toLowerCase();
+    return [name, nameEn, nameZh].any(
+      // 缺失名称不匹配，其余名称进行不区分大小写的字面包含判断。
+      (value) => value?.toLowerCase().contains(keyword) ?? false,
+    );
+  }
 
   // 解析字典项，过滤展示层不需要的数据库字段。
   factory CatalogItem.fromJson(Map<String, dynamic> json) => CatalogItem(
     id: parseEntityId(json['id']),
     name: (json['name'] as String?) ?? '',
+    nameEn: json['name_en'] as String?,
+    nameZh: json['name_zh'] as String?,
     stationCount: (json['stationcount'] as num?)?.toInt(),
     code: (json['code'] ?? json['iso_3166_1'] ?? json['iso_639']) as String?,
   );
+}
+
+// 集中执行展示兜底，返回首个非空名称；语言未知时采用英文与原文。
+String? _localizedName(
+  String locale,
+  String? original,
+  String? english,
+  String? chinese,
+) {
+  for (final value in [
+    if (locale.startsWith('zh')) chinese,
+    english,
+    original,
+  ]) {
+    final label = value?.trim();
+    if (label != null && label.isNotEmpty) return label;
+  }
+  return null;
 }

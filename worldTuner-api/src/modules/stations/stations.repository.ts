@@ -16,7 +16,8 @@ const projection = `s.id, s.name, s.website, s.favicon,
   st.is_hls AS hls, st.last_check_ok AS lastcheckok,
   (SELECT group_concat(name, ',') FROM (SELECT t.name FROM station_tag r JOIN tag t ON t.id = r.tag_id WHERE r.station_id = s.id ORDER BY t.id)) AS tags,
   (SELECT group_concat(name, ',') FROM (SELECT l.name FROM station_language r JOIN language l ON l.id = r.language_id WHERE r.station_id = s.id ORDER BY l.id)) AS language,
-  (SELECT group_concat(name_zh, ',') FROM (SELECT l.name_zh FROM station_language r JOIN language l ON l.id = r.language_id WHERE r.station_id = s.id AND l.name_zh IS NOT NULL ORDER BY l.id)) AS languagezh,
+  (SELECT group_concat(label, ',') FROM (SELECT coalesce(nullif(trim(l.name_en), ''), l.name) AS label FROM station_language r JOIN language l ON l.id = r.language_id WHERE r.station_id = s.id ORDER BY l.id)) AS languageen,
+  (SELECT group_concat(label, ',') FROM (SELECT coalesce(nullif(trim(l.name_zh), ''), nullif(trim(l.name_en), ''), l.name) AS label FROM station_language r JOIN language l ON l.id = r.language_id WHERE r.station_id = s.id ORDER BY l.id)) AS languagezh,
   (SELECT group_concat(code, ',') FROM (SELECT l.code FROM station_language r JOIN language l ON l.id = r.language_id WHERE r.station_id = s.id ORDER BY l.id)) AS languagecodes`;
 const joins = `LEFT JOIN country c ON c.id = s.country_id
   LEFT JOIN station_stream st ON st.id = (
@@ -69,11 +70,10 @@ export class StationRepository {
     }
     if (query.keyword) {
       where.push(`(s.name LIKE ? ESCAPE '\\' OR s.place LIKE ? ESCAPE '\\' OR c.name LIKE ? ESCAPE '\\'
-        OR EXISTS (SELECT 1 FROM station_tag r JOIN tag t ON t.id = r.tag_id WHERE r.station_id = s.id AND t.name LIKE ? ESCAPE '\\')
-        OR EXISTS (SELECT 1 FROM station_language r JOIN language l ON l.id = r.language_id WHERE r.station_id = s.id AND (l.name LIKE ? ESCAPE '\\' OR l.name_zh LIKE ? ESCAPE '\\')))`);
-      for (let i = 0; i < 4; i++) values.push(contains(query.keyword));
-      values.push(contains(query.keyword));
-      values.push(contains(query.keyword));
+        OR EXISTS (SELECT 1 FROM station_tag r JOIN tag t ON t.id = r.tag_id WHERE r.station_id = s.id AND (t.name LIKE ? ESCAPE '\\' OR t.name_en LIKE ? ESCAPE '\\' OR t.name_zh LIKE ? ESCAPE '\\'))
+        OR EXISTS (SELECT 1 FROM station_language r JOIN language l ON l.id = r.language_id WHERE r.station_id = s.id AND (l.name LIKE ? ESCAPE '\\' OR l.name_en LIKE ? ESCAPE '\\' OR l.name_zh LIKE ? ESCAPE '\\')))`);
+      // 名称、地点、国家与标签/语言的三种名称共九个字面匹配参数。
+      for (let i = 0; i < 9; i++) values.push(contains(query.keyword));
     }
     const { results } = await this.db
       .prepare(

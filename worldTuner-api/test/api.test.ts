@@ -29,12 +29,26 @@ function fixture(): SQLiteDatabase {
   database.connection.exec(
     readFileSync(new URL('../migrations/0002_visit_metrics.sql', import.meta.url), 'utf8'),
   );
+  // 按部署顺序应用增量迁移，测试不依赖过时的初始 schema。
+  for (const migration of [
+    '0003_tag_name_zh.sql',
+    '0004_language_name_zh.sql',
+    '0005_catalog_name_en.sql',
+  ]) {
+    database.connection.exec(
+      readFileSync(new URL(`../migrations/${migration}`, import.meta.url), 'utf8'),
+    );
+  }
   database.connection.prepare('INSERT INTO country VALUES (?, ?, ?)').run(id(101), 'China', 'CN');
   database.connection
-    .prepare('INSERT INTO language VALUES (?, ?, ?)')
+    .prepare('INSERT INTO language (id, name, code) VALUES (?, ?, ?)')
     .run(id(102), 'English', 'en');
-  database.connection.prepare('INSERT INTO tag VALUES (?, ?, ?)').run(id(103), 'pop', 'pop');
-  database.connection.prepare('INSERT INTO tag VALUES (?, ?, ?)').run(id(104), 'kpop', 'kpop');
+  database.connection
+    .prepare('INSERT INTO tag (id, name, normalized_name) VALUES (?, ?, ?)')
+    .run(id(103), 'pop', 'pop');
+  database.connection
+    .prepare('INSERT INTO tag (id, name, normalized_name) VALUES (?, ?, ?)')
+    .run(id(104), 'kpop', 'kpop');
   for (let n = 1; n <= 25; n++) {
     database.connection
       .prepare(
@@ -298,7 +312,11 @@ test('D1-shaped binding and SQLite adapter return identical catalog, detail and 
 
 // 缓存不会绕过限流或复用请求 ID；旧接口路径不保留。
 test('cache, CORS, rate limits and sanitized errors remain enforced', async () => {
+  cache.set('https://api.test/api/tags', Response.json({ data: [{ name: 'stale' }] }));
   const first = await request('/tags', { headers: { Origin: 'https://web.test' } });
+  const labels = (await first.clone().json()) as { data: { name: string }[] };
+  assert.notEqual(labels.data[0].name, 'stale');
+  assert.ok(cache.has('https://api.test/api/tags?_response_schema=catalog-names-1'));
   const second = await request('/tags');
   assert.equal(first.headers.get('Access-Control-Allow-Origin'), 'https://web.test');
   assert.equal(second.headers.get('Access-Control-Allow-Origin'), null);
@@ -375,12 +393,32 @@ test('metrics support atomic PV UV writes, rollup and separate databases', async
   }
 });
 
-// 防止数据工程与 API 的建表结构悄然漂移。
-test('API catalog migration exactly matches the v2 data schema', () => {
-  assert.equal(
-    readFileSync(new URL('../migrations/0001_catalog.sql', import.meta.url), 'utf8'),
-    readFileSync(new URL('../../worldTuner-data/v2/schema.sql', import.meta.url), 'utf8'),
-  );
+// 初始迁移不可改写；依次升级后的列契约必须与 data 的最新 schema 一致。
+test('API migrated catalog columns match the latest data schema', () => {
+  const latest = new SQLiteDatabase(':memory:', false);
+  try {
+    latest.connection.exec(
+      readFileSync(new URL('../../worldTuner-data/v2/schema.sql', import.meta.url), 'utf8'),
+    );
+    for (const table of ['tag', 'language', 'station', 'station_tag', 'station_language']) {
+      // 物理列顺序可因增量迁移不同，按字段名比较定义。
+      const columns = (database: SQLiteDatabase) =>
+        database.connection
+          .prepare(`PRAGMA table_info(${table})`)
+          .all()
+          .map(
+            // 不比较 cid，按名称保留实际类型、约束和主键信息。
+            ({ name, type, notnull, dflt_value, pk }) => ({ name, type, notnull, dflt_value, pk }),
+          )
+          .sort(
+            // 稳定比较不同建表路径下的字段集合。
+            (left, right) => String(left.name).localeCompare(String(right.name)),
+          );
+      assert.deepEqual(columns(db), columns(latest), table);
+    }
+  } finally {
+    latest.close();
+  }
 });
 
 // 非法写入、旧路径和私有数据库异常均不能泄漏内部信息。
@@ -438,7 +476,7 @@ test('catalog export imports into an empty new schema without data loss', async 
     assert.ok(!sql.includes('BEGIN TRANSACTION'));
     assert.ok(!sql.includes('CREATE TABLE'));
     target.connection.exec(
-      readFileSync(new URL('../migrations/0001_catalog.sql', import.meta.url), 'utf8'),
+      readFileSync(new URL('../../worldTuner-data/v2/schema.sql', import.meta.url), 'utf8'),
     );
     target.connection.exec(sql);
     assert.equal(
@@ -546,4 +584,42 @@ test('snapshot expires, changes ETag and supports zero TTL', async () => {
   } finally {
     mock.restoreAll();
   }
+});
+
+// 展示名称与匹配 ID 分离，中文和校訂后的英文都可检索同一关联。
+test('catalog returns localized labels and searches all names literally', async () => {
+  db.connection
+    .prepare('UPDATE tag SET name_en = ?, name_zh = ? WHERE id = ?')
+    .run('Popular music', '流行音乐', id(103));
+  db.connection
+    .prepare('UPDATE language SET name_en = ?, name_zh = ? WHERE id = ?')
+    .run('Standard English', '英语', id(102));
+  const tags = (await (await request('/tags?q=' + encodeURIComponent('流行'))).json()) as {
+    data: Array<{ id: string; name: string; name_en: string; name_zh: string }>;
+  };
+  assert.equal(tags.data[0].id, id(103));
+  assert.equal(tags.data[0].name, 'pop');
+  assert.equal(tags.data[0].name_en, 'Popular music');
+  assert.equal(tags.data[0].name_zh, '流行音乐');
+  assert.equal(
+    ((await (await request('/tags?q=Popular')).json()) as { data: unknown[] }).data.length,
+    1,
+  );
+  const languages = (await (await request('/languages')).json()) as {
+    data: Array<{ name_en: string; name_zh: string }>;
+  };
+  assert.equal(languages.data[0].name_zh, '英语');
+  assert.equal(languages.data[0].name_en, 'Standard English');
+  for (const keyword of ['流行音乐', 'Popular music', '英语', 'Standard English']) {
+    const page = (await (
+      await request('/stations?keyword=' + encodeURIComponent(keyword))
+    ).json()) as { data: { list: unknown[] } };
+    assert.ok(page.data.list.length > 0, keyword);
+  }
+  const detail = (await (await request(`/stations/${id(1)}`)).json()) as {
+    data: { language: string; languageEn: string; languageZh: string };
+  };
+  assert.equal(detail.data.language, 'English');
+  assert.equal(detail.data.languageEn, 'Standard English');
+  assert.equal(detail.data.languageZh, '英语');
 });

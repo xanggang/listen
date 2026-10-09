@@ -7,5 +7,7 @@ export interface PlayableStation {
   favicon: string | null;
   country: string | null;
   language: string | null;
+  languageEn?: string | null;
+  languageZh?: string | null;
   votes: number | null;
 }

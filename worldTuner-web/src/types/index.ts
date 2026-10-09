@@ -11,6 +11,8 @@ export enum FilterEnums {
 
 // 语言实体
 export interface Languages {
+  name_en?: string | null;
+  name_zh?: string | null;
   id: string;
   name: string;
   code: string | null;
@@ -27,6 +29,8 @@ export interface Countries {
 
 // 标签实体
 export interface Tags {
+  name_en?: string | null;
+  name_zh?: string | null;
   id: string;
   name: string;
   stationcount: number;
@@ -46,6 +50,8 @@ export interface Station {
   countrycode: string | null;
   tags: string | null;
   language: string | null;
+  languageEn?: string | null;
+  languageZh?: string | null;
   languagecodes: string | null;
   votes: number | null;
   codec: string | null;

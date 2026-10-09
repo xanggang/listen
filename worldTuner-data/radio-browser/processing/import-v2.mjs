@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { DatabaseSync } from 'node:sqlite';
+import { ensureCatalogNames } from '../../v2/src/catalog-names.mjs';
 import { createSnowflakeIdGenerator } from '../../v2/src/snowflake-id.mjs';
 import { normalizeTag, proposeTag } from './report-tags.mjs';
 
@@ -23,12 +24,16 @@ export function playbackKey(stream) {
   return clean(stream.resolved_url ?? stream.url_resolved) ?? clean(stream.url);
 }
 
-/** 清理来源文本；数字零与布尔值由调用方单独处理。 */
+/**
+ * 清理来源文本；数字零与布尔值由调用方单独处理。
+ */
 function clean(value) {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
 }
 
-/** 将语言英文展示名统一为首字母大写；代码和匹配键仍保持小写。 */
+/**
+ * 将语言英文展示名统一为首字母大写；代码和匹配键仍保持小写。
+ */
 function displayLanguageName(value) {
   return value
     .trim()
@@ -38,12 +43,16 @@ function displayLanguageName(value) {
     .join(' ');
 }
 
-/** 验证可选非负整数；异常的来源统计或码率视为缺失。 */
+/**
+ * 验证可选非负整数；异常的来源统计或码率视为缺失。
+ */
 function nonnegative(value) {
   return Number.isSafeInteger(value) && value >= 0 ? value : null;
 }
 
-/** 验证坐标必须成对且处于经纬度范围内。 */
+/**
+ * 验证坐标必须成对且处于经纬度范围内。
+ */
 function coordinates(row) {
   return Number.isFinite(row.geo_lat) &&
     Number.isFinite(row.geo_long) &&
@@ -68,7 +77,9 @@ function compareBrowserRows(a, b) {
   );
 }
 
-/** 将同一来源的字段按优先级合并；空值不能覆盖已有值。 */
+/**
+ * 将同一来源的字段按优先级合并；空值不能覆盖已有值。
+ */
 function firstValue(rows, field) {
   for (const row of rows) {
     const value = clean(row[field]);
@@ -77,7 +88,9 @@ function firstValue(rows, field) {
   return null;
 }
 
-/** 取得排序后首个合法非负整数，保留有效的零。 */
+/**
+ * 取得排序后首个合法非负整数，保留有效的零。
+ */
 function firstNumber(rows, field) {
   for (const row of rows) {
     const value = nonnegative(row[field]);
@@ -86,7 +99,9 @@ function firstNumber(rows, field) {
   return null;
 }
 
-/** 取得排序后首组成对且合法的经纬度，不混用不同记录的坐标。 */
+/**
+ * 取得排序后首组成对且合法的经纬度，不混用不同记录的坐标。
+ */
 function firstCoordinates(rows) {
   for (const row of rows) {
     const pair = coordinates(row);
@@ -95,12 +110,16 @@ function firstCoordinates(rows) {
   return [null, null];
 }
 
-/** 将 Radio Browser 的最后检查结果映射为目录状态；未知检查结果不推断不可用。 */
+/**
+ * 将 Radio Browser 的最后检查结果映射为目录状态；未知检查结果不推断不可用。
+ */
 function browserStatus(row) {
   return row.lastcheckok === 1 ? 'active' : row.lastcheckok === 0 ? 'unavailable' : 'unverified';
 }
 
-/** 将已有台站的非空字段补入主记录；用于多个 Garden ID 命中同一流的情况。 */
+/**
+ * 将已有台站的非空字段补入主记录；用于多个 Garden ID 命中同一流的情况。
+ */
 function combineExisting(primary, secondary) {
   const merged = { ...primary };
   for (const field of stationFields) {
@@ -114,7 +133,9 @@ function combineExisting(primary, secondary) {
   return merged;
 }
 
-/** Radio Browser 的有效字段覆盖 Garden 字段；空值保留已有数据。 */
+/**
+ * Radio Browser 的有效字段覆盖 Garden 字段；空值保留已有数据。
+ */
 function combineBrowser(station, browser) {
   const merged = { ...station };
   for (const field of stationFields) {
@@ -132,14 +153,18 @@ function combineBrowser(station, browser) {
   return merged;
 }
 
-/** 沿已合并的 ID 映射找到仍存在的台站，避免多播放流台站被再次匹配时引用已删除的 ID。 */
+/**
+ * 沿已合并的 ID 映射找到仍存在的台站，避免多播放流台站被再次匹配时引用已删除的 ID。
+ */
 function canonicalStationId(id, mergedIds) {
   let current = id;
   while (mergedIds.has(current)) current = mergedIds.get(current);
   return current;
 }
 
-/** 根据逗号分隔字段收集不重复的非空值，保留原始显示文本。 */
+/**
+ * 根据逗号分隔字段收集不重复的非空值，保留原始显示文本。
+ */
 function splitValues(value) {
   return (clean(value) ?? '')
     .split(',')
@@ -147,7 +172,9 @@ function splitValues(value) {
     .filter(Boolean);
 }
 
-/** 根据来源 countrycode 匹配现有国家；合法但未知的代码按需建档。 */
+/**
+ * 根据来源 countrycode 匹配现有国家；合法但未知的代码按需建档。
+ */
 function countryIdFor(rows, countryIds, insertCountry, nextId) {
   const code = firstValue(rows, 'countrycode')?.toUpperCase();
   if (!code || !/^[A-Z]{2}$/.test(code)) return null;
@@ -160,7 +187,9 @@ function countryIdFor(rows, countryIds, insertCountry, nextId) {
   return id;
 }
 
-/** 将一组同流 Radio Browser 记录变成一份台站字段，按稳定顺序逐字段补空值。 */
+/**
+ * 将一组同流 Radio Browser 记录变成一份台站字段，按稳定顺序逐字段补空值。
+ */
 function browserStation(rows, countryId) {
   const [latitude, longitude] = firstCoordinates(rows);
   return {
@@ -243,17 +272,8 @@ export function importRadioBrowser(
     if (!groups.size) throw new Error('没有可导入且有名称的 Radio Browser 电台。');
     target.exec('BEGIN IMMEDIATE');
     targetTransaction = true;
-    // 兼容已有 V2 文件，为中文展示名补列；失败时与整批导入一起回滚。
-    if (
-      !target
-        .prepare('PRAGMA table_info(tag)')
-        .all()
-        .some((row) => row.name === 'name_zh')
-    ) {
-      target.exec(
-        'ALTER TABLE tag ADD COLUMN name_zh TEXT CHECK (name_zh IS NULL OR length(trim(name_zh)) > 0)',
-      );
-    }
+    // 在导入事务内补齐展示字段，保留已经人工修正的英文译名。
+    ensureCatalogNames(target);
     target.exec(
       'CREATE UNIQUE INDEX IF NOT EXISTS idx_language_code_unique ON language(code) WHERE code IS NOT NULL',
     );
@@ -308,13 +328,13 @@ export function importRadioBrowser(
       "SELECT 1 FROM station_stream WHERE station_id = ? AND url = ? AND coalesce(resolved_url, '') = ? LIMIT 1",
     );
     const insertTag = target.prepare(
-      'INSERT INTO tag (id, name, normalized_name, name_zh) VALUES (?, ?, ?, ?)',
+      'INSERT INTO tag (id, name, normalized_name, name_zh, name_en) VALUES (?, ?, ?, ?, ?)',
     );
     const insertStationTag = target.prepare(
       'INSERT OR IGNORE INTO station_tag (station_id, tag_id) VALUES (?, ?)',
     );
     const insertLanguage = target.prepare(
-      'INSERT INTO language (id, name, name_zh, code) VALUES (?, ?, ?, ?)',
+      'INSERT INTO language (id, name, name_zh, code, name_en) VALUES (?, ?, ?, ?, ?)',
     );
     const insertStationLanguage = target.prepare(
       'INSERT OR IGNORE INTO station_language (station_id, language_id) VALUES (?, ?)',
@@ -460,7 +480,13 @@ export function importRadioBrowser(
           let tagId = tagIds.get(normalized);
           if (!tagId) {
             tagId = nextId();
-            insertTag.run(tagId, normalized, normalized, tagTranslations[normalized] ?? null);
+            insertTag.run(
+              tagId,
+              normalized,
+              normalized,
+              tagTranslations[normalized] ?? null,
+              normalized,
+            );
             tagIds.set(normalized, tagId);
             stats.tags++;
           }
@@ -481,7 +507,7 @@ export function importRadioBrowser(
             const englishName =
               languageTranslations.abbreviations[code] ?? displayLanguageName(name || code);
             const chineseName = languageTranslations.zh[englishName] ?? null;
-            insertLanguage.run(languageId, englishName, chineseName, code);
+            insertLanguage.run(languageId, englishName, chineseName, code, englishName);
             languageIds.set(code, languageId);
             stats.languages++;
           }
@@ -509,7 +535,9 @@ export function importRadioBrowser(
   }
 }
 
-/** 读取命令行路径并执行本地导入，不请求网络或远程数据库。 */
+/**
+ * 读取命令行路径并执行本地导入，不请求网络或远程数据库。
+ */
 function main() {
   const { values } = parseArgs({
     options: {

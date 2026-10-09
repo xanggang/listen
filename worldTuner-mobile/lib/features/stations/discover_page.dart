@@ -177,7 +177,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
                                 child: Text(
                                   [
                                     station.country,
-                                    station.language,
+                                    station.displayLanguage(
+                                      widget.text.language,
+                                    ),
                                   ].whereType<String>().join(' · '),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -265,7 +267,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                           ),
                           const Spacer(),
                           Text(
-                            item.name,
+                            item.displayName(widget.text.language),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(fontWeight: FontWeight.w700),
@@ -323,7 +325,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                     backgroundColor: palette.surface,
                     side: BorderSide(color: palette.border),
                     label: Text(
-                      '${item.name}  ${item.stationCount ?? 0}',
+                      '${item.displayName(widget.text.language)}  ${item.stationCount ?? 0}',
                       style: TextStyle(color: palette.text, fontSize: 11),
                     ),
                   );

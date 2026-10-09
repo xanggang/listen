@@ -6,7 +6,9 @@ import { DatabaseSync } from 'node:sqlite';
 import test from 'node:test';
 import { cleanTags, restoreTags } from '../processing/clean-tags.mjs';
 
-/** 创建两台电台及标准名、别名、技术信息、语言与未知风格标签，覆盖关系合并。 */
+/**
+ * 创建两台电台及标准名、别名、技术信息、语言与未知风格标签，覆盖关系合并。
+ */
 function fixture() {
   const directory = mkdtempSync(join(tmpdir(), 'worldtuner-clean-tags-'));
   const path = join(directory, 'catalog.sqlite');
@@ -33,11 +35,14 @@ function fixture() {
       ('0000000000000000002','0000000000000000015'),
       ('0000000000000000002','0000000000000000016');`);
   db.prepare('UPDATE tag SET name_zh = ? WHERE name = ?').run('稀有风格', 'rare style');
+  db.prepare('UPDATE tag SET name_en = ? WHERE name = ?').run('Rare style music', 'rare style');
   db.close();
   return { directory, path, backup: join(directory, 'tags-backup.sqlite') };
 }
 
-/** 只读取得两张标签表的全部记录，便于检查预览、回滚及恢复是否逐行一致。 */
+/**
+ * 只读取得两张标签表的全部记录，便于检查预览、回滚及恢复是否逐行一致。
+ */
 function snapshot(path) {
   const db = new DatabaseSync(path, { readOnly: true });
   try {
@@ -69,6 +74,7 @@ test('备份、清洗及恢复保持标签关系完整', () => {
     assert.equal(cleaned.tags[0].name_zh, '流行音乐');
     assert.equal(cleaned.tags[1].name, 'rare style');
     assert.equal(cleaned.tags[1].name_zh, '稀有风格');
+    assert.equal(cleaned.tags[1].name_en, 'Rare style music');
     assert.equal(cleaned.tags[2].name, '80s');
     const again = cleanTags(f.path);
     assert.deepEqual(again.before, again.after);

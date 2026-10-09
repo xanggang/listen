@@ -993,6 +993,16 @@
               1
             ],
             "nullable": true
+          },
+          "languageEn": {
+            "type": "string",
+            "nullable": true,
+            "description": "按每种语言逐项回退后聚合的语种展示名；原始 language 保留。"
+          },
+          "languageZh": {
+            "type": "string",
+            "nullable": true,
+            "description": "按每种语言逐项回退后聚合的语种展示名；原始 language 保留。"
           }
         }
       },
@@ -1091,6 +1101,16 @@
           "stationcount": {
             "type": "integer",
             "minimum": 1
+          },
+          "name_en": {
+            "type": "string",
+            "nullable": true,
+            "description": "英文展示名；首次迁移由原名回填，可独立校订。标签与语言返回此字段。"
+          },
+          "name_zh": {
+            "type": "string",
+            "nullable": true,
+            "description": "中文展示名；缺失时客户端回退英文与原名。标签与语言返回此字段。"
           }
         }
       },

@@ -309,7 +309,7 @@ class _SearchPageState extends State<SearchPage> {
                     }
                     final item = items[index - 1];
                     return AetherFilterChip(
-                      label: item.name,
+                      label: item.displayName(widget.text.language),
                       selected: catalog.$2 == item.id,
                       onTap: () => _selectItem(_category, item),
                     );
@@ -405,7 +405,7 @@ class _SearchPageState extends State<SearchPage> {
     final palette = AetherPalette.of(context);
     final details = [
       station.country,
-      station.language,
+      station.displayLanguage(widget.text.language),
       station.codec,
     ].whereType<String>().where((value) => value.isNotEmpty).join(' · ');
     return Column(
@@ -518,7 +518,7 @@ class _SearchPageState extends State<SearchPage> {
     final palette = AetherPalette.of(context);
     final details = [
       station.country,
-      station.language,
+      station.displayLanguage(widget.text.language),
       station.codec,
     ].whereType<String>().where((value) => value.isNotEmpty).join(' · ');
     return Container(

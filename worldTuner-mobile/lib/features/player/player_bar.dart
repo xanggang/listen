@@ -189,7 +189,11 @@ class _PlayerDetails extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  [station.country, station.language, station.codec]
+                  [
+                        station.country,
+                        station.displayLanguage(text.language),
+                        station.codec,
+                      ]
                       .whereType<String>()
                       .where((value) => value.isNotEmpty)
                       .join(' · '),

@@ -1,3 +1,4 @@
+import { ensureCatalogNames } from '../../v2/src/catalog-names.mjs';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
@@ -12,7 +13,9 @@ const defaultDirectory = fileURLToPath(
   new URL('../../v2/docs/标签清洗报告/AI处理包/', import.meta.url),
 );
 
-/** 读取逐行 JSON；忽略空行，解析失败时报告行号，不接受空文件。 */
+/**
+ * 读取逐行 JSON；忽略空行，解析失败时报告行号，不接受空文件。
+ */
 export function readJsonLines(path) {
   const rows = [];
   for (const [index, line] of readFileSync(path, 'utf8').split(/\r?\n/u).entries()) {
@@ -161,6 +164,11 @@ export function planAiTags(tags, input, results) {
       name: group.name,
       normalized_name: group.name,
       name_zh: group.name_zh,
+      name_en:
+        group.entries.find(
+          // 标准名称未变化时保留已校订英文；拆分或新目标按新名称初始化。
+          (entry) => normalizeTag(entry.tag.name) === group.name && entry.tag.name_en?.trim(),
+        )?.tag.name_en ?? group.name,
     });
     for (const entry of group.entries)
       entry.item.targets.push({ id: group.id, name: group.name, name_zh: group.name_zh });
@@ -190,10 +198,11 @@ export function applyAiTags(options = {}) {
     };
     const plan = planAiTags(originalTags, input, results);
     db.exec(`CREATE TEMP TABLE ai_mapping (old_id TEXT, target_id TEXT, PRIMARY KEY(old_id,target_id));
-      CREATE TEMP TABLE ai_tags (id TEXT PRIMARY KEY, name TEXT, normalized_name TEXT, name_zh TEXT);
+      CREATE TEMP TABLE ai_tags (id TEXT PRIMARY KEY, name TEXT, normalized_name TEXT, name_zh TEXT, name_en TEXT);
       CREATE TEMP TABLE ai_links (station_id TEXT, tag_id TEXT, PRIMARY KEY(station_id,tag_id));`);
-    const insertTag = db.prepare('INSERT INTO ai_tags VALUES (?,?,?,?)');
-    for (const tag of plan.tags) insertTag.run(tag.id, tag.name, tag.normalized_name, tag.name_zh);
+    const insertTag = db.prepare('INSERT INTO ai_tags VALUES (?,?,?,?,?)');
+    for (const tag of plan.tags)
+      insertTag.run(tag.id, tag.name, tag.normalized_name, tag.name_zh, tag.name_en);
     const insertMap = db.prepare('INSERT INTO ai_mapping VALUES (?,?)');
     for (const item of plan.mapping)
       for (const target of item.targets) insertMap.run(item.oldId, target.id);
@@ -234,14 +243,15 @@ export function applyAiTags(options = {}) {
         results,
         mapping: plan.mapping,
       });
+      ensureCatalogNames(db, ['tag']);
       db.exec(
-        'DELETE FROM station_tag; DELETE FROM tag; INSERT INTO tag SELECT * FROM ai_tags; INSERT INTO station_tag SELECT * FROM ai_links;',
+        'DELETE FROM station_tag; DELETE FROM tag; INSERT INTO tag (id,name,normalized_name,name_zh,name_en) SELECT id,name,normalized_name,name_zh,name_en FROM ai_tags; INSERT INTO station_tag SELECT * FROM ai_links;',
       );
       const difference = db
         .prepare(
           `SELECT
-        (SELECT count(*) FROM (SELECT * FROM tag EXCEPT SELECT * FROM ai_tags)) +
-        (SELECT count(*) FROM (SELECT * FROM ai_tags EXCEPT SELECT * FROM tag)) +
+        (SELECT count(*) FROM (SELECT id,name,normalized_name,name_zh,name_en FROM tag EXCEPT SELECT id,name,normalized_name,name_zh,name_en FROM ai_tags)) +
+        (SELECT count(*) FROM (SELECT id,name,normalized_name,name_zh,name_en FROM ai_tags EXCEPT SELECT id,name,normalized_name,name_zh,name_en FROM tag)) +
         (SELECT count(*) FROM (SELECT * FROM station_tag EXCEPT SELECT * FROM ai_links)) +
         (SELECT count(*) FROM (SELECT * FROM ai_links EXCEPT SELECT * FROM station_tag)) n`,
         )
@@ -264,7 +274,9 @@ export function applyAiTags(options = {}) {
   }
 }
 
-/** 解析预览或写回选项；仅直接执行模块时运行。 */
+/**
+ * 解析预览或写回选项；仅直接执行模块时运行。
+ */
 function main() {
   const { values } = parseArgs({
     options: {

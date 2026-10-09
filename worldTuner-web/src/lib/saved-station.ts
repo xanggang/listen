@@ -41,9 +41,10 @@ export function toPlayableStation(value: unknown): PlayableStation | null {
     favicon: webUrl(record.favicon),
     country: label(record.country),
     language: label(record.language),
-    votes: Number.isSafeInteger(record.votes) && Number(record.votes) >= 0
-      ? Number(record.votes)
-      : null,
+    languageEn: label(record.languageEn),
+    languageZh: label(record.languageZh),
+    votes:
+      Number.isSafeInteger(record.votes) && Number(record.votes) >= 0 ? Number(record.votes) : null,
   };
 }
 

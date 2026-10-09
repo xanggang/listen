@@ -6,6 +6,7 @@ import type { AppEnv } from '../types.ts';
 // Validation and rate limiting must run before this middleware.
 /**
  * 创建公开 JSON 响应缓存中间件；必须挂在参数校验和限流之后。
+ * 内部响应版本隔离旧契约缓存，版本参数不进入实际 HTTP 请求。
  */
 export function cacheResponse(ttl: number | ((c: Context<AppEnv>) => number)) {
   /**
@@ -16,6 +17,7 @@ export function cacheResponse(ttl: number | ((c: Context<AppEnv>) => number)) {
     const seconds = typeof ttl === 'number' ? ttl : ttl(c);
     if (seconds <= 0) return next();
     const url = new URL(c.req.url);
+    url.searchParams.set('_response_schema', 'catalog-names-1');
     url.searchParams.sort();
     const key = new Request(url.toString());
     let hit: Response | undefined;

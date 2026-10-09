@@ -105,8 +105,12 @@ class _CatalogPickerState extends State<CatalogPicker> {
         if (widget.kind != 'tags') {
           page.sort(
             // 国家与语言采用字母顺序，便于在完整列表中定位。
-            (left, right) =>
-                left.name.toLowerCase().compareTo(right.name.toLowerCase()),
+            (left, right) => left
+                .displayName(widget.text.language)
+                .toLowerCase()
+                .compareTo(
+                  right.displayName(widget.text.language).toLowerCase(),
+                ),
           );
         }
         _items.addAll(page);
@@ -164,7 +168,7 @@ class _CatalogPickerState extends State<CatalogPicker> {
               .where(
                 (item) => _letter != null
                     ? item.name.toUpperCase().startsWith(_letter!)
-                    : item.name.toLowerCase().contains(query),
+                    : item.matches(query),
               )
               .toList();
     return SafeArea(
@@ -226,7 +230,7 @@ class _CatalogPickerState extends State<CatalogPicker> {
                   if (index <= visible.length) {
                     final item = visible[index - 1];
                     return ListTile(
-                      title: Text(item.name),
+                      title: Text(item.displayName(widget.text.language)),
                       subtitle: item.stationCount == null
                           ? null
                           : Text(

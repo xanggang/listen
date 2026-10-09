@@ -15,12 +15,12 @@ const relations = {
 function catalogSql(kind: CatalogKind): string {
   const table = tables[kind];
   const code = kind === 'tags' ? '' : ', x.code';
-  const chinese = kind === 'languages' ? ', x.name_zh' : '';
+  const localized = kind === 'countries' ? '' : ', x.name_en, x.name_zh';
   const join =
     kind === 'countries'
       ? 'JOIN station s ON s.country_id = x.id'
       : `JOIN ${relations[kind][0]} r ON r.${relations[kind][1]} = x.id JOIN station s ON s.id = r.station_id`;
-  return `SELECT x.id, x.name${chinese}${code}, COUNT(*) AS stationcount FROM ${table} x ${join} WHERE ${publicStation}`;
+  return `SELECT x.id, x.name${localized}${code}, COUNT(*) AS stationcount FROM ${table} x ${join} WHERE ${publicStation}`;
 }
 export class CatalogRepository {
   private readonly db: SqlDatabase;
@@ -42,15 +42,15 @@ export class CatalogRepository {
     return results;
   }
   /**
-   * 使用字面名称匹配分页检索标签，分类数量与电台可见性采用相同口径。
+   * 按原名、英文或中文进行字面匹配；分类数量与电台可见性采用相同口径。
    */
   async searchTags(query: string, limit: number, offset: number): Promise<CatalogItem[]> {
     const escaped = query.replace(/[\\%_]/g, '\\$&');
     const { results } = await this.db
       .prepare(
-        `${catalogSql('tags')} AND (? = '' OR x.name LIKE ? ESCAPE '\\') GROUP BY x.id ORDER BY stationcount DESC, x.id ASC LIMIT ? OFFSET ?`,
+        `${catalogSql('tags')} AND (? = '' OR x.name LIKE ? ESCAPE '\\' OR x.name_en LIKE ? ESCAPE '\\' OR x.name_zh LIKE ? ESCAPE '\\') GROUP BY x.id ORDER BY stationcount DESC, x.id ASC LIMIT ? OFFSET ?`,
       )
-      .bind(query, `%${escaped}%`, limit, offset)
+      .bind(query, `%${escaped}%`, `%${escaped}%`, `%${escaped}%`, limit, offset)
       .all<CatalogItem>();
     return results;
   }

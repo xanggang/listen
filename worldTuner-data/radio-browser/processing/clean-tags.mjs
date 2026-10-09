@@ -3,21 +3,24 @@ import { resolve, dirname, basename, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { DatabaseSync } from 'node:sqlite';
+import { ensureCatalogNames } from '../../v2/src/catalog-names.mjs';
 import { normalizeTag, proposeTag } from './report-tags.mjs';
 
 const defaultDb = fileURLToPath(new URL('../../v2/data/worldtuner-v2.sqlite', import.meta.url));
 const rulesPath = new URL('./tag-cleaning-rules.json', import.meta.url);
 const translationsPath = new URL('./tag-names.zh-CN.json', import.meta.url);
-const chineseColumnSql =
-  'ALTER TABLE tag ADD COLUMN name_zh TEXT CHECK (name_zh IS NULL OR length(trim(name_zh)) > 0)';
 
-/** 为备份生成同目录的独立文件名，绝不覆盖之前的快照。 */
+/**
+ * 为备份生成同目录的独立文件名，绝不覆盖之前的快照。
+ */
 function defaultBackupPath(dbPath) {
   const stamp = new Date().toISOString().replaceAll(':', '-');
   return join(dirname(dbPath), `${basename(dbPath, '.sqlite')}-tags-${stamp}.sqlite`);
 }
 
-/** 统计标签及关联行数，供清洗前后和备份完整性核对。 */
+/**
+ * 统计标签及关联行数，供清洗前后和备份完整性核对。
+ */
 function counts(db) {
   return {
     tags: db.prepare('SELECT count(*) AS n FROM tag').get().n,
@@ -25,19 +28,38 @@ function counts(db) {
   };
 }
 
-/** 检查支持的旧/新标签结构，返回是否已有中文列；其他新增字段拒绝处理以免丢失。 */
+/**
+ * 检查旧/新标签字段；支持中英文展示列，拒绝未知字段以免清洗丢失数据。
+ */
 function verifySchema(db) {
   const tags = db.prepare('PRAGMA table_info(tag)').all();
   const links = db.prepare('PRAGMA table_info(station_tag)').all();
   // 按字段名核对固定导出结构，防止把不同版本的表当成当前结构。
-  const tagFields = tags.map((row) => row.name).join(',');
+  const fields = new Set(
+    tags.map(
+      // 校验字段集合，不依赖增量迁移的物理列顺序。
+      (row) => row.name,
+    ),
+  );
+  const supported = ['id', 'name', 'normalized_name', 'name_zh', 'name_en'];
   if (
-    !['id,name,normalized_name', 'id,name,normalized_name,name_zh'].includes(tagFields) ||
-    links.map((row) => row.name).join(',') !== 'station_id,tag_id'
+    ['id', 'name', 'normalized_name'].some(
+      // 必需字段缺失时拒绝导入或恢复。
+      (field) => !fields.has(field),
+    ) ||
+    [...fields].some(
+      // 不能丢弃尚未适配的新增字段。
+      (field) => !supported.includes(field),
+    ) ||
+    links
+      .map(
+        // 关联表仍采用固定两字段契约。
+        (row) => row.name,
+      )
+      .join(',') !== 'station_id,tag_id'
   ) {
     throw new Error('标签表字段与清洗脚本不匹配，请先适配备份和恢复字段。');
   }
-  return tagFields.endsWith(',name_zh');
 }
 
 /**
@@ -55,14 +77,16 @@ export function backupTags(db, path, metadata) {
   const backup = new DatabaseSync(file);
   try {
     backup.exec(`PRAGMA foreign_keys = ON;
-      CREATE TABLE tag (id TEXT PRIMARY KEY, name TEXT NOT NULL, normalized_name TEXT NOT NULL, name_zh TEXT);
+      CREATE TABLE tag (id TEXT PRIMARY KEY, name TEXT NOT NULL, normalized_name TEXT NOT NULL, name_zh TEXT, name_en TEXT);
       CREATE TABLE station_tag (station_id TEXT NOT NULL, tag_id TEXT NOT NULL REFERENCES tag(id),
         PRIMARY KEY (station_id, tag_id));
       CREATE TABLE backup_metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL);
       BEGIN IMMEDIATE;`);
-    const addTag = backup.prepare('INSERT INTO tag VALUES (?, ?, ?, ?)');
+    const addTag = backup.prepare(
+      'INSERT INTO tag (id, name, normalized_name, name_zh, name_en) VALUES (?, ?, ?, ?, ?)',
+    );
     for (const row of db.prepare('SELECT * FROM tag').iterate()) {
-      addTag.run(row.id, row.name, row.normalized_name, row.name_zh ?? null);
+      addTag.run(row.id, row.name, row.normalized_name, row.name_zh ?? null, row.name_en ?? null);
     }
     const addLink = backup.prepare('INSERT INTO station_tag VALUES (?, ?)');
     for (const row of db.prepare('SELECT station_id, tag_id FROM station_tag').iterate()) {
@@ -132,19 +156,22 @@ function createPlan(tags, rules, translations) {
       name: key,
       normalized_name: key,
       name_zh: translations[key] ?? existingChinese?.tag.name_zh ?? null,
+      name_en: primary.tag.name_en?.trim() || key,
     });
     for (const entry of group) entry.item.targetId = primary.tag.id;
   }
   return { tags: cleaned, mapping };
 }
 
-/** 检查真实标签及关联与临时计划完全一致，同时检查外键与数据库完整性。 */
+/**
+ * 检查真实标签及关联与临时计划完全一致，同时检查外键与数据库完整性。
+ */
 function verifyApplied(db) {
   const tagDifference = db
     .prepare(
       `SELECT
-    (SELECT count(*) FROM (SELECT * FROM tag EXCEPT SELECT * FROM cleaned_tags)) +
-    (SELECT count(*) FROM (SELECT * FROM cleaned_tags EXCEPT SELECT * FROM tag)) AS n`,
+    (SELECT count(*) FROM (SELECT id,name,normalized_name,name_zh,name_en FROM tag EXCEPT SELECT id,name,normalized_name,name_zh,name_en FROM cleaned_tags)) +
+    (SELECT count(*) FROM (SELECT id,name,normalized_name,name_zh,name_en FROM cleaned_tags EXCEPT SELECT id,name,normalized_name,name_zh,name_en FROM tag)) AS n`,
     )
     .get().n;
   const linkDifference = db
@@ -164,11 +191,13 @@ function verifyApplied(db) {
   }
 }
 
-/** 将临时计划原子写回 tag 和 station_tag；调用方负责开启事务及预先备份。 */
+/**
+ * 将临时计划原子写回 tag 和 station_tag；调用方负责开启事务及预先备份。
+ */
 function applyTemporaryPlan(db) {
   db.exec(`DELETE FROM station_tag;
     DELETE FROM tag;
-    INSERT INTO tag SELECT * FROM cleaned_tags;
+    INSERT INTO tag (id,name,normalized_name,name_zh,name_en) SELECT id,name,normalized_name,name_zh,name_en FROM cleaned_tags;
     INSERT INTO station_tag SELECT * FROM cleaned_station_tags;`);
   verifyApplied(db);
 }
@@ -191,16 +220,17 @@ export function cleanTags(dbPath = defaultDb, options = {}) {
     db.exec('PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;');
     db.exec(options.apply ? 'BEGIN IMMEDIATE' : 'BEGIN');
     transaction = true;
-    const hasChinese = verifySchema(db);
+    verifySchema(db);
     const before = counts(db);
     const plan = createPlan(db.prepare('SELECT * FROM tag ORDER BY id').all(), rules, translations);
     db.exec(`CREATE TEMP TABLE tag_mapping (old_id TEXT PRIMARY KEY, target_id TEXT);
-      CREATE TEMP TABLE cleaned_tags (id TEXT PRIMARY KEY, name TEXT NOT NULL, normalized_name TEXT NOT NULL, name_zh TEXT);
+      CREATE TEMP TABLE cleaned_tags (id TEXT PRIMARY KEY, name TEXT NOT NULL, normalized_name TEXT NOT NULL, name_zh TEXT, name_en TEXT);
       CREATE TEMP TABLE cleaned_station_tags (station_id TEXT, tag_id TEXT, PRIMARY KEY (station_id, tag_id));`);
     const addMap = db.prepare('INSERT INTO tag_mapping VALUES (?, ?)');
     for (const row of plan.mapping) addMap.run(row.oldId, row.targetId);
-    const addTag = db.prepare('INSERT INTO cleaned_tags VALUES (?, ?, ?, ?)');
-    for (const row of plan.tags) addTag.run(row.id, row.name, row.normalized_name, row.name_zh);
+    const addTag = db.prepare('INSERT INTO cleaned_tags VALUES (?, ?, ?, ?, ?)');
+    for (const row of plan.tags)
+      addTag.run(row.id, row.name, row.normalized_name, row.name_zh, row.name_en);
     db.exec(`INSERT OR IGNORE INTO cleaned_station_tags
       SELECT st.station_id, m.target_id FROM station_tag st JOIN tag_mapping m ON m.old_id=st.tag_id
       WHERE m.target_id IS NOT NULL;`);
@@ -236,7 +266,7 @@ export function cleanTags(dbPath = defaultDb, options = {}) {
         translations,
         mapping: plan.mapping,
       });
-      if (!hasChinese) db.exec(chineseColumnSql);
+      ensureCatalogNames(db, ['tag']);
       applyTemporaryPlan(db);
       summary.applied = true;
     }
@@ -268,13 +298,13 @@ export function restoreTags(dbPath, backupPath) {
   try {
     db.exec('PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000; BEGIN IMMEDIATE;');
     transaction = true;
-    const hasChinese = verifySchema(db);
+    verifySchema(db);
     verifySchema(source);
-    db.exec(`CREATE TEMP TABLE cleaned_tags (id TEXT PRIMARY KEY, name TEXT NOT NULL, normalized_name TEXT NOT NULL, name_zh TEXT);
+    db.exec(`CREATE TEMP TABLE cleaned_tags (id TEXT PRIMARY KEY, name TEXT NOT NULL, normalized_name TEXT NOT NULL, name_zh TEXT, name_en TEXT);
       CREATE TEMP TABLE cleaned_station_tags (station_id TEXT, tag_id TEXT, PRIMARY KEY (station_id, tag_id));`);
-    const addTag = db.prepare('INSERT INTO cleaned_tags VALUES (?, ?, ?, ?)');
+    const addTag = db.prepare('INSERT INTO cleaned_tags VALUES (?, ?, ?, ?, ?)');
     for (const row of source.prepare('SELECT * FROM tag').iterate()) {
-      addTag.run(row.id, row.name, row.normalized_name, row.name_zh ?? null);
+      addTag.run(row.id, row.name, row.normalized_name, row.name_zh ?? null, row.name_en ?? null);
     }
     const addLink = db.prepare('INSERT INTO cleaned_station_tags VALUES (?, ?)');
     for (const row of source.prepare('SELECT station_id, tag_id FROM station_tag').iterate()) {
@@ -296,7 +326,7 @@ export function restoreTags(dbPath, backupPath) {
       restoreFrom: snapshot,
       createdAt: new Date().toISOString(),
     });
-    if (!hasChinese) db.exec(chineseColumnSql);
+    ensureCatalogNames(db, ['tag']);
     applyTemporaryPlan(db);
     const restored = counts(db);
     db.exec('COMMIT');
@@ -311,7 +341,9 @@ export function restoreTags(dbPath, backupPath) {
   }
 }
 
-/** 默认生成预览；显式 --apply 清洗本地数据，--restore 恢复专用标签备份。 */
+/**
+ * 默认生成预览；显式 --apply 清洗本地数据，--restore 恢复专用标签备份。
+ */
 function main() {
   const { values } = parseArgs({
     options: {

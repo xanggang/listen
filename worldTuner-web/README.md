@@ -32,3 +32,7 @@ pnpm dev
 - `pnpm test`（Node.js 22）验证浏览器本地收藏与历史记录的字段校验、坏数据恢复和去重规则。
 
 历史电台 SQL 快照现位于 `../worldTuner-api/data/listen-d1-export.sql`，不属于 Web 构建资产。项目整体分析见 `../docs/listen项目分析与重开发准备.md`。
+
+## 标签与语言名称
+
+发现页与排行榜使用统一的 `src/lib/catalog-names.ts` 展示规则：中文 `name_zh → name_en → name`；英文 `name_en → name`。字典保存所有译名，切换界面语言直接更新标签，不修改筛选 ID。电台语种支持 `languageEn` / `languageZh`，收藏持久化保留这些字段，历史收藏仍可回退原文。升级 API 数据结构后刷新页面，重新获取字典。

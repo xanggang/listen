@@ -64,3 +64,20 @@ pnpm dev --ip 0.0.0.0
 ## 全量地图与缓存
 
 首页使用 `GET /api/map/snapshot` 获取 `[id, name, 经度, 纬度]` 全量元组，支持 gzip、ETag/304。`MAP_SNAPSHOT_CACHE_TTL_SECONDS` 默认 300；Worker 在 `wrangler.jsonc` 配置，SQLite 在 `.env.sqlite` 配置，0 禁用。详见[地图缓存文档](../docs/map-snapshot-cache.md)。
+
+## 标签与语言展示名迁移
+
+标签和语言接口保留 `name` 原名，并返回 `name_en`、`name_zh`。国家接口不增加译名。电台 DTO 保留 `language`，新增 `languageEn`，`languageZh` 按每种语种逐项执行中文→英文→原名后聚合。标签及电台关键词搜索同时匹配原名、中英文；筛选仍传 ID。
+
+现有 SQLite 目录先升级，再重启 API。进入 `worldTuner-data`：
+
+```bash
+npm run migrate:v2:catalog-names -- --db /实际路径/worldtuner-v2.sqlite
+npm run migrate:v2:catalog-names -- --db /实际路径/worldtuner-v2.sqlite --apply
+```
+
+第一条只预览。第二条先备份全库，再事务补齐 `name_en`/`name_zh`；英文仅回填缺失值，保留既有中文、英文校订、ID 和关联。API 不自动迁移业务库，缺字段时启动会提示迁移命令。
+
+D1 使用迁移 `0003`、`0004`、`0005_catalog_name_en.sql`，按顺序升级已有库，不重新执行历史建表文件。本地运行 `pnpm db:migrate:local`；正式库在发布前单独运行 `pnpm exec wrangler d1 migrations apply DB --remote`。本次开发没有操作远程库。
+
+字典缓存仍保存所有语言字段，不按客户端语言拆分。JSON Cache API 内部键新增 `_response_schema=catalog-names-1`，避免发布后命中不含译名的旧缓存；客户端仍调用原 URL，地图快照缓存不受影响。今后改变响应格式时同步更新该内部版本。

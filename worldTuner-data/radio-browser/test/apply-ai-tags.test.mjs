@@ -7,7 +7,9 @@ import test from 'node:test';
 import { applyAiTags, planAiTags } from '../processing/apply-ai-tags.mjs';
 import { restoreTags } from '../processing/clean-tags.mjs';
 
-/** 创建可合并、可拆分和可删除的结果项；ID 参数始终使用字符串。 */
+/**
+ * 创建可合并、可拆分和可删除的结果项；ID 参数始终使用字符串。
+ */
 function result(id, name, action, targets) {
   return { id, original_name: name, action, targets, confidence: 'high', reason: '测试明确映射。' };
 }
@@ -62,8 +64,9 @@ test('AI 入库支持拆分并可从备份恢复全部关联', () => {
     db.exec(readFileSync(new URL('../../v2/schema.sql', import.meta.url), 'utf8'));
     db.exec(`INSERT INTO station (id,name,source_type,created_at,updated_at) VALUES
       ('0000000000000000001','A','radio_browser','now','now'),('0000000000000000002','B','radio_browser','now','now');
-      INSERT INTO tag VALUES ('0000000000000000001','rock','rock','摇滚'),('0000000000000000002','rock jazz','rock jazz',NULL),('0000000000000000003','noise metadata','noise metadata',NULL);
+      INSERT INTO tag (id,name,normalized_name,name_zh) VALUES ('0000000000000000001','rock','rock','摇滚'),('0000000000000000002','rock jazz','rock jazz',NULL),('0000000000000000003','noise metadata','noise metadata',NULL);
       INSERT INTO station_tag VALUES ('0000000000000000001','0000000000000000001'),('0000000000000000001','0000000000000000002'),('0000000000000000002','0000000000000000002'),('0000000000000000001','0000000000000000003');`);
+    db.prepare('UPDATE tag SET name_en = ? WHERE name = ?').run('Rock music', 'rock');
     const originalTags = db.prepare('SELECT * FROM tag ORDER BY id').all();
     const originalLinks = db.prepare('SELECT * FROM station_tag ORDER BY station_id,tag_id').all();
     writeFileSync(
@@ -90,6 +93,11 @@ test('AI 入库支持拆分并可从备份恢复全部关联', () => {
       db.prepare('SELECT id FROM tag WHERE name=?').get('rock').id,
       '0000000000000000001',
     );
+    assert.equal(
+      db.prepare('SELECT name_en FROM tag WHERE name=?').get('rock').name_en,
+      'Rock music',
+    );
+    assert.equal(db.prepare('SELECT name_en FROM tag WHERE name=?').get('jazz').name_en, 'jazz');
     assert.equal(db.prepare('SELECT count(*) n FROM station_tag').get().n, 4);
     restoreTags(path, backupPath);
     assert.deepEqual(db.prepare('SELECT * FROM tag ORDER BY id').all(), originalTags);

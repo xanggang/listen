@@ -99,3 +99,9 @@ flutter analyze
 flutter test
 flutter build apk --debug --dart-define-from-file=env/local.json
 ```
+
+## 标签与语种名称
+
+发现、搜索、排行榜和完整筛选面板按当前界面语言显示分类名称：中文使用 `name_zh → name_en → name`，英文使用 `name_en → name`，空白按缺失处理。字典缓存保存全部名称，切换语言直接重新展示，无须重新请求；搜索同时匹配原文、中英文。筛选仍提交 ID。
+
+电台语种及本地收藏支持 `languageEn`、`languageZh`；旧收藏回退原始 `language`。更新后完整重启 App，再验证语言切换，确保内存中旧字典重新加载。

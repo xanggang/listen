@@ -197,7 +197,7 @@ class StationTile extends StatelessWidget {
     final palette = AetherPalette.of(context);
     final details = [
       station.country,
-      station.language,
+      station.displayLanguage(text.language),
       if (station.votes != null) '${station.votes} ${text.get('voteCount')}',
     ].whereType<String>().where((part) => part.isNotEmpty).join(' · ');
     return Container(
