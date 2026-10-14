@@ -1,3 +1,4 @@
+import { ensureCountryNames } from '../../v2/src/country-names.mjs';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -520,6 +521,8 @@ export function importRadioBrowser(
     if (integrity?.integrity_check !== 'ok' || foreignKeys.length) {
       throw new Error('导入后的 V2 数据库完整性或外键检查失败。');
     }
+    // 新增国家也使用本地名称快照；整个导入失败时一并回滚。
+    ensureCountryNames(target);
     target.exec('COMMIT');
     targetTransaction = false;
     source.exec('COMMIT');

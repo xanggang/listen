@@ -2,7 +2,9 @@
 CREATE TABLE country (
   id TEXT PRIMARY KEY NOT NULL CHECK (length(id) = 19 AND id NOT GLOB '*[^0-9]*'),
   name TEXT NOT NULL CHECK (length(trim(name)) > 0),
-  code TEXT NOT NULL UNIQUE CHECK (code GLOB '[A-Z][A-Z]')
+  code TEXT NOT NULL UNIQUE CHECK (code GLOB '[A-Z][A-Z]'),
+  name_en TEXT CHECK (name_en IS NULL OR length(trim(name_en)) > 0),
+  name_zh TEXT CHECK (name_zh IS NULL OR length(trim(name_zh)) > 0)
 );
 
 CREATE TABLE station (

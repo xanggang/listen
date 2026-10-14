@@ -12,6 +12,8 @@ export function stationDto(row: StationRow) {
     place: row.place,
     countryId: row.country_id,
     country: row.country,
+    countryEn: row.countryen,
+    countryZh: row.countryzh,
     countrycode: row.countrycode,
     geoLat: row.geo_lat,
     geoLong: row.geo_long,

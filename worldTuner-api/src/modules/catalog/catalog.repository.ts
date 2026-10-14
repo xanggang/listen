@@ -15,7 +15,7 @@ const relations = {
 function catalogSql(kind: CatalogKind): string {
   const table = tables[kind];
   const code = kind === 'tags' ? '' : ', x.code';
-  const localized = kind === 'countries' ? '' : ', x.name_en, x.name_zh';
+  const localized = ', x.name_en, x.name_zh';
   const join =
     kind === 'countries'
       ? 'JOIN station s ON s.country_id = x.id'

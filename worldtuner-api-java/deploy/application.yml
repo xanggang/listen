@@ -1,0 +1,36 @@
+server:
+  port: 8787
+  compression:
+    enabled: false
+  error:
+    whitelabel:
+      enabled: false
+
+spring:
+  application:
+    name: worldtuner-api-java
+  threads:
+    virtual:
+      enabled: true
+
+worldtuner:
+  # 目录库：v2 业务库，公开 API 只读（绝对路径）
+  catalog-db-path: /opt/worldtuner/worldtuner-v2.sqlite
+  # 统计库：独立 SQLite 文件，启用 WAL（自动创建）
+  metrics-db-path: /opt/worldtuner/metrics.sqlite
+  # 地图快照缓存秒数
+  map-snapshot-ttl-seconds: 300
+  # CORS 白名单：填你的 Web 前端真实域名（HTTPS），多个用英文逗号分隔
+  allowed-origins: "https://your-web-domain.com"
+  # 进程内 JSON 缓存
+  cache-enabled: true
+  # 后台管理 Token：用 openssl rand -hex 32 生成后替换
+  admin-token: "change-me-please"
+  # 限流（每分钟）
+  read-limit-per-minute: 180
+  search-limit-per-minute: 30
+  metrics-limit-per-minute: 60
+
+logging:
+  level:
+    root: INFO

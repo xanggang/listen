@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { catalogDisplayName, stationLanguageLabel } from '@/lib/catalog-names';
+import { catalogDisplayName, stationLanguageLabel, stationCountryLabel } from '@/lib/catalog-names';
 import AetherHeader from '@/components/AetherHeader';
 import SearchInput from '@/components/SearchInput';
 import StationList from '@/components/StationList';
@@ -174,7 +174,7 @@ export default function DiscoverPage() {
                   aria-pressed={countryId === country.id}
                   onClick={() => setCountryId(country.id)}
                 >
-                  {country.name}
+                  {catalogDisplayName(country, locale)}
                 </button>
               ),
             )}
@@ -188,7 +188,7 @@ export default function DiscoverPage() {
               <div className="discover-feature__details">
                 <h2>{featured.name}</h2>
                 <p>
-                  {[featured.country, stationLanguageLabel(featured, locale)]
+                  {[stationCountryLabel(featured, locale), stationLanguageLabel(featured, locale)]
                     .filter(Boolean)
                     .join(' · ')}
                 </p>

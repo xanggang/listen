@@ -42,3 +42,5 @@ npm run migrate:v2:catalog-names -- --db /实际路径/catalog.sqlite --apply
 ```
 
 默认只读预览；`--apply` 在原库旁创建完整 SQLite 备份后事务升级。可用 `--backup /备份路径.sqlite` 指定位置，已有备份不会覆盖。只升级统一 v2 业务库，不修改 Radio Browser / Radio Garden 原始采集库。两个导入流程补齐展示字段；标签清洗、AI 清洗与备份恢复支持英文名并保留已校订值。
+
+国家字典现在也支持 `name_en`、`name_zh`，复用 geo-localization 的现有名称快照。用 `npm run migrate:v2:country-names` 预览，加 `-- --apply` 完整备份后升级；自定义业务库可传 `--db`。两个 v2 导入器自动填补新国家名称。未覆盖代码保留英文，不猜测身份。

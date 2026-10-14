@@ -100,7 +100,7 @@ function createFixture() {
   const target = new DatabaseSync(targetPath);
   target.exec(schema);
   target.exec(`
-    INSERT INTO country VALUES ('0000000000000000001', 'Austria', 'AT');
+    INSERT INTO country (id, name, code) VALUES ('0000000000000000001', 'Austria', 'AT');
     INSERT INTO station (id, name, website, source_type, created_at, updated_at)
       VALUES ('0000000000000000002', 'Garden A', 'https://garden.example', 'radio_garden', '2026-01-01', '2026-01-01');
     INSERT INTO station (id, name, source_type, created_at, updated_at)

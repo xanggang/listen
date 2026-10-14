@@ -40,6 +40,8 @@ export function toPlayableStation(value: unknown): PlayableStation | null {
     urlResolved,
     favicon: webUrl(record.favicon),
     country: label(record.country),
+    countryEn: label(record.countryEn),
+    countryZh: label(record.countryZh),
     language: label(record.language),
     languageEn: label(record.languageEn),
     languageZh: label(record.languageZh),

@@ -4,11 +4,17 @@ import {
   catalogDisplayName,
   catalogMatches,
   stationLanguageLabel,
+  stationCountryLabel,
 } from '../src/lib/catalog-names.ts';
 
 // 验证展示兜底和跨语言搜索，名称转换不修改筛选 ID 或原名。
 test('catalog names localize without changing identity and match all names', () => {
-  const item = { id: '123', name: '原始', name_en: ' Rock ', name_zh: ' 摇滚 ' };
+  const item = {
+    id: '123',
+    name: '原始',
+    name_en: ' Rock ',
+    name_zh: ' 摇滚 ',
+  };
   assert.equal(catalogDisplayName(item, 'zh-CN'), '摇滚');
   assert.equal(catalogDisplayName(item, 'en'), 'Rock');
   assert.equal(catalogDisplayName({ ...item, name_zh: ' ' }, 'zh'), 'Rock');
@@ -31,4 +37,18 @@ test('station languages support translated and legacy saved records', () => {
   );
   assert.equal(stationLanguageLabel({ language: 'legacy' }, 'en'), 'legacy');
   assert.equal(stationLanguageLabel({ language: null }, 'zh'), null);
+});
+
+// 国家译名与旧收藏采用相同兜底，不改变原始国家字段。
+test('country names localize and fall back for legacy favorites', () => {
+  assert.equal(
+    stationCountryLabel({ country: 'China', countryEn: 'China', countryZh: '中国' }, 'zh'),
+    '中国',
+  );
+  assert.equal(
+    stationCountryLabel({ country: 'China', countryEn: 'China', countryZh: '中国' }, 'en'),
+    'China',
+  );
+  assert.equal(stationCountryLabel({ country: 'Legacy' }, 'zh'), 'Legacy');
+  assert.equal(stationCountryLabel({ country: null }, 'zh'), null);
 });

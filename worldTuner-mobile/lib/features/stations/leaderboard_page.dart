@@ -229,7 +229,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               ),
               const SizedBox(height: 3),
               Text(
-                station.country ?? '',
+                station.displayCountry(widget.text.language) ?? '',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 10, color: palette.muted),

@@ -1,3 +1,4 @@
+import { ensureCountryNames } from '../../v2/src/country-names.mjs';
 import { ensureCatalogNames } from '../../v2/src/catalog-names.mjs';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -223,6 +224,8 @@ export function importRadioGarden(
     if (integrity?.integrity_check !== 'ok' || foreignKeys.length) {
       throw new Error('导入后的 V2 数据库完整性或外键检查失败。');
     }
+    // 新增国家也使用本地名称快照；整个导入失败时一并回滚。
+    ensureCountryNames(target);
     target.exec('COMMIT');
     targetTransaction = false;
     source.exec('COMMIT');

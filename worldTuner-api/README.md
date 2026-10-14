@@ -67,7 +67,7 @@ pnpm dev --ip 0.0.0.0
 
 ## 标签与语言展示名迁移
 
-标签和语言接口保留 `name` 原名，并返回 `name_en`、`name_zh`。国家接口不增加译名。电台 DTO 保留 `language`，新增 `languageEn`，`languageZh` 按每种语种逐项执行中文→英文→原名后聚合。标签及电台关键词搜索同时匹配原名、中英文；筛选仍传 ID。
+标签和语言接口保留 `name` 原名，并返回 `name_en`、`name_zh`。国家接口同样返回中英文展示名，国家扩展迁移见下文。电台 DTO 保留 `language`，新增 `languageEn`，`languageZh` 按每种语种逐项执行中文→英文→原名后聚合。标签及电台关键词搜索同时匹配原名、中英文；筛选仍传 ID。
 
 现有 SQLite 目录先升级，再重启 API。进入 `worldTuner-data`：
 
@@ -80,4 +80,8 @@ npm run migrate:v2:catalog-names -- --db /实际路径/worldtuner-v2.sqlite --ap
 
 D1 使用迁移 `0003`、`0004`、`0005_catalog_name_en.sql`，按顺序升级已有库，不重新执行历史建表文件。本地运行 `pnpm db:migrate:local`；正式库在发布前单独运行 `pnpm exec wrangler d1 migrations apply DB --remote`。本次开发没有操作远程库。
 
-字典缓存仍保存所有语言字段，不按客户端语言拆分。JSON Cache API 内部键新增 `_response_schema=catalog-names-1`，避免发布后命中不含译名的旧缓存；客户端仍调用原 URL，地图快照缓存不受影响。今后改变响应格式时同步更新该内部版本。
+字典缓存仍保存所有语言字段，不按客户端语言拆分。JSON Cache API 内部键使用 `_response_schema=country-names-1`，避免发布后命中不含译名的旧缓存；客户端仍调用原 URL，地图快照缓存不受影响。今后改变响应格式时同步更新该内部版本。
+
+## 国家名称（后续扩展）
+
+国家接口现在也返回 `name_en`、`name_zh`，电台 DTO 新增 `countryEn`、`countryZh`，原 `country` 不变。国家中文来自现有本地映射，不在请求时访问第三方。SQLite 先执行 data 项目的 `migrate:v2:country-names -- --db /实际路径/catalog.sqlite --apply`（自动备份），再重启服务；D1 按顺序升级至 `0006_country_names.sql`。JSON 缓存内部版本现为 `country-names-1`。完整覆盖报告与命令见主项目 `docs/country-localization.md`。

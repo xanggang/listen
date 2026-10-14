@@ -43,12 +43,36 @@ void main() {
       'id': '123',
       'name': 'Station',
       'url': '',
+      'country': 'China',
+      'countryEn': 'China',
+      'countryZh': '中国',
       'language': 'raw',
       'languageEn': 'English',
       'languageZh': '英语',
     });
     expect(Station.fromJson(station.toJson()).displayLanguage('zh'), '英语');
     expect(station.displayLanguage('en'), 'English');
+    expect(Station.fromJson(station.toJson()).displayCountry('zh'), '中国');
+    expect(station.displayCountry('en'), 'China');
+    expect(
+      const CatalogItem(
+        id: '123',
+        name: 'China',
+        nameEn: 'China',
+        nameZh: '中国',
+        code: 'CN',
+      ).matches('cn'),
+      isTrue,
+    );
+    expect(
+      const Station(
+        id: '123',
+        name: 'Station',
+        url: '',
+        country: 'Legacy',
+      ).displayCountry('zh'),
+      'Legacy',
+    );
     expect(
       const Station(
         id: '123',

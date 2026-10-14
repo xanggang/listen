@@ -34,12 +34,15 @@ function fixture(): SQLiteDatabase {
     '0003_tag_name_zh.sql',
     '0004_language_name_zh.sql',
     '0005_catalog_name_en.sql',
+    '0006_country_names.sql',
   ]) {
     database.connection.exec(
       readFileSync(new URL(`../migrations/${migration}`, import.meta.url), 'utf8'),
     );
   }
-  database.connection.prepare('INSERT INTO country VALUES (?, ?, ?)').run(id(101), 'China', 'CN');
+  database.connection
+    .prepare('INSERT INTO country (id, name, code) VALUES (?, ?, ?)')
+    .run(id(101), 'China', 'CN');
   database.connection
     .prepare('INSERT INTO language (id, name, code) VALUES (?, ?, ?)')
     .run(id(102), 'English', 'en');
@@ -316,7 +319,7 @@ test('cache, CORS, rate limits and sanitized errors remain enforced', async () =
   const first = await request('/tags', { headers: { Origin: 'https://web.test' } });
   const labels = (await first.clone().json()) as { data: { name: string }[] };
   assert.notEqual(labels.data[0].name, 'stale');
-  assert.ok(cache.has('https://api.test/api/tags?_response_schema=catalog-names-1'));
+  assert.ok(cache.has('https://api.test/api/tags?_response_schema=country-names-1'));
   const second = await request('/tags');
   assert.equal(first.headers.get('Access-Control-Allow-Origin'), 'https://web.test');
   assert.equal(second.headers.get('Access-Control-Allow-Origin'), null);
@@ -622,4 +625,33 @@ test('catalog returns localized labels and searches all names literally', async 
   assert.equal(detail.data.language, 'English');
   assert.equal(detail.data.languageEn, 'Standard English');
   assert.equal(detail.data.languageZh, '英语');
+});
+
+// 国家译名只影响展示和关键词匹配，精确筛选与原始国家信息保持不变。
+test('country names localize catalogs and station metadata without changing filters', async () => {
+  db.connection
+    .prepare('UPDATE country SET name_en=?, name_zh=? WHERE id=?')
+    .run('China', '中国', id(101));
+  const countries = (await (await request('/countries')).json()) as {
+    data: { id: string; name: string; name_en: string; name_zh: string }[];
+  };
+  assert.equal(countries.data[0].name, 'China');
+  assert.equal(countries.data[0].name_zh, '中国');
+  assert.equal(countries.data[0].name_en, 'China');
+  for (const query of ['中国', 'China', 'CN']) {
+    const response = await request(
+      '/stations?keyword=' + encodeURIComponent(query) + '&countriesId=' + id(101),
+    );
+    assert.equal(response.status, 200);
+    const page = (await response.json()) as {
+      data: {
+        list: { country: string; countryEn: string; countryZh: string; countryId: string }[];
+      };
+    };
+    assert.ok(page.data.list.length > 0);
+    assert.equal(page.data.list[0].countryId, id(101));
+    assert.equal(page.data.list[0].country, 'China');
+    assert.equal(page.data.list[0].countryEn, 'China');
+    assert.equal(page.data.list[0].countryZh, '中国');
+  }
 });

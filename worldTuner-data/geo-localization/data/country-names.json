@@ -1,0 +1,1577 @@
+[
+  {
+    "code": "AL",
+    "name_en": "Albania",
+    "name_zh": "阿尔巴尼亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "DZ",
+    "name_en": "Algeria",
+    "name_zh": "阿尔及利亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AS",
+    "name_en": "American Samoa",
+    "name_zh": "美属萨摩亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AD",
+    "name_en": "Andorra",
+    "name_zh": "安道尔",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AO",
+    "name_en": "Angola",
+    "name_zh": "安哥拉",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AI",
+    "name_en": "Anguilla",
+    "name_zh": "安圭拉",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AG",
+    "name_en": "Antigua and Barbuda",
+    "name_zh": "安提瓜和巴布达",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AR",
+    "name_en": "Argentina",
+    "name_zh": "阿根廷",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AM",
+    "name_en": "Armenia",
+    "name_zh": "亚美尼亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AW",
+    "name_en": "Aruba",
+    "name_zh": "阿鲁巴",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AU",
+    "name_en": "Australia",
+    "name_zh": "澳大利亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AT",
+    "name_en": "Austria",
+    "name_zh": "奥地利",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AZ",
+    "name_en": "Azerbaijan",
+    "name_zh": "阿塞拜疆",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": null,
+    "name_en": "Azores",
+    "name_zh": "亚速尔群岛",
+    "source": "manual",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BH",
+    "name_en": "Bahrain",
+    "name_zh": "巴林",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GG",
+    "name_en": "Bailiwick of Guernsey",
+    "name_zh": "根西岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "JE",
+    "name_en": "Bailiwick of Jersey",
+    "name_zh": "泽西岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BD",
+    "name_en": "Bangladesh",
+    "name_zh": "孟加拉国",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BB",
+    "name_en": "Barbados",
+    "name_zh": "巴巴多斯",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BY",
+    "name_en": "Belarus",
+    "name_zh": "白俄罗斯",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BE",
+    "name_en": "Belgium",
+    "name_zh": "比利时",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BZ",
+    "name_en": "Belize",
+    "name_zh": "伯利兹",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BJ",
+    "name_en": "Benin",
+    "name_zh": "贝宁",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BM",
+    "name_en": "Bermuda",
+    "name_zh": "百慕大",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BT",
+    "name_en": "Bhutan",
+    "name_zh": "不丹",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BO",
+    "name_en": "Bolivia",
+    "name_zh": "玻利维亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BA",
+    "name_en": "Bosnia and Herzegovina",
+    "name_zh": "波斯尼亚和黑塞哥维那",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BW",
+    "name_en": "Botswana",
+    "name_zh": "博茨瓦纳",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BR",
+    "name_en": "Brazil",
+    "name_zh": "巴西",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "VG",
+    "name_en": "British Virgin Islands",
+    "name_zh": "英属维尔京群岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BN",
+    "name_en": "Brunei",
+    "name_zh": "文莱",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BG",
+    "name_en": "Bulgaria",
+    "name_zh": "保加利亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BF",
+    "name_en": "Burkina Faso",
+    "name_zh": "布基纳法索",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BI",
+    "name_en": "Burundi",
+    "name_zh": "布隆迪",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "KH",
+    "name_en": "Cambodia",
+    "name_zh": "柬埔寨",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CM",
+    "name_en": "Cameroon",
+    "name_zh": "喀麦隆",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CA",
+    "name_en": "Canada",
+    "name_zh": "加拿大",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CV",
+    "name_en": "Cape Verde",
+    "name_zh": "佛得角",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "KY",
+    "name_en": "Cayman Islands",
+    "name_zh": "开曼群岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CF",
+    "name_en": "Central African Republic",
+    "name_zh": "中非共和国",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "TD",
+    "name_en": "Chad",
+    "name_zh": "乍得",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CL",
+    "name_en": "Chile",
+    "name_zh": "智利",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CN",
+    "name_en": "China",
+    "name_zh": "中国",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MF",
+    "name_en": "Collectivity of Saint Martin",
+    "name_zh": "法属圣马丁",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CO",
+    "name_en": "Colombia",
+    "name_zh": "哥伦比亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "KM",
+    "name_en": "Comoros",
+    "name_zh": "科摩罗",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CR",
+    "name_en": "Costa Rica",
+    "name_zh": "哥斯达黎加",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "HR",
+    "name_en": "Croatia",
+    "name_zh": "克罗地亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CU",
+    "name_en": "Cuba",
+    "name_zh": "古巴",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CW",
+    "name_en": "Curaçao",
+    "name_zh": "库拉索",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CY",
+    "name_en": "Cyprus",
+    "name_zh": "塞浦路斯",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CZ",
+    "name_en": "Czechia",
+    "name_zh": "捷克",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CI",
+    "name_en": "Côte d'Ivoire",
+    "name_zh": "科特迪瓦",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CD",
+    "name_en": "Democratic Republic of the Congo",
+    "name_zh": "刚果民主共和国",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "DK",
+    "name_en": "Denmark",
+    "name_zh": "丹麦",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "DM",
+    "name_en": "Dominica",
+    "name_zh": "多米尼克",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "DO",
+    "name_en": "Dominican Republic",
+    "name_zh": "多米尼加共和国",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "EC",
+    "name_en": "Ecuador",
+    "name_zh": "厄瓜多尔",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "EG",
+    "name_en": "Egypt",
+    "name_zh": "埃及",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SV",
+    "name_en": "El Salvador",
+    "name_zh": "萨尔瓦多",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "ER",
+    "name_en": "Eritrea",
+    "name_zh": "厄立特里亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "EE",
+    "name_en": "Estonia",
+    "name_zh": "爱沙尼亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SZ",
+    "name_en": "Eswatini",
+    "name_zh": "斯威士兰",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "ET",
+    "name_en": "Ethiopia",
+    "name_zh": "埃塞俄比亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "FK",
+    "name_en": "Falkland Islands",
+    "name_zh": "福克兰群岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "FO",
+    "name_en": "Faroe Islands",
+    "name_zh": "法罗群岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "FM",
+    "name_en": "Federated States of Micronesia",
+    "name_zh": "密克罗尼西亚联邦",
+    "source": "manual",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "FJ",
+    "name_en": "Fiji",
+    "name_zh": "斐济",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "FI",
+    "name_en": "Finland",
+    "name_zh": "芬兰",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "FR",
+    "name_en": "France",
+    "name_zh": "法国",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GF",
+    "name_en": "French Guiana",
+    "name_zh": "法属圭亚那",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GA",
+    "name_en": "Gabon",
+    "name_zh": "加蓬",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GE",
+    "name_en": "Georgia",
+    "name_zh": "格鲁吉亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "DE",
+    "name_en": "Germany",
+    "name_zh": "德国",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GH",
+    "name_en": "Ghana",
+    "name_zh": "加纳",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GI",
+    "name_en": "Gibraltar",
+    "name_zh": "直布罗陀",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GR",
+    "name_en": "Greece",
+    "name_zh": "希腊",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GL",
+    "name_en": "Greenland",
+    "name_zh": "格陵兰",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GD",
+    "name_en": "Grenada",
+    "name_zh": "格林纳达",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GP",
+    "name_en": "Guadeloupe",
+    "name_zh": "瓜德罗普",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GU",
+    "name_en": "Guam",
+    "name_zh": "关岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GT",
+    "name_en": "Guatemala",
+    "name_zh": "危地马拉",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GN",
+    "name_en": "Guinea",
+    "name_zh": "几内亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GW",
+    "name_en": "Guiné-Bissau",
+    "name_zh": "几内亚比绍",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GY",
+    "name_en": "Guyana",
+    "name_zh": "圭亚那",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "HT",
+    "name_en": "Haiti",
+    "name_zh": "海地",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "HN",
+    "name_en": "Honduras",
+    "name_zh": "洪都拉斯",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "HK",
+    "name_en": "Hong Kong",
+    "name_zh": "香港",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "HU",
+    "name_en": "Hungary",
+    "name_zh": "匈牙利",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "IS",
+    "name_en": "Iceland",
+    "name_zh": "冰岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "IN",
+    "name_en": "India",
+    "name_zh": "印度",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "ID",
+    "name_en": "Indonesia",
+    "name_zh": "印度尼西亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "IR",
+    "name_en": "Iran",
+    "name_zh": "伊朗",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "IQ",
+    "name_en": "Iraq",
+    "name_zh": "伊拉克",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "IE",
+    "name_en": "Ireland",
+    "name_zh": "爱尔兰",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "IM",
+    "name_en": "Isle of Man",
+    "name_zh": "马恩岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "IL",
+    "name_en": "Israel",
+    "name_zh": "以色列",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "IT",
+    "name_en": "Italy",
+    "name_zh": "意大利",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "JM",
+    "name_en": "Jamaica",
+    "name_zh": "牙买加",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "JP",
+    "name_en": "Japan",
+    "name_zh": "日本",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "JO",
+    "name_en": "Jordan",
+    "name_zh": "约旦",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "KZ",
+    "name_en": "Kazakhstan",
+    "name_zh": "哈萨克斯坦",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "KE",
+    "name_en": "Kenya",
+    "name_zh": "肯尼亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "KI",
+    "name_en": "Kiribati",
+    "name_zh": "基里巴斯",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "XK",
+    "name_en": "Kosovo",
+    "name_zh": "科索沃",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "KW",
+    "name_en": "Kuwait",
+    "name_zh": "科威特",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "KG",
+    "name_en": "Kyrgyzstan",
+    "name_zh": "吉尔吉斯斯坦",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "LA",
+    "name_en": "Laos",
+    "name_zh": "老挝",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "LV",
+    "name_en": "Latvia",
+    "name_zh": "拉脱维亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "LB",
+    "name_en": "Lebanon",
+    "name_zh": "黎巴嫩",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "LS",
+    "name_en": "Lesotho",
+    "name_zh": "莱索托",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "LR",
+    "name_en": "Liberia",
+    "name_zh": "利比里亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "LY",
+    "name_en": "Libya",
+    "name_zh": "利比亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "LI",
+    "name_en": "Liechtenstein",
+    "name_zh": "列支敦士登",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "LT",
+    "name_en": "Lithuania",
+    "name_zh": "立陶宛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "LU",
+    "name_en": "Luxembourg",
+    "name_zh": "卢森堡",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MO",
+    "name_en": "Macau",
+    "name_zh": "澳门",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MG",
+    "name_en": "Madagascar",
+    "name_zh": "马达加斯加",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": null,
+    "name_en": "Madeira",
+    "name_zh": "马德拉群岛",
+    "source": "manual",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MW",
+    "name_en": "Malawi",
+    "name_zh": "马拉维",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MY",
+    "name_en": "Malaysia",
+    "name_zh": "马来西亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "ML",
+    "name_en": "Mali",
+    "name_zh": "马里",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MT",
+    "name_en": "Malta",
+    "name_zh": "马耳他",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MH",
+    "name_en": "Marshall Islands",
+    "name_zh": "马绍尔群岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MQ",
+    "name_en": "Martinique",
+    "name_zh": "马提尼克",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MR",
+    "name_en": "Mauritania",
+    "name_zh": "毛里塔尼亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MU",
+    "name_en": "Mauritius",
+    "name_zh": "毛里求斯",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "YT",
+    "name_en": "Mayotte",
+    "name_zh": "马约特",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MX",
+    "name_en": "Mexico",
+    "name_zh": "墨西哥",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MD",
+    "name_en": "Moldova",
+    "name_zh": "摩尔多瓦",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MC",
+    "name_en": "Monaco",
+    "name_zh": "摩纳哥",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MN",
+    "name_en": "Mongolia",
+    "name_zh": "蒙古",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "ME",
+    "name_en": "Montenegro",
+    "name_zh": "黑山",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MS",
+    "name_en": "Montserrat",
+    "name_zh": "蒙特塞拉特",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MA",
+    "name_en": "Morocco",
+    "name_zh": "摩洛哥",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MZ",
+    "name_en": "Mozambique",
+    "name_zh": "莫桑比克",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MM",
+    "name_en": "Myanmar (Burma)",
+    "name_zh": "缅甸",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "NA",
+    "name_en": "Namibia",
+    "name_zh": "纳米比亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "NP",
+    "name_en": "Nepal",
+    "name_zh": "尼泊尔",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "NL",
+    "name_en": "Netherlands",
+    "name_zh": "荷兰",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "NC",
+    "name_en": "New Calédonia",
+    "name_zh": "新喀里多尼亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "NZ",
+    "name_en": "New Zealand",
+    "name_zh": "新西兰",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "NI",
+    "name_en": "Nicaragua",
+    "name_zh": "尼加拉瓜",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "NE",
+    "name_en": "Niger",
+    "name_zh": "尼日尔",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "NG",
+    "name_en": "Nigeria",
+    "name_zh": "尼日利亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "KP",
+    "name_en": "North Korea",
+    "name_zh": "朝鲜",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MK",
+    "name_en": "North Macedonia",
+    "name_zh": "北马其顿",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "MP",
+    "name_en": "Northern Mariana Islands",
+    "name_zh": "北马里亚纳群岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "NO",
+    "name_en": "Norway",
+    "name_zh": "挪威",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "OM",
+    "name_en": "Oman",
+    "name_zh": "阿曼",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "PK",
+    "name_en": "Pakistan",
+    "name_zh": "巴基斯坦",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "PS",
+    "name_en": "Palestine",
+    "name_zh": "巴勒斯坦",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "PA",
+    "name_en": "Panama",
+    "name_zh": "巴拿马",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "PG",
+    "name_en": "Papua New Guinea",
+    "name_zh": "巴布亚新几内亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "PY",
+    "name_en": "Paraguay",
+    "name_zh": "巴拉圭",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "PE",
+    "name_en": "Peru",
+    "name_zh": "秘鲁",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "PH",
+    "name_en": "Philippines",
+    "name_zh": "菲律宾",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "PL",
+    "name_en": "Poland",
+    "name_zh": "波兰",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "PT",
+    "name_en": "Portugal",
+    "name_zh": "葡萄牙",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "PR",
+    "name_en": "Puerto Rico",
+    "name_zh": "波多黎各",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "QA",
+    "name_en": "Qatar",
+    "name_zh": "卡塔尔",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "RO",
+    "name_en": "Romania",
+    "name_zh": "罗马尼亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "RU",
+    "name_en": "Russia",
+    "name_zh": "俄罗斯",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "RW",
+    "name_en": "Rwanda",
+    "name_zh": "卢旺达",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "RE",
+    "name_en": "Réunion",
+    "name_zh": "留尼汪",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BL",
+    "name_en": "Saint Barthélemy",
+    "name_zh": "圣巴泰勒米",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SH",
+    "name_en": "Saint Helena",
+    "name_zh": "圣赫勒拿",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "KN",
+    "name_en": "Saint Kitts and Nevis",
+    "name_zh": "圣基茨和尼维斯",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "LC",
+    "name_en": "Saint Lucia",
+    "name_zh": "圣卢西亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "VC",
+    "name_en": "Saint Vincent and the Grenadines",
+    "name_zh": "圣文森特和格林纳丁斯",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "PM",
+    "name_en": "Saint-Pierre et Miquelon",
+    "name_zh": "圣皮埃尔和密克隆群岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "WS",
+    "name_en": "Samoa",
+    "name_zh": "萨摩亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SM",
+    "name_en": "San Marino",
+    "name_zh": "圣马力诺",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SA",
+    "name_en": "Saudi Arabia",
+    "name_zh": "沙特阿拉伯",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SN",
+    "name_en": "Senegal",
+    "name_zh": "塞内加尔",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "RS",
+    "name_en": "Serbia",
+    "name_zh": "塞尔维亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SC",
+    "name_en": "Seychelles",
+    "name_zh": "塞舌尔",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SL",
+    "name_en": "Sierra Leone",
+    "name_zh": "塞拉利昂",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SG",
+    "name_en": "Singapore",
+    "name_zh": "新加坡",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SX",
+    "name_en": "Sint Maarten",
+    "name_zh": "荷属圣马丁",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SK",
+    "name_en": "Slovakia",
+    "name_zh": "斯洛伐克",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SI",
+    "name_en": "Slovenia",
+    "name_zh": "斯洛文尼亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SB",
+    "name_en": "Solomon Islands",
+    "name_zh": "所罗门群岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SO",
+    "name_en": "Somalia",
+    "name_zh": "索马里",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "ZA",
+    "name_en": "South Africa",
+    "name_zh": "南非",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "KR",
+    "name_en": "South Korea",
+    "name_zh": "韩国",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "ES",
+    "name_en": "Spain",
+    "name_zh": "西班牙",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "LK",
+    "name_en": "Sri Lanka",
+    "name_zh": "斯里兰卡",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SD",
+    "name_en": "Sudan",
+    "name_zh": "苏丹",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SR",
+    "name_en": "Suriname",
+    "name_zh": "苏里南",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SE",
+    "name_en": "Sweden",
+    "name_zh": "瑞典",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "CH",
+    "name_en": "Switzerland",
+    "name_zh": "瑞士",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "SY",
+    "name_en": "Syria",
+    "name_zh": "叙利亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "ST",
+    "name_en": "São Tomé and Príncipe",
+    "name_zh": "圣多美和普林西比",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": null,
+    "name_en": "Tahiti",
+    "name_zh": "塔希提岛",
+    "source": "manual",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "TW",
+    "name_en": "Taiwan",
+    "name_zh": "台湾",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "TJ",
+    "name_en": "Tajikistan",
+    "name_zh": "塔吉克斯坦",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "TZ",
+    "name_en": "Tanzania",
+    "name_zh": "坦桑尼亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "TH",
+    "name_en": "Thailand",
+    "name_zh": "泰国",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "BS",
+    "name_en": "The Bahamas",
+    "name_zh": "巴哈马",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GM",
+    "name_en": "The Gambia",
+    "name_zh": "冈比亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "TL",
+    "name_en": "Timor-Leste",
+    "name_zh": "东帝汶",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "TG",
+    "name_en": "Togo",
+    "name_zh": "多哥",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "TO",
+    "name_en": "Tonga",
+    "name_zh": "汤加",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "TT",
+    "name_en": "Trinidad and Tobago",
+    "name_zh": "特立尼达和多巴哥",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "TN",
+    "name_en": "Tunisia",
+    "name_zh": "突尼斯",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "TC",
+    "name_en": "Turks and Caicos Islands",
+    "name_zh": "特克斯和凯科斯群岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "TR",
+    "name_en": "Türkiye",
+    "name_zh": "土耳其",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "VI",
+    "name_en": "U.S. Virgin Islands",
+    "name_zh": "美属维尔京群岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "UG",
+    "name_en": "Uganda",
+    "name_zh": "乌干达",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "UA",
+    "name_en": "Ukraine",
+    "name_zh": "乌克兰",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AE",
+    "name_en": "United Arab Emirates",
+    "name_zh": "阿拉伯联合酋长国",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "GB",
+    "name_en": "United Kingdom",
+    "name_zh": "英国",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "US",
+    "name_en": "United States",
+    "name_zh": "美国",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "UY",
+    "name_en": "Uruguay",
+    "name_zh": "乌拉圭",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "UZ",
+    "name_en": "Uzbekistan",
+    "name_zh": "乌兹别克斯坦",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "VU",
+    "name_en": "Vanuatu",
+    "name_zh": "瓦努阿图",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "VA",
+    "name_en": "Vatican City",
+    "name_zh": "梵蒂冈",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "VE",
+    "name_en": "Venezuela",
+    "name_zh": "委内瑞拉",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "VN",
+    "name_en": "Vietnam",
+    "name_zh": "越南",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "WF",
+    "name_en": "Wallis and Futuna",
+    "name_zh": "瓦利斯和富图纳",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "YE",
+    "name_en": "Yemen",
+    "name_zh": "也门",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "ZM",
+    "name_en": "Zambia",
+    "name_zh": "赞比亚",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "ZW",
+    "name_en": "Zimbabwe",
+    "name_zh": "津巴布韦",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AX",
+    "name_en": "Åland Islands",
+    "name_zh": "奥兰群岛",
+    "source": "cldr",
+    "updated_at": "2026-09-28T08:29:36.210Z"
+  }
+]

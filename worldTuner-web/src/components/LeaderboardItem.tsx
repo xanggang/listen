@@ -1,6 +1,6 @@
 'use client';
 
-import { stationLanguageLabel } from '@/lib/catalog-names';
+import { stationLanguageLabel, stationCountryLabel } from '@/lib/catalog-names';
 
 import type { Station } from '@/types';
 import type { PlayableStation } from '@/types/playable-station';
@@ -66,8 +66,9 @@ export default function LeaderboardItem({ item, rank }: LeaderboardItemProps) {
       <div className="station-row__info">
         <h3>{item.name}</h3>
         <p>
-          {[item.country, stationLanguageLabel(item, locale)].filter(Boolean).join(' · ') ||
-            'worldTuner'}
+          {[stationCountryLabel(item, locale), stationLanguageLabel(item, locale)]
+            .filter(Boolean)
+            .join(' · ') || 'worldTuner'}
         </p>
       </div>
       <button

@@ -27,7 +27,11 @@ export function catalogMatches(item: CatalogNames, keyword: string): boolean {
  * 展示电台语种，旧 API 或旧收藏缺少翻译字段时仍使用原有 language。
  */
 export function stationLanguageLabel(
-  item: { language: string | null; languageEn?: string | null; languageZh?: string | null },
+  item: {
+    language: string | null;
+    languageEn?: string | null;
+    languageZh?: string | null;
+  },
   locale: string,
 ): string | null {
   return localizedName(locale, item.language, item.languageEn, item.languageZh);
@@ -47,4 +51,18 @@ function localizedName(
     if (label) return label;
   }
   return null;
+}
+
+/**
+ * 按界面语言展示国家；没有译名或读取旧收藏时保留原始 country。
+ */
+export function stationCountryLabel(
+  item: {
+    country: string | null;
+    countryEn?: string | null;
+    countryZh?: string | null;
+  },
+  locale: string,
+): string | null {
+  return localizedName(locale, item.country, item.countryEn, item.countryZh);
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { catalogDisplayName } from '@/lib/catalog-names';
+import { catalogDisplayName, stationCountryLabel } from '@/lib/catalog-names';
 import AetherHeader from '@/components/AetherHeader';
 import StationList from '@/components/StationList';
 import { useStations } from '@/app/store/useStations';
@@ -157,7 +157,7 @@ export default function LeaderboardPage() {
                       <span className="podium__rank">{index + 1}</span>
                     </div>
                     <strong>{station.name}</strong>
-                    <small>{station.country || 'worldTuner'}</small>
+                    <small>{stationCountryLabel(station, locale) || 'worldTuner'}</small>
                     <em>
                       {station.votes ?? 0} {t('votes')}
                     </em>

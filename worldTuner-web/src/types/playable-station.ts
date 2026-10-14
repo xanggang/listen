@@ -6,6 +6,8 @@ export interface PlayableStation {
   urlResolved: string | null;
   favicon: string | null;
   country: string | null;
+  countryEn?: string | null;
+  countryZh?: string | null;
   language: string | null;
   languageEn?: string | null;
   languageZh?: string | null;

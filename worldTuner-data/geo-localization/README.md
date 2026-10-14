@@ -18,3 +18,7 @@ FROM radio_garden_places_zh LIMIT 10;
 ```
 
 大部分名称按 CLDR 地区代码匹配。Radio Garden 的个别别名通过明确的代码映射；Madeira、Tahiti、Azores 没有相应的 CLDR 国家或地区代码，以手工中文名称保存且 `region_code` 为 `NULL`。地点名需要另做地理实体匹配，不能仅凭英文 `title` 批量翻译；此命令不处理地点名。
+
+## 接入统一 v2 国家表
+
+已缓存的国家名称导出为 `data/country-names.json` 并纳入版本管理，不要求运行环境携带原始采集数据库。v2 的两个导入器按国家代码复用该快照，只填缺失译名。现有业务库运行 `npm run migrate:v2:country-names` 预览，加 `-- --apply` 先备份再升级；国家原名、代码和关联不变。未覆盖国家保留英文兜底。详见主项目 `docs/country-localization.md`。

@@ -42,14 +42,14 @@ for (const table of requiredTables) {
   }
 }
 // 展示字段必须先通过独立迁移升级；服务保持目录数据库只读。
-for (const table of ['tag', 'language']) {
+for (const table of ['tag', 'language', 'country']) {
   const columns = catalog.connection.prepare(`PRAGMA table_info(${table})`).all();
   for (const field of ['name_en', 'name_zh']) {
     // 仅检查固定字典表的结构，不自动写入或修改现有目录。
     if (!columns.some((column) => column.name === field)) {
       catalog.close();
       throw new Error(
-        `Missing catalog column: ${table}.${field}. Run worldTuner-data migrate:v2:catalog-names with --db ${catalogPath} --apply before starting API.`,
+        `Missing catalog column: ${table}.${field}. Run worldTuner-data ${table === 'country' ? 'migrate:v2:country-names' : 'migrate:v2:catalog-names'} with --db ${catalogPath} --apply before starting API.`,
       );
     }
   }

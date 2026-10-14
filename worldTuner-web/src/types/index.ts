@@ -21,6 +21,8 @@ export interface Languages {
 
 // 国家实体
 export interface Countries {
+  name_en?: string | null;
+  name_zh?: string | null;
   id: string;
   name: string;
   code: string | null;
@@ -47,6 +49,8 @@ export interface Station {
   place: string | null;
   countryId: string | null;
   country: string | null;
+  countryEn?: string | null;
+  countryZh?: string | null;
   countrycode: string | null;
   tags: string | null;
   language: string | null;

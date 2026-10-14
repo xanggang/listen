@@ -21,6 +21,8 @@ class Station {
     this.urlResolved,
     this.favicon,
     this.country,
+    this.countryEn,
+    this.countryZh,
     this.language,
     this.languageEn,
     this.languageZh,
@@ -41,6 +43,8 @@ class Station {
   final String? urlResolved;
   final String? favicon;
   final String? country;
+  final String? countryEn;
+  final String? countryZh;
   final String? language;
   final String? languageEn;
   final String? languageZh;
@@ -53,6 +57,10 @@ class Station {
   final String? tags;
   final String? sourceType;
   final String? catalogStatus;
+
+  // 国家按界面语言展示，缺失译名或旧收藏回退原名。
+  String? displayCountry(String locale) =>
+      _localizedName(locale, country, countryEn, countryZh);
 
   // 电台语种按界面语言展示，旧收藏没有翻译字段时保留原文兜底。
   String? displayLanguage(String locale) =>
@@ -72,6 +80,8 @@ class Station {
       urlResolved: json['urlResolved'] as String?,
       favicon: json['favicon'] as String?,
       country: json['country'] as String?,
+      countryEn: json['countryEn'] as String?,
+      countryZh: json['countryZh'] as String?,
       language: json['language'] as String?,
       languageEn: json['languageEn'] as String?,
       languageZh: json['languageZh'] as String?,
@@ -95,6 +105,8 @@ class Station {
     'urlResolved': urlResolved,
     'favicon': favicon,
     'country': country,
+    'countryEn': countryEn,
+    'countryZh': countryZh,
     'language': language,
     'languageEn': languageEn,
     'languageZh': languageZh,
@@ -155,10 +167,10 @@ class CatalogItem {
   String displayName(String locale) =>
       _localizedName(locale, name, nameEn, nameZh) ?? '';
 
-  // 搜索同时匹配原名、中英文展示名，不因界面语言而限制可搜索的名称。
+  // 搜索同时匹配原名、中英文展示名与代码，不因界面语言限制可搜索的名称。
   bool matches(String query) {
     final keyword = query.trim().toLowerCase();
-    return [name, nameEn, nameZh].any(
+    return [name, nameEn, nameZh, code].any(
       // 缺失名称不匹配，其余名称进行不区分大小写的字面包含判断。
       (value) => value?.toLowerCase().contains(keyword) ?? false,
     );

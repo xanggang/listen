@@ -36,3 +36,5 @@ pnpm dev
 ## 标签与语言名称
 
 发现页与排行榜使用统一的 `src/lib/catalog-names.ts` 展示规则：中文 `name_zh → name_en → name`；英文 `name_en → name`。字典保存所有译名，切换界面语言直接更新标签，不修改筛选 ID。电台语种支持 `languageEn` / `languageZh`，收藏持久化保留这些字段，历史收藏仍可回退原文。升级 API 数据结构后刷新页面，重新获取字典。
+
+国家筛选和电台国家信息使用 `stationCountryLabel` / `catalogDisplayName` 随界面语言切换；原 `country` 保留，新增译名持久化到收藏，旧收藏回退原名。先迁移 API 数据库，再更新服务并刷新页面。参见主项目 `docs/country-localization.md`。

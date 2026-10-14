@@ -176,7 +176,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
                               Expanded(
                                 child: Text(
                                   [
-                                    station.country,
+                                    station.displayCountry(
+                                      widget.text.language,
+                                    ),
                                     station.displayLanguage(
                                       widget.text.language,
                                     ),

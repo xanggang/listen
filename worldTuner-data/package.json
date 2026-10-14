@@ -20,6 +20,7 @@
     "process:radio-garden:v2": "node radio-garden/processing/import-v2.mjs",
     "init:v2": "node v2/src/init.mjs",
     "apply:radio-browser:ai-tags": "node radio-browser/processing/apply-ai-tags.mjs",
-    "migrate:v2:catalog-names": "node v2/src/catalog-names.mjs"
+    "migrate:v2:catalog-names": "node v2/src/catalog-names.mjs",
+    "migrate:v2:country-names": "node v2/src/country-names.mjs"
   }
 }

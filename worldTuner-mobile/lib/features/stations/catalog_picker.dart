@@ -104,7 +104,7 @@ class _CatalogPickerState extends State<CatalogPicker> {
       setState(() {
         if (widget.kind != 'tags') {
           page.sort(
-            // 国家与语言采用字母顺序，便于在完整列表中定位。
+            // 按当前展示名排序；中文国家不显示英文 A–Z 索引。
             (left, right) => left
                 .displayName(widget.text.language)
                 .toLowerCase()
@@ -190,7 +190,8 @@ class _CatalogPickerState extends State<CatalogPicker> {
                 ),
               ),
             ),
-            if (widget.kind == 'countries') ...[
+            if (widget.kind == 'countries' &&
+                !widget.text.language.startsWith('zh')) ...[
               const SizedBox(height: 8),
               SizedBox(
                 height: 38,

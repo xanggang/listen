@@ -404,7 +404,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget _bestMatch(BuildContext context, Station station) {
     final palette = AetherPalette.of(context);
     final details = [
-      station.country,
+      station.displayCountry(widget.text.language),
       station.displayLanguage(widget.text.language),
       station.codec,
     ].whereType<String>().where((value) => value.isNotEmpty).join(' · ');
@@ -517,7 +517,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget _stationRow(BuildContext context, Station station) {
     final palette = AetherPalette.of(context);
     final details = [
-      station.country,
+      station.displayCountry(widget.text.language),
       station.displayLanguage(widget.text.language),
       station.codec,
     ].whereType<String>().where((value) => value.isNotEmpty).join(' · ');

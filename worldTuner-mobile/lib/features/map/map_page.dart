@@ -396,7 +396,7 @@ class _MapPageState extends State<MapPage> {
                       const SizedBox(height: 4),
                       Text(
                         [
-                          station.country,
+                          station.displayCountry(widget.text.language),
                           station.codec,
                         ].whereType<String>().join(' · '),
                         maxLines: 1,

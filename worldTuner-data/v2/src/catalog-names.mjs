@@ -8,17 +8,17 @@ const tables = ['tag', 'language'];
 const defaultDatabase = fileURLToPath(new URL('../data/worldtuner-v2.sqlite', import.meta.url));
 
 /**
- * 为固定的标签/语言表补齐展示字段，仅回填缺失的英文名，不改 ID、原名或关联。
+ * 为固定字典表补齐展示字段，仅回填缺失的英文名，不改 ID、原名或关联。
  * 调用方负责事务与备份；导入脚本可在已有事务内复用此方法。
  * @param {DatabaseSync} db 可写业务库连接。
- * @param {Array<'tag'|'language'>} selected 固定表名子集，标签专用备份可只升级 tag。
+ * @param {Array<'tag'|'language'|'country'>} selected 固定表名子集，标签专用备份可只升级 tag。
  * @returns {Record<string, number>} 每张表回填的行数。
  */
 export function ensureCatalogNames(db, selected = tables) {
   if (
     selected.some(
       // SQL 标识符只能来自固定字典表映射。
-      (table) => !tables.includes(table),
+      (table) => !['tag', 'language', 'country'].includes(table),
     )
   )
     throw new Error('Unsupported catalog table');

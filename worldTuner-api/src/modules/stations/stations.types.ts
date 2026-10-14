@@ -6,6 +6,8 @@ export interface StationRow {
   place: string | null;
   country_id: string | null;
   country: string | null;
+  countryen: string | null;
+  countryzh: string | null;
   countrycode: string | null;
   geo_lat: number | null;
   geo_long: number | null;

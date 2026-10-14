@@ -49,7 +49,7 @@ class PlayerBar extends StatelessWidget {
         } else if (player.buffering) {
           subtitle = text.get('buffering');
         } else {
-          subtitle = station.country ?? text.get('live');
+          subtitle = station.displayCountry(text.language) ?? text.get('live');
         }
         return Container(
           margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
@@ -190,7 +190,7 @@ class _PlayerDetails extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   [
-                        station.country,
+                        station.displayCountry(text.language),
                         station.displayLanguage(text.language),
                         station.codec,
                       ]
