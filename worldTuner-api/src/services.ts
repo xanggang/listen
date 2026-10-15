@@ -1,3 +1,5 @@
+import { AdminRepository } from './modules/admin/admin.repository.ts';
+import { AdminService } from './modules/admin/admin.service.ts';
 import type { SqlDatabase } from './database/database.ts';
 import { CatalogRepository } from './modules/catalog/catalog.repository.ts';
 import { CatalogService } from './modules/catalog/catalog.service.ts';
@@ -9,12 +11,17 @@ import { MetricsRepository } from './modules/metrics/metrics.repository.ts';
 import { MetricsService } from './modules/metrics/metrics.service.ts';
 
 /**
- * 组装统一业务服务；SQLite 可单独注入统计库，D1 默认使用同一绑定。
+ * 组装统一业务服务；SQLite 可单独注入统计库，D1 默认使用同一绑定；管理写入可注入独立连接。
  */
-export function createServices(db: SqlDatabase, metricsDb: SqlDatabase = db) {
+export function createServices(
+  db: SqlDatabase,
+  metricsDb: SqlDatabase = db,
+  adminDb: SqlDatabase = db,
+) {
   const catalog = new CatalogService(new CatalogRepository(db));
   return {
     catalog,
+    admin: new AdminService(new AdminRepository(adminDb)),
     map: new MapService(new MapRepository(db)),
     stations: new StationService(new StationRepository(db), catalog),
     metrics: new MetricsService(new MetricsRepository(metricsDb)),

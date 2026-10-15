@@ -1,6 +1,6 @@
 # worldTuner API
 
-API 基于 `worldTuner-data/v2/schema.sql` 的新业务库，按电台、播放流、国家、标签及语种关联查询。旧表和旧接口已移除，统一前缀为 `/api`；所有实体 ID 使用 19 位字符串并保留前导零。
+API 基于 `worldTuner-data/v2/schema.sql` 的新业务库，按电台、播放流、国家、标签及语种关联查询。旧表和旧接口已移除，公开接口前缀为 `/api`，受保护的管理业务接口前缀为 `/admin/api`；所有实体 ID 使用 19 位字符串并保留前导零。
 
 详细的接口、双数据库架构、启动和迁移说明见 [项目文档](../docs/api-mobile-new-catalog.md)。机器可读契约见 [OpenAPI](docs/openapi.json)。
 
@@ -85,3 +85,9 @@ D1 使用迁移 `0003`、`0004`、`0005_catalog_name_en.sql`，按顺序升级�
 ## 国家名称（后续扩展）
 
 国家接口现在也返回 `name_en`、`name_zh`，电台 DTO 新增 `countryEn`、`countryZh`，原 `country` 不变。国家中文来自现有本地映射，不在请求时访问第三方。SQLite 先执行 data 项目的 `migrate:v2:country-names -- --db /实际路径/catalog.sqlite --apply`（自动备份），再重启服务；D1 按顺序升级至 `0006_country_names.sql`。JSON 缓存内部版本现为 `country-names-1`。完整覆盖报告与命令见主项目 `docs/country-localization.md`。
+
+## Java 业务接口同步
+
+已补齐 Java 的 `GET /admin/api/health`、`PUT /admin/api/stations/:id/visibility`，仅管理端支持鉴权后的上下架写入；公开业务接口保持兼容。密钥为 `ADMIN_TOKEN`，未配置时默认拒绝访问。Worker 使用 Secret；SQLite 在 `.env.sqlite` 配置密钥后开启独立管理写连接，公开目录连接继续只读。
+
+本次保留国家、标签、语种中英文及国家中文搜索；跳过 Java 的日志、systemd 和部署实现。接口配置、同步清单、缓存生效边界与验证见 [业务同步说明](../docs/java-worker-business-sync.md)。管理接口没有公开缓存，既有公开缓存按 TTL 刷新。

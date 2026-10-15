@@ -3,7 +3,7 @@
   "info": {
     "title": "worldTuner API",
     "version": "1.0.0",
-    "description": "统一新库 API，支持 Cloudflare D1 和 SQLite。仅 /api 路径，无旧表或旧接口兼容。匿名游客，无用户体系；拒绝未知/重复参数。所有实体 ID 是 19 位字符串。"
+    "description": "统一新库 API，支持 Cloudflare D1 和 SQLite。仅 /api 路径，无旧表或旧接口兼容。匿名游客，无用户体系；拒绝未知/重复参数。所有实体 ID 是 19 位字符串。 管理业务接口位于 /admin/api，使用独立 Bearer Token；未配置时拒绝访问。"
   },
   "servers": [
     {
@@ -856,6 +856,230 @@
           }
         }
       }
+    },
+    "/admin/api/health": {
+      "servers": [
+        {
+          "url": "http://localhost:8787"
+        }
+      ],
+      "get": {
+        "operationId": "adminHealth",
+        "description": "需要管理 Token 的存活探测，不读取数据库；响应不缓存。",
+        "security": [
+          {
+            "AdminBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "ok"
+                          ]
+                        },
+                        "service": {
+                          "type": "string",
+                          "enum": [
+                            "worldtuner-admin-api"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "错误响应，包含 error.code、message、requestId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "错误响应，包含 error.code、message、requestId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "错误响应，包含 error.code、message、requestId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/api/stations/{id}/visibility": {
+      "servers": [
+        {
+          "url": "http://localhost:8787"
+        }
+      ],
+      "put": {
+        "operationId": "adminSetStationVisibility",
+        "description": "与 Java 管理接口一致：原子更新可见性和 UTC 更新时间；不修改其他字段。公开缓存按现有 TTL 刷新。禁止额外查询参数，请求体上限 1024 字节。",
+        "security": [
+          {
+            "AdminBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "visibility"
+                ],
+                "properties": {
+                  "visibility": {
+                    "type": "string",
+                    "enum": [
+                      "visible",
+                      "hidden"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "visibility"
+                      ],
+                      "properties": {
+                        "id": {
+                          "$ref": "#/components/schemas/EntityId"
+                        },
+                        "visibility": {
+                          "type": "string",
+                          "enum": [
+                            "visible",
+                            "hidden"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "错误响应，包含 error.code、message、requestId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "错误响应，包含 error.code、message、requestId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "错误响应，包含 error.code、message、requestId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "错误响应，包含 error.code、message、requestId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "错误响应，包含 error.code、message、requestId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "错误响应，包含 error.code、message、requestId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1142,6 +1366,13 @@
             }
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "AdminBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "服务端 ADMIN_TOKEN；不配置时所有管理接口拒绝访问。"
       }
     }
   }

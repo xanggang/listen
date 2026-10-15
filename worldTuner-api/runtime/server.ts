@@ -59,8 +59,14 @@ const metrics = new SQLiteDatabase(metricsPath, false);
 metrics.connection.exec(
   readFileSync(new URL('../migrations/0002_visit_metrics.sql', import.meta.url), 'utf8'),
 );
+// 仅显式配置管理员密钥才打开独立写连接，公开 API 继续使用原只读连接。
+const adminCatalog = process.env.ADMIN_TOKEN?.trim()
+  ? new SQLiteDatabase(catalogPath, false)
+  : undefined;
 const env: ApiBindings = {
   DB: catalog,
+  ADMIN_DB: adminCatalog,
+  ADMIN_TOKEN: process.env.ADMIN_TOKEN,
   METRICS_DB: metrics,
   CACHE_ENABLED: 'false',
   MAP_SNAPSHOT_CACHE_TTL_SECONDS: process.env.MAP_SNAPSHOT_CACHE_TTL_SECONDS,
@@ -109,9 +115,10 @@ function shutdown(): void {
   stopping = true;
   clearInterval(rollupTimer);
   server.close(
-    // 所有 HTTP 请求结束后关闭两条连接。
+    // 所有 HTTP 请求结束后关闭目录、管理写入及统计连接。
     () => {
       catalog.close();
+      adminCatalog?.close();
       metrics.close();
     },
   );

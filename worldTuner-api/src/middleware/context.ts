@@ -7,7 +7,7 @@ export const requestContext = createMiddleware<AppEnv>(
    */ async (c, next) => {
     const id = crypto.randomUUID();
     c.set('requestId', id);
-    c.set('services', createServices(c.env.DB, c.env.METRICS_DB));
+    c.set('services', createServices(c.env.DB, c.env.METRICS_DB, c.env.ADMIN_DB));
     c.header('X-Request-Id', id);
     c.header('X-Content-Type-Options', 'nosniff');
     c.header('Cache-Control', 'no-store');

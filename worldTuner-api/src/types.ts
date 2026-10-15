@@ -2,6 +2,8 @@ import type { createServices } from './services.ts';
 import type { SqlDatabase } from './database/database.ts';
 export interface ApiBindings {
   DB: SqlDatabase;
+  ADMIN_DB?: SqlDatabase;
+  ADMIN_TOKEN?: string;
   METRICS_DB?: SqlDatabase;
   CACHE_ENABLED?: string;
   MAP_SNAPSHOT_CACHE_TTL_SECONDS?: string;
