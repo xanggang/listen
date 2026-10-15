@@ -77,6 +77,14 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.widgetWithText(ListTile, 'China'), findsOneWidget);
       expect(find.widgetWithText(ChoiceChip, 'C'), findsOneWidget);
+      final labels = tester
+          .widgetList<ListTile>(find.byType(ListTile))
+          .map(
+            // 英文切换后重新排序，不沿用中文界面的缓存顺序。
+            (tile) => (tile.title as Text).data,
+          )
+          .toList();
+      expect(labels.indexOf('China'), lessThan(labels.indexOf('Unknown')));
       expect(requests, 1);
     },
   );

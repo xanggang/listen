@@ -1,5 +1,6 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import type { NextRequest } from 'next/server';
+import { buildListenApiUrl } from '@/lib/listen-api-url';
 import { getListenApiBaseUrl } from '@/lib/listen-api-config';
 
 /**
@@ -17,7 +18,10 @@ export async function POST(request: NextRequest): Promise<Response> {
   try {
     const baseUrl = getListenApiBaseUrl();
     const response = baseUrl
-      ? await fetch(new URL('/api/metrics/visit', baseUrl), { ...options, cache: 'no-store' })
+      ? await fetch(buildListenApiUrl('/api/metrics/visit', baseUrl), {
+          ...options,
+          cache: 'no-store',
+        })
       : await (async () => {
           // 生产环境使用 Web Worker 已有的 API Service Binding。
           const { env } = await getCloudflareContext({ async: true });

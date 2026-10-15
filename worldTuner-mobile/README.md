@@ -107,3 +107,14 @@ flutter build apk --debug --dart-define-from-file=env/local.json
 电台语种及本地收藏支持 `languageEn`、`languageZh`；旧收藏回退原始 `language`。更新后完整重启 App，再验证语言切换，确保内存中旧字典重新加载。
 
 国家名称也采用中文→英文→原名兜底，覆盖筛选、电台信息及播放器；旧收藏继续使用原名。完整国家筛选支持中文、英文、代码搜索，中文界面隐藏英文 A–Z 索引。默认本地数据库已完成迁移，更新后重启 API 和 App 获取新字典。
+
+## 线上 API 环境（安卓）
+
+`env/online.json` 使用 `API_BASE_URL=https://tuner.naxi.fun/client`，客户端追加 `/api/...`，最终健康检查地址为 `https://tuner.naxi.fun/client/api/health`。地图 Key 沿用现有示例配置，本地及局域网环境保持可选。
+
+```bash
+flutter run -d <设备ID> --dart-define-from-file=env/online.json
+flutter build apk --release --dart-define-from-file=env/online.json
+```
+
+IDEA / Android Studio 运行配置可选 `Android Online`（以 mobile 为项目根目录）。也可在原 Flutter 配置的 **Additional run args** 填入 `--dart-define-from-file=env/online.json`。切换环境后停止运行并重新启动，热重载不会更新构建变量。

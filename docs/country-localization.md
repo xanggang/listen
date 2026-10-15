@@ -53,3 +53,33 @@ pnpm exec wrangler d1 migrations apply DB --remote
 - 本地真实数据库通过 API 入口验证国家列表与“中国”电台搜索，均返回 200 和中文国家名。没有截图或真机验收，没有远程部署。
 
 后续需要刷新翻译时，先更新现有名称源，再审查 JSON 快照差异；SQLite 可重复执行迁移补齐缺失译名，D1 通过新的增量迁移补齐，已发布历史迁移不改写。
+
+## Java API 与安卓排行榜补齐（2026-10-15）
+
+Java 的国家字典原先遗漏 `name_en`、`name_zh`，现已补齐；电台响应同步返回 `countryEn`、`countryZh`。安卓无需自带国家翻译表，复用 API 数据和已有展示兜底。
+
+排行榜新增国家榜，支持热门国家、查看全部、中英文/代码搜索、清除筛选及非热门项回显。前三名与分页列表统一使用 `countriesId`。国家字典按需加载并缓存。
+
+需重新打包上传 Java JAR、重启服务，再完整重启 App 清除内存中的旧字典。如果服务器数据库还没有国家译名字段，先按本文 SQLite 迁移步骤升级业务库；本次没有修改服务器数据库或发布服务。
+
+## 补齐国家名称与面板语言排序（2026-10-15）
+
+补齐原先缺少的 14 个代码对应中文名，来源为 Unicode CLDR 中文地区表：
+https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json
+
+另为 `code=XX AND name=France` 添加严格限定的显示别名“法国”，不修改异常代码或电台关联；其他 XX 不会套用此译名。已有人工译名不会覆盖。国家面板在构建时按当前语言的展示名重新排序，切换语言无需重新请求。
+
+本地库已备份后补齐 15 项，现在 236 项都有中文显示名。原始数据逐表摘要一致，外键检查通过。备份：`worldTuner-data/v2/data/worldtuner-v2-country-names-2026-10-15T08-53-51.549Z.sqlite`。
+
+服务器 SQLite 在更新代码/名称 JSON 后执行：
+
+```bash
+# 在 worldTuner-data 目录，使用服务器实际数据库路径
+npm run migrate:v2:country-names -- --db /opt/worldtuner/worldtuner-v2.sqlite
+npm run migrate:v2:country-names -- --db /opt/worldtuner/worldtuner-v2.sqlite --apply
+sudo systemctl restart worldtuner
+```
+
+或者先备份服务器目录库，再同步本地已补齐的业务库。不要覆盖服务器的 `metrics.sqlite`。D1 通过新增 `0007_country_names_complete.sql` 补齐，历史迁移不改写。本次未操作服务器。
+
+验证：4 项数据迁移测试、5 项 Flutter 国家面板/排行榜测试及 Flutter analyze 通过。

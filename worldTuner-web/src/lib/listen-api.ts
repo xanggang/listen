@@ -1,10 +1,13 @@
 import 'server-only';
+import { buildListenApiUrl } from './listen-api-url';
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { headers } from 'next/headers';
 import { getListenApiBaseUrl } from './listen-api-config';
 
 export class ListenApiError extends Error {
-  /** 保留 HTTP 状态，供兼容门面区分不存在与服务故障。 */
+  /**
+   * 保留 HTTP 状态，供兼容门面区分不存在与服务故障。
+   */
   constructor(
     public status: number,
     message: string,
@@ -30,7 +33,7 @@ export async function apiFetch(
   let response: Response;
   if (baseUrl) {
     // Explicit override for local development or a non-Cloudflare Web host.
-    response = await fetch(new URL(path, baseUrl), { ...options, cache: 'no-store' });
+    response = await fetch(buildListenApiUrl(path, baseUrl), { ...options, cache: 'no-store' });
   } else {
     const { env } = await getCloudflareContext({ async: true });
     if (!env.LISTEN_API) throw new Error('LISTEN_API binding or LISTEN_API_BASE_URL is required');

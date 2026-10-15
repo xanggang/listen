@@ -26,6 +26,10 @@ public class StationRow {
   /** 国家名，可能为 null。 */
   private String country;
 
+  // 国家展示译名为空时，客户端沿用原始 country。
+  private String countryEn;
+  private String countryZh;
+
   /** 两位国家代码，可能为 null。 */
   private String countrycode;
 
@@ -148,6 +152,34 @@ public class StationRow {
   /** 设置国家名。 */
   public void setCountry(String country) {
     this.country = country;
+  }
+
+  /**
+   * 返回可空英文国家展示名，原始 country 保持不变。
+   */
+  public String getCountryEn() {
+    return countryEn;
+  }
+
+  /**
+   * 接收关联国家的英文展示名。
+   */
+  public void setCountryEn(String countryEn) {
+    this.countryEn = countryEn;
+  }
+
+  /**
+   * 返回可空中文国家展示名，供客户端按语言选择。
+   */
+  public String getCountryZh() {
+    return countryZh;
+  }
+
+  /**
+   * 接收关联国家的中文展示名。
+   */
+  public void setCountryZh(String countryZh) {
+    this.countryZh = countryZh;
   }
 
   /** 返回两位国家代码。 */

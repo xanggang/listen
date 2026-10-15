@@ -7,11 +7,12 @@ import '../../core/aether_widgets.dart';
 import '../../core/api_client.dart';
 import '../../core/app_text.dart';
 import '../player/player_controller.dart';
+import 'catalog_picker.dart';
 import 'station.dart';
 import 'station_library.dart';
 import 'station_results.dart';
 
-// 依据 API 票数排序展示全球、语言和流派榜单。
+// 依据 API 票数排序展示全球、语言、标签和国家榜单。
 class LeaderboardPage extends StatefulWidget {
   const LeaderboardPage({
     super.key,
@@ -31,7 +32,7 @@ class LeaderboardPage extends StatefulWidget {
   State<LeaderboardPage> createState() => _LeaderboardPageState();
 }
 
-// 分别保存语言和标签的加载状态；成功列表留在页面内，失败允许重新请求。
+// 分别保存语言、标签和国家的加载状态；成功列表留在页面内，失败允许重新请求。
 class _LeaderboardCatalog {
   // 分类名称仅由页面固定调用点提供，不能传入外部查询值。
   _LeaderboardCatalog(this.kind);
@@ -47,8 +48,13 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   int _scope = 0;
   String? _languageId;
   String? _tagId;
+  String? _countryId;
+  CatalogItem? _selectedLanguage;
+  CatalogItem? _selectedTag;
+  CatalogItem? _selectedCountry;
   final _languages = _LeaderboardCatalog('languages');
   final _tags = _LeaderboardCatalog('tags');
+  final _countries = _LeaderboardCatalog('countries');
   late Future<StationPage> _topStations;
 
   // 首次加载分类字典和全球前三电台。
@@ -91,6 +97,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       unawaited(_loadCatalog(_languages));
     } else if (_scope == 2) {
       unawaited(_loadCatalog(_tags));
+    } else if (_scope == 3) {
+      unawaited(_loadCatalog(_countries));
     }
   }
 
@@ -103,16 +111,61 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     _retryCatalog();
   }
 
-  // 选择语言或流派字典项并刷新前三名。
-  void _selectFilter(String id) {
+  // 选择完整字典或快捷项并刷新榜单；null 清除筛选，保留非热门项用于回显。
+  void _selectFilter(CatalogItem? item) {
     setState(() {
       if (_scope == 1) {
-        _languageId = id;
+        _languageId = item?.id;
+        _selectedLanguage = item;
+      } else if (_scope == 3) {
+        _countryId = item?.id;
+        _selectedCountry = item;
       } else {
-        _tagId = id;
+        _tagId = item?.id;
+        _selectedTag = item;
       }
       _reloadTop();
     });
+  }
+
+  // 复用搜索页的完整分类面板，标签支持分页搜索，语言和国家支持完整列表查找。
+  void _openCatalogPicker() {
+    final scope = _scope;
+    if (scope == 0) return;
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      // 面板复用既有加载、搜索、分页与主题，选项只更新当前榜单。
+      builder: (context) => FractionallySizedBox(
+        heightFactor: 0.88,
+        child: CatalogPicker(
+          api: widget.api,
+          text: widget.text,
+          kind: scope == 1
+              ? 'languages'
+              : scope == 3
+              ? 'countries'
+              : 'tags',
+          title: widget.text.get(
+            scope == 1
+                ? 'languages'
+                : scope == 3
+                ? 'countries'
+                : 'genres',
+          ),
+          selectedId: scope == 1
+              ? _languageId
+              : scope == 3
+              ? _countryId
+              : _tagId,
+          // 底部面板关闭前立即应用选项，完整列表中的非热门项也能回显。
+          onSelected: _selectFilter,
+          // 清除后仍停留当前榜单维度，不重置其他维度的筛选。
+          onClear: () => _selectFilter(null),
+        ),
+      ),
+    );
   }
 
   // 使用当前可见维度重新请求榜首三台。
@@ -121,14 +174,23 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       pageSize: 3,
       languageId: _scope == 1 ? _languageId : null,
       tagId: _scope == 2 ? _tagId : null,
+      countryId: _scope == 3 ? _countryId : null,
     );
   }
 
   // 展示缓存的分类列表；失败提供本地化重试按钮，加载期间不能重复点击。
   Widget _filterOptions(BuildContext context) {
     final palette = AetherPalette.of(context);
-    final source = _scope == 1 ? _languages : _tags;
-    final selectedId = _scope == 1 ? _languageId : _tagId;
+    final source = _scope == 1
+        ? _languages
+        : _scope == 3
+        ? _countries
+        : _tags;
+    final selectedId = _scope == 1
+        ? _languageId
+        : _scope == 3
+        ? _countryId
+        : _tagId;
     if (source.loading) return const LinearProgressIndicator();
     if (source.failed) {
       return Row(
@@ -147,23 +209,45 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
         ],
       );
     }
-    final items = source.items;
-    if (items == null) return const LinearProgressIndicator();
+    final cached = source.items;
+    if (cached == null) return const LinearProgressIndicator();
+    final selected = _scope == 1
+        ? _selectedLanguage
+        : _scope == 3
+        ? _selectedCountry
+        : _selectedTag;
+    final items = [
+      if (selected != null &&
+          !cached.any(
+            // 不重复显示已经存在于快捷列表的选中分类。
+            (item) => item.id == selected.id,
+          ))
+        selected,
+      ...cached,
+    ];
     return SizedBox(
       height: 42,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: items.length,
+        itemCount: items.length + 1,
         // 分类选项之间保留固定触控间距。
         separatorBuilder: (context, index) => const SizedBox(width: 8),
         // 当前分类通过 API ID 过滤整个榜单，复用成功的分类数据。
         itemBuilder: (context, index) {
-          final item = items[index];
+          if (index == 0) {
+            return AetherFilterChip(
+              label: widget.text.get('all'),
+              selected: selectedId == null,
+              // 与搜索页一致，首项恢复当前维度的全部电台。
+              onTap: () => _selectFilter(null),
+            );
+          }
+          final item = items[index - 1];
           return AetherFilterChip(
             label: item.displayName(widget.text.language),
             selected: selectedId == item.id,
             // 选择具体分类后只重新请求榜单电台，不重复下载分类列表。
-            onTap: () => _selectFilter(item.id),
+            onTap: () => _selectFilter(item),
           );
         },
       ),
@@ -327,12 +411,27 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 selected: _scope == 2,
                 onTap: () => _selectScope(2),
               ),
+              const SizedBox(width: 8),
+              AetherFilterChip(
+                label: t('filterCountry'),
+                selected: _scope == 3,
+                // 国家字典首次进入时加载，成功结果与其他榜单一样缓存。
+                onTap: () => _selectScope(3),
+              ),
             ],
           ),
         ),
         if (_scope != 0) ...[
           const SizedBox(height: 12),
-          _filterOptions(context),
+          Row(
+            children: [
+              Expanded(child: _filterOptions(context)),
+              TextButton(
+                onPressed: _openCatalogPicker,
+                child: Text(t('viewAll')),
+              ),
+            ],
+          ),
         ],
         const SizedBox(height: 24),
         _podium(context),
@@ -350,6 +449,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
         ? _languageId
         : _scope == 2
         ? _tagId
+        : _scope == 3
+        ? _countryId
         : null;
     return StationResults(
       key: ValueKey('$_scope:$filter'),
@@ -362,6 +463,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       skipFirst: 3,
       languageId: _scope == 1 ? _languageId : null,
       tagId: _scope == 2 ? _tagId : null,
+      countryId: _scope == 3 ? _countryId : null,
     );
   }
 }

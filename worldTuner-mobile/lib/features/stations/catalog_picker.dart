@@ -102,17 +102,6 @@ class _CatalogPickerState extends State<CatalogPicker> {
           : await widget.api.catalog(widget.kind, limit: 1000);
       if (!mounted || generation != _generation) return;
       setState(() {
-        if (widget.kind != 'tags') {
-          page.sort(
-            // 按当前展示名排序；中文国家不显示英文 A–Z 索引。
-            (left, right) => left
-                .displayName(widget.text.language)
-                .toLowerCase()
-                .compareTo(
-                  right.displayName(widget.text.language).toLowerCase(),
-                ),
-          );
-        }
         _items.addAll(page);
         _offset += page.length;
         _hasMore = widget.kind == 'tags' && page.length == 30;
@@ -171,6 +160,15 @@ class _CatalogPickerState extends State<CatalogPicker> {
                     : item.matches(query),
               )
               .toList();
+    if (widget.kind != 'tags') {
+      visible.sort(
+        // 缓存不按语言拆分，每次构建按当前展示名重新排序。
+        (left, right) => left
+            .displayName(widget.text.language)
+            .toLowerCase()
+            .compareTo(right.displayName(widget.text.language).toLowerCase()),
+      );
+    }
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),

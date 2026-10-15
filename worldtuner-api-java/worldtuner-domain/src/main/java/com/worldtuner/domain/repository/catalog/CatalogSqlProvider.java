@@ -13,7 +13,9 @@ public final class CatalogSqlProvider {
   private static final String PUBLIC_STATION =
       "s.visibility_status = 'visible' AND s.catalog_status != 'unavailable'";
 
-  /** 工具类不需要实例化。 */
+  /**
+   * 工具类不需要实例化。
+   */
   private CatalogSqlProvider() {
   }
 
@@ -28,13 +30,13 @@ public final class CatalogSqlProvider {
   }
 
   /**
-   * 生成国家列表 SQL；国家不返回中英文译名字段。
+   * 生成国家列表 SQL；返回已有中英文展示名，不改变国家代码与统计口径。
    *
    * @param limit 最大返回条数
    * @return 可执行 SQL
    */
   public static String selectCountries(@Param("limit") int limit) {
-    return catalogSql(CatalogKind.COUNTRIES, false) + " GROUP BY x.id ORDER BY stationcount DESC, x.id ASC LIMIT #{limit}";
+    return catalogSql(CatalogKind.COUNTRIES, true) + " GROUP BY x.id ORDER BY stationcount DESC, x.id ASC LIMIT #{limit}";
   }
 
   /**
@@ -63,7 +65,7 @@ public final class CatalogSqlProvider {
     String columns = localized
         ? "x.id, x.name, x.name_en AS nameEn, x.name_zh AS nameZh, COUNT(*) AS stationcount"
         : "x.id, x.name, x.code, COUNT(*) AS stationcount";
-    String languageCode = kind == CatalogKind.LANGUAGES ? ", x.code" : "";
+    String languageCode = kind != CatalogKind.TAGS ? ", x.code" : "";
     String join;
     if (kind == CatalogKind.COUNTRIES) {
       join = "FROM country x JOIN station s ON s.country_id = x.id";

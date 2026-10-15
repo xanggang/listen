@@ -90,7 +90,9 @@ class ApiContractTest {
         .andExpect(jsonPath("$.error.requestId").isNotEmpty());
   }
 
-  /** 电台列表：只返回公开电台，按票数排序；分页边界正确。 */
+  /**
+   * 电台列表保留公开性、分页及票数排序，并返回国家展示译名。
+   */
   @Test
   @Order(2)
   void stationListFiltersAndPaginates() throws Exception {
@@ -100,6 +102,8 @@ class ApiContractTest {
         .andExpect(jsonPath("$.data.list[0].id").value("0000000000000001001"))
         .andExpect(jsonPath("$.data.list[0].name").value("Radio One"))
         .andExpect(jsonPath("$.data.list[0].countrycode").value("CN"))
+        .andExpect(jsonPath("$.data.list[0].countryEn").value("China"))
+        .andExpect(jsonPath("$.data.list[0].countryZh").value("中国"))
         .andExpect(jsonPath("$.data.list[0].tags").value("pop,jazz"))
         .andExpect(jsonPath("$.data.list[0].language").value("English,中文"))
         .andExpect(jsonPath("$.data.list[0].languageZh").value("英语,中文"))
@@ -169,7 +173,9 @@ class ApiContractTest {
         .andExpect(jsonPath("$.error.code").value("INVALID_PARAMETER"));
   }
 
-  /** 字典接口：返回译名字段与关联计数；标签支持搜索与分页。 */
+  /**
+   * 语言和国家字典返回中英文译名与稳定代码；标签支持搜索与分页。
+   */
   @Test
   @Order(5)
   void catalogDictionariesExposeLocalizedNames() throws Exception {
@@ -186,7 +192,8 @@ class ApiContractTest {
         .andExpect(jsonPath("$.data[0].id").value("0000000000000000001"))
         .andExpect(jsonPath("$.data[0].name").value("China"))
         .andExpect(jsonPath("$.data[0].code").value("CN"))
-        .andExpect(jsonPath("$.data[0].name_zh").doesNotExist());
+        .andExpect(jsonPath("$.data[0].name_en").value("China"))
+        .andExpect(jsonPath("$.data[0].name_zh").value("中国"));
 
     mockMvc.perform(get("/api/tags?q=爵"))
         .andExpect(status().isOk())

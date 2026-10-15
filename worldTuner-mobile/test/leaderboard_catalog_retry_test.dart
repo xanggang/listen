@@ -114,6 +114,175 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  // 完整面板搜索非热门标签，榜首与分页必须使用同一 ID，清除后恢复全部。
+  testWidgets('view all selects and clears a non-popular leaderboard tag', (
+    tester,
+  ) async {
+    final requests = <Uri>[];
+    final api = ApiClient(
+      origin: Uri.parse('https://api.test'),
+      client: MockClient(
+        // 快捷列表仅提供 Rock，Ambient 只能通过完整面板搜索获得。
+        (request) async {
+          requests.add(request.url);
+          if (request.url.pathSegments.last == 'stations') {
+            return _emptyStations();
+          }
+          final searched = request.url.queryParameters['q'] == 'Ambient';
+          return http.Response(
+            jsonEncode({
+              'data': [
+                {
+                  'id': searched
+                      ? '0363513228099059715'
+                      : '0363513228099059714',
+                  'name': searched ? 'Ambient' : 'Rock',
+                },
+              ],
+            }),
+            200,
+          );
+        },
+      ),
+    );
+    addTearDown(api.dispose);
+    await _showPage(tester, api);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tags'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('View all'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Ambient');
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(ListTile, 'Ambient'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ambient'), findsOneWidget);
+    final filtered = requests
+        .where(
+          // 榜首和下方列表均提交完整选择结果的 ID。
+          (uri) =>
+              uri.path == '/api/stations' &&
+              uri.queryParameters['tagsId'] == '0363513228099059715',
+        )
+        .toList();
+    expect(
+      filtered.any(
+        // 确认前三名的独立请求也已刷新。
+        (uri) => uri.queryParameters['pageSize'] == '3',
+      ),
+      isTrue,
+    );
+    expect(filtered.length, greaterThanOrEqualTo(2));
+    await tester.tap(find.text('View all'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(ListTile, 'All'));
+    await tester.pumpAndSettle();
+    expect(
+      requests
+          .lastWhere(
+            // 清除后的最新榜单请求不再带标签过滤。
+            (uri) => uri.path == '/api/stations',
+          )
+          .queryParameters['tagsId'],
+      isNull,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  // 国家榜采用 countriesId，中文名随界面语言展示，完整面板可选非热门国家。
+  testWidgets(
+    'country leaderboard localizes and shares the filter with podium and list',
+    (tester) async {
+      final requests = <Uri>[];
+      final api = ApiClient(
+        origin: Uri.parse('https://api.test'),
+        client: MockClient(
+          // 国家名称由 API 返回中英文，完整列表额外提供 Japan。
+          (request) async {
+            requests.add(request.url);
+            final kind = request.url.pathSegments.last;
+            if (kind == 'stations') return _emptyStations();
+            final data = kind == 'countries'
+                ? [
+                    {
+                      'id': '0363513228099059721',
+                      'name': 'China',
+                      'name_en': 'China',
+                      'name_zh': '中国',
+                      'code': 'CN',
+                    },
+                    if (request.url.queryParameters['limit'] == '1000')
+                      {
+                        'id': '0363513228099059722',
+                        'name': 'Japan',
+                        'name_en': 'Japan',
+                        'name_zh': '日本',
+                        'code': 'JP',
+                      },
+                  ]
+                : <Object>[];
+            return http.Response(
+              jsonEncode({'data': data}),
+              200,
+              headers: {'content-type': 'application/json; charset=utf-8'},
+            );
+          },
+        ),
+      );
+      addTearDown(api.dispose);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: buildAetherTheme(Brightness.light),
+          home: Scaffold(
+            body: LeaderboardPage(
+              api: api,
+              player: _UnusedPlayer(),
+              library: _UnusedLibrary(),
+              text: const AppText('zh'),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('国家榜'));
+      await tester.tap(find.text('国家榜'));
+      await tester.pumpAndSettle();
+      expect(find.text('中国'), findsOneWidget);
+      await tester.tap(find.text('中国'));
+      await tester.pumpAndSettle();
+      expect(
+        requests
+            .where(
+              // 榜首与分页列表均按国家 ID 请求，不能误传标签参数。
+              (uri) =>
+                  uri.path == '/api/stations' &&
+                  uri.queryParameters['countriesId'] == '0363513228099059721' &&
+                  !uri.queryParameters.containsKey('tagsId'),
+            )
+            .length,
+        greaterThanOrEqualTo(2),
+      );
+      await tester.tap(find.text('查看全部'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '日本');
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ListTile, '日本'));
+      await tester.pumpAndSettle();
+      expect(find.text('日本'), findsOneWidget);
+      expect(
+        requests
+            .lastWhere(
+              // 完整面板选择后新国家立即生效。
+              (uri) => uri.path == '/api/stations',
+            )
+            .queryParameters['countriesId'],
+        '0363513228099059722',
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
 
 // 空电台页让用例仅关注分类请求，不创建播放器或收藏组件。

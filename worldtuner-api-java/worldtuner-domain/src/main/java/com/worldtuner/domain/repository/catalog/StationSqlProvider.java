@@ -26,7 +26,7 @@ public final class StationSqlProvider {
       s.place, s.country_id AS countryId, s.latitude AS geoLat, s.longitude AS geoLong,
       s.votes, s.clickcount, s.source_type AS sourceType, s.catalog_status AS catalogStatus,
       s.created_at AS createdAt, s.updated_at AS updatedAt,
-      c.name AS country, c.code AS countrycode,
+      c.name AS country, c.name_en AS countryEn, c.name_zh AS countryZh, c.code AS countrycode,
       st.url, st.resolved_url AS urlResolved, st.codec, st.bitrate,
       st.is_hls AS hls, st.last_check_ok AS lastcheckok,
       (SELECT group_concat(name, ',') FROM (SELECT t.name FROM station_tag r JOIN tag t ON t.id = r.tag_id WHERE r.station_id = s.id ORDER BY t.id)) AS tags,

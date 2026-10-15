@@ -38,3 +38,16 @@ pnpm dev
 发现页与排行榜使用统一的 `src/lib/catalog-names.ts` 展示规则：中文 `name_zh → name_en → name`；英文 `name_en → name`。字典保存所有译名，切换界面语言直接更新标签，不修改筛选 ID。电台语种支持 `languageEn` / `languageZh`，收藏持久化保留这些字段，历史收藏仍可回退原文。升级 API 数据结构后刷新页面，重新获取字典。
 
 国家筛选和电台国家信息使用 `stationCountryLabel` / `catalogDisplayName` 随界面语言切换；原 `country` 保留，新增译名持久化到收藏，旧收藏回退原名。先迁移 API 数据库，再更新服务并刷新页面。参见主项目 `docs/country-localization.md`。
+
+## 线上 API 环境
+
+使用 `env/online.env`，服务根地址为 `https://tuner.naxi.fun/client`，健康检查为 `/client/api/health`。保留原有本地启动命令，切换线上接口使用：
+
+```bash
+pnpm dev:online
+# 生产模式本地验证：先构建，再启动，两个命令都使用线上环境
+pnpm build:online
+pnpm start:online
+```
+
+线上部署平台设置 `LISTEN_API_BASE_URL=https://tuner.naxi.fun/client` 并重新部署。该地址不含 `/api`，Web 的接口客户端会保留 `/client` 并追加 `/api/...`，地图代理和 PV/UV 上报同样使用该配置。配置文件不包含密钥。Shell 中已有同名环境变量时优先使用 Shell 的值。

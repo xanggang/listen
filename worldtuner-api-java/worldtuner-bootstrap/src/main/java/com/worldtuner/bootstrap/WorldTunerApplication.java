@@ -3,6 +3,7 @@ package com.worldtuner.bootstrap;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -22,11 +23,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class WorldTunerApplication {
 
   /**
-   * 应用入口。
+   * 在日志系统初始化前指定 JAR 所在目录，再启动应用；开发时使用启动目录。
    *
    * @param args 命令行参数
    */
   public static void main(String[] args) {
+    ApplicationHome home = new ApplicationHome(WorldTunerApplication.class);
+    String logDirectory = home.getSource() != null && home.getSource().isFile()
+        ? home.getDir().getAbsolutePath() : System.getProperty("user.dir");
+    System.setProperty("worldtuner.log-dir", logDirectory);
     SpringApplication.run(WorldTunerApplication.class, args);
   }
 }

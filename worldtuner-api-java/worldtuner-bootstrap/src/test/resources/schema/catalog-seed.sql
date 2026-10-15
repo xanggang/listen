@@ -1,5 +1,5 @@
 -- 行为测试种子数据：覆盖可见性、目录状态、播放流排序与译名聚合。
-INSERT INTO country (id, name, code) VALUES ('0000000000000000001', 'China', 'CN');
+INSERT INTO country (id, name, code, name_en, name_zh) VALUES ('0000000000000000001', 'China', 'CN', 'China', '中国');
 
 INSERT INTO tag (id, name, normalized_name, name_en, name_zh) VALUES
   ('0000000000000000031', 'pop', 'pop', 'Pop', '流行'),

@@ -11,7 +11,7 @@ const names = JSON.parse(
 );
 
 /**
- * 复用已缓存名称，仅按明确国家代码填补中文；未覆盖代码保留原名兜底，不猜测身份。
+ * 复用已缓存名称，仅按明确国家代码填补中文；未覆盖代码保留原名兜底，不猜测身份；明确的显示别名同时约束原名与代码。
  * 调用方负责备份及事务；重复执行不覆盖人工译名，不修改原名、代码或关联。
  * @param {DatabaseSync} db 可写 v2 业务库。
  * @returns {{translated: number, untranslated: object[]}} 新填中文数量和未覆盖国家。
@@ -19,11 +19,15 @@ const names = JSON.parse(
 export function ensureCountryNames(db) {
   ensureCatalogNames(db, ['country']);
   const update = db.prepare(
-    'UPDATE country SET name_zh = ? WHERE code = ? AND (name_zh IS NULL OR length(trim(name_zh)) = 0)',
+    'UPDATE country SET name_zh = ? WHERE code = ? AND (? IS NULL OR name = ?) AND (name_zh IS NULL OR length(trim(name_zh)) = 0)',
   );
   let translated = 0;
   for (const entry of names) {
-    if (entry.code) translated += Number(update.run(entry.name_zh, entry.code).changes);
+    if (entry.code)
+      translated += Number(
+        update.run(entry.name_zh, entry.code, entry.match_name ?? null, entry.match_name ?? null)
+          .changes,
+      );
   }
   return {
     translated,
@@ -46,17 +50,6 @@ export async function migrateCountryNames(database = defaultDatabase, options = 
   let transaction = false;
   try {
     const countries = db.prepare('SELECT id, name, code FROM country ORDER BY code').all();
-    const codes = new Set(
-      names
-        .filter(
-          // 手工地区没有国家代码，不按名称推断归属。
-          (entry) => entry.code,
-        )
-        .map(
-          // 代码是唯一的身份匹配键。
-          (entry) => entry.code,
-        ),
-    );
     if (!options.apply)
       return {
         applied: false,
@@ -64,7 +57,13 @@ export async function migrateCountryNames(database = defaultDatabase, options = 
         total: countries.length,
         unmatched: countries.filter(
           // 输出未覆盖代码供后续补齐，预览不修改原库。
-          (entry) => !codes.has(entry.code),
+          (country) =>
+            !names.some(
+              // 与实际写入采用相同匹配约束，异常代码别名必须同时匹配原名。
+              (entry) =>
+                entry.code === country.code &&
+                (!entry.match_name || entry.match_name === country.name),
+            ),
         ),
       };
     const stamp = new Date().toISOString().replaceAll(':', '-');

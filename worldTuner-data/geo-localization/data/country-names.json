@@ -1573,5 +1573,125 @@
     "name_zh": "奥兰群岛",
     "source": "cldr",
     "updated_at": "2026-09-28T08:29:36.210Z"
+  },
+  {
+    "code": "AF",
+    "name_en": "Afghanistan",
+    "name_zh": "阿富汗",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "AQ",
+    "name_en": "Antarctica",
+    "name_zh": "南极洲",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "BQ",
+    "name_en": "Bonaire",
+    "name_zh": "荷属加勒比区",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "CC",
+    "name_en": "The Cocos Keeling Islands",
+    "name_zh": "科科斯（基林）群岛",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "CG",
+    "name_en": "The Congo",
+    "name_zh": "刚果（布）",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "IO",
+    "name_en": "British Indian Ocean Territory",
+    "name_zh": "英属印度洋领地",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "MV",
+    "name_en": "Maldives",
+    "name_zh": "马尔代夫",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "NU",
+    "name_en": "Niue",
+    "name_zh": "纽埃",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "PF",
+    "name_en": "French Polynesia",
+    "name_zh": "法属波利尼西亚",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "PW",
+    "name_en": "Palau",
+    "name_zh": "帕劳",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "SS",
+    "name_en": "South Sudan",
+    "name_zh": "南苏丹",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "TF",
+    "name_en": "The French Southern Territories",
+    "name_zh": "法属南部领地",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "TM",
+    "name_en": "Turkmenistan",
+    "name_zh": "土库曼斯坦",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "UM",
+    "name_en": "The United States Minor Outlying Islands",
+    "name_zh": "美国本土外小岛屿",
+    "source": "cldr",
+    "updated_at": "2026-10-15",
+    "source_url": "https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/zh/territories.json"
+  },
+  {
+    "code": "XX",
+    "name_en": "France",
+    "name_zh": "法国",
+    "match_name": "France",
+    "source": "manual-display-alias",
+    "updated_at": "2026-10-15"
   }
 ]
