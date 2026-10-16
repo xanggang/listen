@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { validator } from 'hono/validator';
 import type { AppEnv } from '../../types.ts';
-import { entityId, validateParams } from '../../shared/validation.ts';
+import { stationPublicId, validateParams } from '../../shared/validation.ts';
 import { cacheResponse } from '../../middleware/cache.ts';
 import { searchRateLimit } from '../../middleware/rate-limit.ts';
 import { parseStationQuery } from './stations.schema.ts';
@@ -31,11 +31,11 @@ stationRoutes.get(
   '/:id',
   validator(
     'param' /**
-     * 验证详情 id，并拒绝详情接口不支持的查询参数。
+     * 验证 7 位电台 public_id，并拒绝详情接口不支持的查询参数。
      */,
     (params, c) => {
       validateParams(new URL(c.req.url).searchParams, []);
-      return { id: entityId(params.id, 'id') };
+      return { id: stationPublicId(params.id, 'id') };
     },
   ),
   cacheResponse(300),

@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadStationFeatures } from '../src/lib/map-stations.ts';
 
-// 全量元组一次获取，前导零 ID、中文名称及同坐标的不同电台保持原样。
+// 全量元组一次获取，区分大小写的 public_id、中文名称及同坐标的不同电台保持原样。
 test('地图一次加载全量元组并启用浏览器缓存', async () => {
-  const ids = ['0363513228099059713', '0363513228099059714'];
+  const ids = ['0aB12xY', '0Ab12Xy'];
   let calls = 0;
   const result = await loadStationFeatures(
     new AbortController().signal,
@@ -13,7 +13,7 @@ test('地图一次加载全量元组并启用浏览器缓存', async () => {
     async (input, options) => {
       calls++;
       assert.equal(input, '/api/map/snapshot');
-      assert.equal(options.cache, 'default');
+      assert.equal(options.cache, 'no-cache');
       return Response.json({
         data: {
           count: 2,
@@ -40,7 +40,8 @@ test('地图一次加载全量元组并启用浏览器缓存', async () => {
 test('坏元组、错误计数和 HTTP 失败中止加载', async () => {
   for (const data of [
     { count: 1, points: [] },
-    { count: 1, points: [['0363513228099059713', 'Bad', 120, 100]] },
+    { count: 1, points: [['0363513228099059713', 'Old ID', 120, 30]] },
+    { count: 1, points: [['0aB12xY', 'Bad', 120, 100]] },
   ]) {
     await assert.rejects(
       loadStationFeatures(

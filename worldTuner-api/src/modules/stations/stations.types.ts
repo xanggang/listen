@@ -1,5 +1,6 @@
 export interface StationRow {
   id: string;
+  public_id: string;
   name: string;
   website: string | null;
   favicon: string | null;

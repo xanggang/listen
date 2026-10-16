@@ -36,3 +36,11 @@ export function entityId(value: string | null, name: string): string {
   if (value && /^\d{19}$/.test(value)) return value;
   throw new ApiError(400, 'INVALID_PARAMETER', `${name} must be a 19-digit entity ID`);
 }
+
+/**
+ * 验证电台对外的 7 位 Base62 public_id，区分大小写，不接受内部主键或数字类型。
+ */
+export function stationPublicId(value: string | null, name: string): string {
+  if (value && /^[0-9A-Za-z]{7}$/.test(value)) return value;
+  throw new ApiError(400, 'INVALID_PARAMETER', `${name} must be a 7-character Base62 station ID`);
+}

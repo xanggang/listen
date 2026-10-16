@@ -91,9 +91,13 @@ class ApiClient {
     );
   }
 
-  // 地图点选后按字符串 ID 获取当前数据源的完整详情。
-  Future<Station> stationById(String id) async =>
-      Station.fromJson(await _get('stations/$id') as Map<String, dynamic>);
+  // 按 7 位 public_id 获取详情；校验后才拼接路径，拒绝旧主键和非法字符。
+  Future<Station> stationById(String id) async {
+    final publicId = parseStationPublicId(id);
+    return Station.fromJson(
+      await _get('stations/$publicId') as Map<String, dynamic>,
+    );
+  }
 
   // 读取榜单语言或标签，kind 仅由客户端固定调用点提供。
   Future<List<CatalogItem>> catalog(String kind, {int limit = 30}) async {
@@ -200,16 +204,16 @@ class ApiClient {
     }
   }
 
-  // 读取当前库的点位页；游标保持字符串，移动端不再使用旧数据快照。
+  // 读取点位页，输入输出游标均校验为 7 位 public_id，不作数字转换。
   Future<MapPointPage> mapPoints({String? after, int limit = 5000}) async {
     final query = <String, String>{'limit': '$limit'};
-    if (after != null) query['after'] = after;
+    if (after != null) query['after'] = parseStationPublicId(after);
     final data = await _get('map/stations', query) as Map<String, dynamic>;
     return MapPointPage(
       list: MapPoint.parseRows(data['list'] as List<dynamic>),
       nextCursor: data['nextCursor'] == null
           ? null
-          : parseEntityId(data['nextCursor']),
+          : parseStationPublicId(data['nextCursor']),
     );
   }
 

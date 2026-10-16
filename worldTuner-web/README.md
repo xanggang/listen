@@ -39,15 +39,8 @@ pnpm dev
 
 国家筛选和电台国家信息使用 `stationCountryLabel` / `catalogDisplayName` 随界面语言切换；原 `country` 保留，新增译名持久化到收藏，旧收藏回退原名。先迁移 API 数据库，再更新服务并刷新页面。参见主项目 `docs/country-localization.md`。
 
-## 线上 API 环境
+## 电台短 ID
 
-使用 `env/online.env`，服务根地址为 `https://tuner.naxi.fun/client`，健康检查为 `/client/api/health`。保留原有本地启动命令，切换线上接口使用：
+电台列表、地图、详情、播放、收藏和最近播放的 `id` 统一使用 7 位区分大小写的 Base62 public_id。国家、标签和语种筛选仍使用原 19 位 ID。Server Actions 与地图同源代理仅转发公开 ID，Web 不读取内部电台主键。旧主键收藏或播放快照会被字段校验丢弃，不做 ID 映射。
 
-```bash
-pnpm dev:online
-# 生产模式本地验证：先构建，再启动，两个命令都使用线上环境
-pnpm build:online
-pnpm start:online
-```
-
-线上部署平台设置 `LISTEN_API_BASE_URL=https://tuner.naxi.fun/client` 并重新部署。该地址不含 `/api`，Web 的接口客户端会保留 `/client` 并追加 `/api/...`，地图代理和 PV/UV 上报同样使用该配置。配置文件不包含密钥。Shell 中已有同名环境变量时优先使用 Shell 的值。
+地图加载通过 ETag 强制重新验证缓存，避免发布后使用原 19 位 ID 的旧快照。运行前确保 API 已接入完成 public_id 回填的数据；本地 SQLite 默认使用 `worldtuner-v2-public.sqlite`。先更新 API 再刷新 Web。

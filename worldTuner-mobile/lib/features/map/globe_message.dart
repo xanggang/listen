@@ -12,7 +12,7 @@ class GlobeMessage {
   final GlobeMessageType type;
   final String? stationId;
 
-  // 解析 JavaScript channel 文本；未知类型和非法 id 均被忽略。
+  // 解析 JavaScript channel 文本；仅接受 7 位 public_id，未知类型或旧主键均被忽略。
   static GlobeMessage? parse(String raw) {
     try {
       final value = jsonDecode(raw);
@@ -22,7 +22,7 @@ class GlobeMessage {
         'error' => const GlobeMessage(GlobeMessageType.error),
         'select' => GlobeMessage(
           GlobeMessageType.select,
-          stationId: parseEntityId(value['id']),
+          stationId: parseStationPublicId(value['id']),
         ),
         _ => null,
       };

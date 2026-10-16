@@ -1,4 +1,5 @@
 import { ensureCountryNames } from '../../v2/src/country-names.mjs';
+import { ensureStationPublicIds } from '../../v2/src/station-public-ids.mjs';
 import { ensureCatalogNames } from '../../v2/src/catalog-names.mjs';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -68,6 +69,7 @@ export function parseChannel(entityId, responseJson) {
 /**
  * 在 V2 库中导入 Radio Garden 频道；整批写入使用事务，已有同源记录时拒绝重复导入。
  * 原始库只读，缺失地点或无效详情会中止并回滚目标库。
+ * 提交前补齐电台 public_id，已有对外 ID 与内部主键保持稳定。
  * @param {string} sourcePath Radio Garden 采集库路径。
  * @param {string} targetPath 已建表的 V2 库路径。
  * @param {{workerId?: number}} [options] 同一数据库并发写入时唯一的生成节点编号。
@@ -226,6 +228,7 @@ export function importRadioGarden(
     }
     // 新增国家也使用本地名称快照；整个导入失败时一并回滚。
     ensureCountryNames(target);
+    ensureStationPublicIds(target);
     target.exec('COMMIT');
     targetTransaction = false;
     source.exec('COMMIT');

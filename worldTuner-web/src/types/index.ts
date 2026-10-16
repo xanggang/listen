@@ -38,7 +38,7 @@ export interface Tags {
   stationcount: number;
 }
 
-// 新业务库的电台展示字段；实体 ID 始终保留字符串和前导零。
+// 电台 id 是 7 位 public_id；countryId 等分类 ID 仍为 19 位字符串。
 export interface Station {
   id: string;
   name: string;

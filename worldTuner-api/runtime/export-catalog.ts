@@ -87,7 +87,9 @@ export function exportCatalog(source: string, output: string): Record<string, nu
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const source =
     process.argv[2] ??
-    fileURLToPath(new URL('../../worldTuner-data/v2/data/worldtuner-v2.sqlite', import.meta.url));
+    fileURLToPath(
+      new URL('../../worldTuner-data/v2/data/worldtuner-v2-public.sqlite', import.meta.url),
+    );
   const output = process.argv[3];
   if (!output) throw new Error('Usage: pnpm db:export:catalog [source.sqlite] output.sql');
   console.log(JSON.stringify(exportCatalog(resolve(source), resolve(output))));

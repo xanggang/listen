@@ -16,7 +16,7 @@ class MapPoint {
   final double latitude;
   final double longitude;
 
-  // 在后台 isolate 解码完整元组快照，严格校验计数、字符串 ID 与坐标顺序。
+  // 在后台 isolate 解码快照，严格校验 7 位 public_id、计数与坐标顺序。
   static List<MapPoint> parseSnapshot(String body) {
     final payload = jsonDecode(body);
     if (payload is! Map<String, dynamic> ||
@@ -34,7 +34,7 @@ class MapPoint {
       if (row is! List ||
           row.length != 4 ||
           row[0] is! String ||
-          !RegExp(r'^\d{19}$').hasMatch(row[0] as String) ||
+          !RegExp(r'^[0-9A-Za-z]{7}$').hasMatch(row[0] as String) ||
           row[1] is! String ||
           row[2] is! num ||
           row[3] is! num) {
@@ -62,7 +62,7 @@ class MapPoint {
     return points;
   }
 
-  // 解析单页点位；无效坐标不进入地球数据，非法 ID 由调用方处理为加载错误。
+  // 解析单页点位；校验 public_id，无效坐标不进入地球数据。
   static List<MapPoint> parseRows(List<dynamic> rows) {
     final points = <MapPoint>[];
     for (final value in rows) {
@@ -81,7 +81,7 @@ class MapPoint {
       }
       points.add(
         MapPoint(
-          id: parseEntityId(value['id']),
+          id: parseStationPublicId(value['id']),
           name: value['name'] as String? ?? '',
           latitude: lat.toDouble(),
           longitude: lng.toDouble(),

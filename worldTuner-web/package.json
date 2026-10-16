@@ -11,10 +11,7 @@
     "deploy": "opennextjs-cloudflare deploy",
     "deploy:cf": "next build && opennextjs-cloudflare build && opennextjs-cloudflare upload",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts",
-    "dev:online": "node --env-file=env/online.env node_modules/next/dist/bin/next dev --turbopack",
-    "build:online": "node --env-file=env/online.env node_modules/next/dist/bin/next build",
-    "start:online": "node --env-file=env/online.env node_modules/next/dist/bin/next start"
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts"
   },
   "dependencies": {
     "@maptiler/sdk": "^3.9.0",

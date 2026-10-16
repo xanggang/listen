@@ -1,11 +1,11 @@
 import type { StationRow, StreamRow } from './stations.types.ts';
 
 /**
- * 生成电台展示 DTO；ID 保持字符串，未知来源统计保持 null，缺流时 URL 为空。
+ * 对外 id 映射为 public_id，内部主键不暴露；未知统计保持 null，缺流时 URL 为空。
  */
 export function stationDto(row: StationRow) {
   return {
-    id: row.id,
+    id: row.public_id,
     name: row.name,
     website: row.website,
     favicon: row.favicon,

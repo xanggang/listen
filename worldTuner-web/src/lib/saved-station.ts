@@ -21,7 +21,7 @@ function label(value: unknown): string | null {
 }
 
 /**
- * 将完整电台或持久化 JSON 校验并缩减为播放与列表需要的字段。
+ * 校验 7 位电台 public_id 并提取播放字段；旧主键记录及坏数据不进入本地列表。
  */
 export function toPlayableStation(value: unknown): PlayableStation | null {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
@@ -30,7 +30,7 @@ export function toPlayableStation(value: unknown): PlayableStation | null {
   const name = label(record.name);
   const url = webUrl(record.url);
   const urlResolved = webUrl(record.urlResolved);
-  if (typeof id !== 'string' || !/^\d{19}$/.test(id) || !name || (!url && !urlResolved)) {
+  if (typeof id !== 'string' || !/^[0-9A-Za-z]{7}$/.test(id) || !name || (!url && !urlResolved)) {
     return null;
   }
   return {

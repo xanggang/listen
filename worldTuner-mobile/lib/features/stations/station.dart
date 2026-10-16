@@ -11,6 +11,14 @@ String parseEntityId(Object? value) {
   return text;
 }
 
+// 电台对外 id 仅接受 7 位区分大小写的 Base62 字符串，不兼容原内部主键或数字。
+String parseStationPublicId(Object? value) {
+  if (value is! String || !RegExp(r'^[0-9A-Za-z]{7}$').hasMatch(value)) {
+    throw const FormatException('Invalid station public ID');
+  }
+  return value;
+}
+
 // 来自 API 的电台详情，只保留移动界面和播放器使用的字段。
 class Station {
   // 保存播放、列表和本地收藏共同需要的电台信息。
@@ -69,10 +77,10 @@ class Station {
   // 优先使用数据库解析过的流地址；无效地址由播放器报告错误。
   String get streamUrl => urlResolved?.isNotEmpty == true ? urlResolved! : url;
 
-  // 将 API 的可空 JSON 字段安全转换为客户端模型。
+  // 校验电台 public_id，再将 API 可空字段转换为模型；旧收藏主键会被丢弃。
   factory Station.fromJson(Map<String, dynamic> json) {
     return Station(
-      id: parseEntityId(json['id']),
+      id: parseStationPublicId(json['id']),
       name: (json['name'] as String?)?.trim().isNotEmpty == true
           ? (json['name'] as String).trim()
           : 'Unknown station',

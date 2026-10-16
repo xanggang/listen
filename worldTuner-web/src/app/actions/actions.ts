@@ -56,10 +56,10 @@ export async function getStations(query: SearchType) {
 }
 
 /**
- * 使用新库的 19 位字符串 ID 获取电台；只有真实 404 转换为 null，其他异常继续传播。
+ * 使用电台的 7 位 public_id 获取详情；只有真实 404 转换为 null，其他异常继续传播。
  */
 export async function getStationById(id: string): Promise<Station | null> {
-  if (!/^\d{19}$/.test(id)) throw new Error('Invalid station id');
+  if (!/^[0-9A-Za-z]{7}$/.test(id)) throw new Error('Invalid station id');
   try {
     return await apiGet<Station>(`/api/stations/${id}`);
   } catch (error) {

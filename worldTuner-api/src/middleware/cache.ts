@@ -17,7 +17,7 @@ export function cacheResponse(ttl: number | ((c: Context<AppEnv>) => number)) {
     const seconds = typeof ttl === 'number' ? ttl : ttl(c);
     if (seconds <= 0) return next();
     const url = new URL(c.req.url);
-    url.searchParams.set('_response_schema', 'country-names-1');
+    url.searchParams.set('_response_schema', 'station-public-id-1');
     url.searchParams.sort();
     const key = new Request(url.toString());
     let hit: Response | undefined;

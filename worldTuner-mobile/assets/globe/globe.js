@@ -175,9 +175,9 @@
     send('select', { id });
   }
 
-  // ID 保持字符串；雪花 ID 不可转为 Number，否则点选和播放特效会指向错误电台。
+  // 仅接受 7 位区分大小写的 public_id，地图点选与播放光圈使用同一标识。
   function validStationId(id) {
-    return typeof id === 'string' && /^(?:[0-9]{19}|[1-9][0-9]{0,15})$/.test(id);
+    return typeof id === 'string' && /^[0-9A-Za-z]{7}$/.test(id);
   }
 
   // 将全部有效经纬度逐个更新为 GeoJSON，不合并相邻或重合的电台。

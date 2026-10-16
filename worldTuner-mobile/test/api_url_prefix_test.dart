@@ -1,18 +1,13 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:worldtuner_mobile/core/api_client.dart';
 
-// 检查真实线上环境文件与 API 客户端配合时不会丢失或重复代理路径。
+// 验证服务地址包含代理前缀时，API 客户端保留完整路径。
 void main() {
-  // 使用国家字典请求验证 /client 与 /api 各出现一次。
-  test('online environment preserves client API prefix', () async {
-    final config =
-        jsonDecode(File('env/online.json').readAsStringSync())
-            as Map<String, dynamic>;
-    final origin = Uri.parse(config['API_BASE_URL'] as String);
+  // 使用国家字典请求验证代理前缀与 /api 各出现一次。
+  test('API client preserves service prefix', () async {
+    final origin = Uri.parse('https://api.example.com/service');
     final requests = <Uri>[];
     final api = ApiClient(
       origin: origin,
@@ -32,9 +27,8 @@ void main() {
       await api.catalog('countries', limit: 1000);
       expect(
         requests.single.toString(),
-        'https://tuner.naxi.fun/client/api/countries?limit=1000',
+        'https://api.example.com/service/api/countries?limit=1000',
       );
-      expect(config['MAPTILER_API_KEY'], isNotEmpty);
     } finally {
       api.dispose();
     }

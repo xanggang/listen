@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import type { AppEnv } from '../../types.ts';
 import { adminAuth } from '../../middleware/admin-auth.ts';
 import { ApiError } from '../../shared/errors.ts';
-import { entityId, validateParams } from '../../shared/validation.ts';
+import { stationPublicId, validateParams } from '../../shared/validation.ts';
 import { parseVisibility } from './admin.schema.ts';
 
 export const adminRoutes = new Hono<AppEnv>();
@@ -17,10 +17,10 @@ adminRoutes.get(
 );
 adminRoutes.put(
   '/stations/:id/visibility',
-  // 限定 JSON 请求体与实体 ID，只调用独立管理业务，不开放任意数据库写入。
+  // 限定 JSON 请求体与电台 public_id，只调用独立管理业务，不开放任意数据库写入。
   async (c) => {
     validateParams(new URL(c.req.url).searchParams, []);
-    const id = entityId(c.req.param('id'), 'id');
+    const id = stationPublicId(c.req.param('id'), 'id');
     if (!c.req.header('Content-Type')?.toLowerCase().startsWith('application/json')) {
       throw new ApiError(415, 'UNSUPPORTED_MEDIA_TYPE', 'JSON body required');
     }

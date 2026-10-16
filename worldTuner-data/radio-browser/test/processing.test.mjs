@@ -138,6 +138,10 @@ test('导入时按实际流合并电台并保持来源关系', () => {
     const db = new DatabaseSync(fixture.targetPath, { readOnly: true });
     try {
       assert.equal(db.prepare('SELECT count(*) n FROM station').get().n, 2);
+      for (const station of db.prepare('SELECT id, public_id FROM station').all()) {
+        assert.match(station.id, /^\d{19}$/);
+        assert.match(station.public_id, /^[0-9A-Za-z]{7}$/);
+      }
       const merged = db.prepare("SELECT * FROM station WHERE source_type = 'both'").get();
       assert.equal(merged.name, 'Browser Radio');
       assert.equal(merged.website, 'https://browser.example');

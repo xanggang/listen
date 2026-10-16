@@ -11,12 +11,14 @@ export class AdminRepository {
   }
 
   /**
-   * 单条 SQL 原子更新可见性及时间，返回 ID；不存在返回 null，避免先查后写的竞态。
+   * 按 public_id 原子更新可见性及时间，返回对外 ID；不存在返回 null。
    * ID、状态与 UTC 时间均使用参数绑定，不更新其他业务字段。
    */
   async setVisibility(id: string, visibility: StationVisibility, updatedAt: string) {
     return this.db
-      .prepare('UPDATE station SET visibility_status = ?, updated_at = ? WHERE id = ? RETURNING id')
+      .prepare(
+        'UPDATE station SET visibility_status = ?, updated_at = ? WHERE public_id COLLATE BINARY = ? RETURNING public_id AS id',
+      )
       .bind(visibility, updatedAt, id)
       .first<{ id: string }>();
   }

@@ -29,7 +29,7 @@ void main() {
             'data': {
               'list': [
                 {
-                  'id': '0363513228099059708',
+                  'id': '0aB12xY',
                   'name': 'Jazz FM',
                   'url': 'https://example.com/stream',
                 },
@@ -49,7 +49,7 @@ void main() {
       languageId: '0363513228099059703',
       countryId: '0363513228099059755',
     );
-    expect(page.list.single.id, '0363513228099059708');
+    expect(page.list.single.id, '0aB12xY');
     expect(page.nextPage, 3);
   });
 
@@ -68,16 +68,16 @@ void main() {
     );
     addTearDown(client.dispose);
     expect(
-      () => client.stationById('42'),
+      () => client.stationById('0aB12xY'),
       throwsA(
         // 断言 HTTP 状态码被保留，供页面区分错误。
         isA<ApiException>().having((error) => error.statusCode, 'status', 404),
       ),
     );
   });
-  // 地图页游标和详情均保留真实的 19 位 ID，包含前导零。
+  // 地图游标与详情均使用区分大小写的 7 位 public_id，保留前导零。
   test('map points and detail preserve string ids and cursors', () async {
-    const id = '0363513228099059713';
+    const id = '0aB12xY';
     final client = ApiClient(
       origin: Uri.parse('https://api.example.com'),
       // 模拟新地图页和点选后的详情，校验字符串参数没有精度转换。
@@ -115,7 +115,7 @@ void main() {
   test(
     'map snapshot persists, revalidates with 304 and keeps independent points',
     () async {
-      const id = '0363513228099059713';
+      const id = '0aB12xY';
       final store = MemorySnapshotCache();
       var calls = 0;
       final transport = MockClient(
@@ -132,7 +132,7 @@ void main() {
                   'count': 2,
                   'points': [
                     [id, 'Radio', -87.90647, 43.03890],
-                    ['0363513228099059714', 'Radio 2', -87.90647, 43.03890],
+                    ['0Ab12Xy', 'Radio 2', -87.90647, 43.03890],
                   ],
                 },
               }),

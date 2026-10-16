@@ -7,8 +7,8 @@
   "vars": { "MAP_SNAPSHOT_CACHE_TTL_SECONDS": "300", "ALLOWED_ORIGINS": "http://localhost:3000,http://127.0.0.1:3000" },
   "d1_databases": [{
     "binding": "DB",
-    "database_name": "worldtuner",
-    "database_id": "00000000-0000-0000-0000-000000000000",
+    "database_name": "tuner",
+    "database_id": "81316922-1a07-407f-be7d-51a383ee242a",
     "migrations_dir": "migrations"
   }],
   "ratelimits": [

@@ -1,4 +1,5 @@
 import { ensureCountryNames } from '../../v2/src/country-names.mjs';
+import { ensureStationPublicIds } from '../../v2/src/station-public-ids.mjs';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -210,6 +211,7 @@ function browserStation(rows, countryId) {
 /**
  * 按实际播放地址把 Radio Browser 导入 V2。相同流归为一台，字段优先使用 Browser 非空值；
  * 所有原始 UUID 和 Garden ID 保留在 station_source。目标库已有 Browser 来源时拒绝重入，失败整体回滚。
+ * 提交前为缺少 public_id 的电台生成对外短 ID，保留已有值与内部主键。
  * @param {string} sourcePath Radio Browser 原始库路径，只读打开。
  * @param {string} targetPath 已建表的 V2 库路径。
  * @param {{workerId?: number}} [options] 同一目标库并发生成 ID 时独立的节点编号。
@@ -523,6 +525,7 @@ export function importRadioBrowser(
     }
     // 新增国家也使用本地名称快照；整个导入失败时一并回滚。
     ensureCountryNames(target);
+    ensureStationPublicIds(target);
     target.exec('COMMIT');
     targetTransaction = false;
     source.exec('COMMIT');

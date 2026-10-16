@@ -128,6 +128,7 @@ test('导入有效频道并拒绝重复导入', () => {
         },
       );
       assert.match(db.prepare('SELECT id FROM station').get().id, /^\d{19}$/);
+      assert.match(db.prepare('SELECT public_id FROM station').get().public_id, /^[0-9A-Za-z]{7}$/);
       assert.equal(db.prepare('PRAGMA foreign_key_check').all().length, 0);
     } finally {
       db.close();

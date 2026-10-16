@@ -40,7 +40,7 @@ void main() {
   // 收藏往返保留译名；旧记录仍能正常显示原始语种。
   test('saved stations retain translated languages and legacy fallback', () {
     final station = Station.fromJson({
-      'id': '123',
+      'id': '0aB12xY',
       'name': 'Station',
       'url': '',
       'country': 'China',

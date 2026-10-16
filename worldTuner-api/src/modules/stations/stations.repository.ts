@@ -7,7 +7,7 @@ import { publicStation } from '../../database/catalog-policy.ts';
 // 优先非失败流，再取首选流；固定 ID 用于稳定选择，空流不会冒充可播放地址。
 export const streamOrder =
   'CASE WHEN st.last_check_ok = 0 THEN 1 ELSE 0 END, st.is_primary DESC, st.id ASC';
-const projection = `s.id, s.name, s.website, s.favicon,
+const projection = `s.id, s.public_id, s.name, s.website, s.favicon,
   s.place, s.country_id, s.latitude AS geo_lat, s.longitude AS geo_long,
   s.votes, s.clickcount, s.source_type, s.catalog_status,
   s.created_at, s.updated_at,
@@ -40,11 +40,13 @@ export class StationRepository {
     this.db = db;
   }
   /**
-   * 使用字符串主键读取公开详情；隐藏、不可用和不存在的电台均返回 null。
+   * 使用区分大小写的 public_id 读取公开详情，保留内部 id 供关联查询；不可见时返回 null。
    */
-  findById(id: string) {
+  findByPublicId(id: string) {
     return this.db
-      .prepare(`SELECT ${projection} FROM station s ${joins} WHERE ${publicStation} AND s.id = ?`)
+      .prepare(
+        `SELECT ${projection} FROM station s ${joins} WHERE ${publicStation} AND s.public_id COLLATE BINARY = ?`,
+      )
       .bind(id)
       .first<StationRow>();
   }

@@ -24,7 +24,7 @@ cp .env.sqlite.example .env.sqlite
 pnpm dev:sqlite
 ```
 
-默认只读使用已导入的 `worldTuner-data/v2/data/worldtuner-v2.sqlite`。也可运行本地 D1，初始化步骤见 API README；旧 `data/listen-d1-export.sql` 不适用于新结构。
+默认只读使用已完成 public_id 回填的 `worldTuner-data/v2/data/worldtuner-v2-public.sqlite`。也可运行本地 D1，初始化步骤见 API README；旧 `data/listen-d1-export.sql` 不适用于新结构。
 
 在另一个终端确认模拟器已完全启动，并查看设备 ID：
 
@@ -108,13 +108,8 @@ flutter build apk --debug --dart-define-from-file=env/local.json
 
 国家名称也采用中文→英文→原名兜底，覆盖筛选、电台信息及播放器；旧收藏继续使用原名。完整国家筛选支持中文、英文、代码搜索，中文界面隐藏英文 A–Z 索引。默认本地数据库已完成迁移，更新后重启 API 和 App 获取新字典。
 
-## 线上 API 环境（安卓）
+## 电台短 ID
 
-`env/online.json` 使用 `API_BASE_URL=https://tuner.naxi.fun/client`，客户端追加 `/api/...`，最终健康检查地址为 `https://tuner.naxi.fun/client/api/health`。地图 Key 沿用现有示例配置，本地及局域网环境保持可选。
+API 响应字段仍为 `id`，电台模型、地图快照、点选消息、详情请求、播放器及本地收藏统一使用 7 位区分大小写的 Base62 public_id。分类字典与筛选 ID 仍使用原值，内部主键不进入移动端。旧电台主键记录不做映射，恢复收藏时由模型校验忽略。
 
-```bash
-flutter run -d <设备ID> --dart-define-from-file=env/online.json
-flutter build apk --release --dart-define-from-file=env/online.json
-```
-
-IDEA / Android Studio 运行配置可选 `Android Online`（以 mobile 为项目根目录）。也可在原 Flutter 配置的 **Additional run args** 填入 `--dart-define-from-file=env/online.json`。切换环境后停止运行并重新启动，热重载不会更新构建变量。
+地图 gzip 文件缓存使用 `worldtuner-map-public-id-1.json.gz` 隔离旧格式；ETag 与 304 复用仍生效。更新客户端前，API 必须先完成字段迁移和数据回填；本地 `.env.sqlite` 指向 `worldtuner-v2-public.sqlite`。

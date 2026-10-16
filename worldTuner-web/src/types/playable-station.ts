@@ -1,4 +1,4 @@
-// 播放器与本地收藏只持有必要的公共电台字段，不保存 API 的完整记录。
+// 播放器与本地收藏的 id 使用 7 位 public_id，只保存必要的公开播放字段。
 export interface PlayableStation {
   id: string;
   name: string;

@@ -1,6 +1,6 @@
 /**
- * 一次读取同源全量地图快照；浏览器按 Cache-Control 和 ETag 复用 HTTP 缓存。
- * 元组顺序为 [id, name, longitude, latitude]，同坐标电台保持独立、不聚合。
+ * 一次读取同源全量地图快照；浏览器通过 ETag 重新验证正文，避免复用旧主键格式的快照。
+ * 元组顺序为 [public_id, name, longitude, latitude]，同坐标电台保持独立、不聚合。
  * 可取消请求；格式、计数或重复 ID 异常时拒绝不完整快照。
  */
 export async function loadStationFeatures(
@@ -8,7 +8,7 @@ export async function loadStationFeatures(
   onPage?: (data: GeoJSON.FeatureCollection<GeoJSON.Point>) => void,
   request: typeof fetch = fetch,
 ): Promise<GeoJSON.FeatureCollection<GeoJSON.Point>> {
-  const response = await request('/api/map/snapshot', { signal, cache: 'default' });
+  const response = await request('/api/map/snapshot', { signal, cache: 'no-cache' });
   if (!response.ok) throw new Error('Map API unavailable');
   const payload: unknown = await response.json();
   if (typeof payload !== 'object' || payload === null || !('data' in payload))
@@ -34,7 +34,7 @@ export async function loadStationFeatures(
     const [id, name, longitude, latitude] = value;
     if (
       typeof id !== 'string' ||
-      !/^\d{19}$/.test(id) ||
+      !/^[0-9A-Za-z]{7}$/.test(id) ||
       seen.has(id) ||
       typeof name !== 'string' ||
       typeof latitude !== 'number' ||

@@ -13,13 +13,19 @@ import type { SqlDatabase, SqlStatement, SqlValue } from '../src/database/databa
 function id(value: number): string {
   return `1234567890123456${String(value).padStart(3, '0')}`;
 }
+/**
+ * 为测试构造包含大小写字母的 7 位对外 ID，与内部主键明确分离。
+ */
+function publicId(value: number): string {
+  return `aB${String(value).padStart(5, '0')}`;
+}
 let db: SQLiteDatabase;
 let env: ApiBindings;
 let pending: Promise<unknown>[];
 let cache: Map<string, Response>;
 
 /**
- * 在内存创建与数据项目完全一致的新表结构，不接触已整理的真实库。
+ * 在内存按迁移构造最新业务表（含电台 public_id），不接触已整理的真实库。
  */
 function fixture(): SQLiteDatabase {
   const database = new SQLiteDatabase(':memory:', false);
@@ -35,6 +41,7 @@ function fixture(): SQLiteDatabase {
     '0004_language_name_zh.sql',
     '0005_catalog_name_en.sql',
     '0006_country_names.sql',
+    '0008_station_public_id.sql',
   ]) {
     database.connection.exec(
       readFileSync(new URL(`../migrations/${migration}`, import.meta.url), 'utf8'),
@@ -68,6 +75,9 @@ function fixture(): SQLiteDatabase {
       .prepare('INSERT INTO station_tag VALUES (?, ?)')
       .run(id(n), id(n % 2 ? 103 : 104));
     database.connection.prepare('INSERT INTO station_language VALUES (?, ?)').run(id(n), id(102));
+    database.connection
+      .prepare('UPDATE station SET public_id=? WHERE id=?')
+      .run(publicId(n), id(n));
   }
   return database;
 }
@@ -121,18 +131,18 @@ async function request(path: string, options: RequestInit = {}): Promise<Respons
   return response;
 }
 
-// 验证新库 ID 字符串、稳定分页和无重复记录。
-test('station pagination preserves 19-digit IDs and stable ordering', async () => {
+// 验证列表仅暴露 7 位 public_id，内部主键不泄漏且分页顺序保持稳定。
+test('station pagination exposes public IDs and stable ordering', async () => {
   const first = (await (await request('/stations?pageSize=10')).json()) as {
     data: { list: { id: string }[]; hasMore: boolean };
   };
   const last = (await (await request('/stations?page=3&pageSize=10')).json()) as {
     data: { list: { id: string }[]; hasMore: boolean; nextPage: number | null };
   };
-  assert.equal(first.data.list[0].id, id(1));
+  assert.equal(first.data.list[0].id, publicId(1));
   assert.equal(first.data.hasMore, true);
   assert.equal(last.data.list.length, 5);
-  assert.equal(last.data.list[0].id, id(21));
+  assert.equal(last.data.list[0].id, publicId(21));
   assert.equal(last.data.hasMore, false);
   assert.equal(last.data.nextPage, null);
 });
@@ -168,8 +178,8 @@ test('hidden and unavailable stations never appear in public endpoints', async (
   db.connection
     .prepare("UPDATE station SET catalog_status = 'unavailable' WHERE id = ?")
     .run(id(2));
-  assert.equal((await request(`/stations/${id(1)}`)).status, 404);
-  assert.equal((await request(`/stations/${id(2)}`)).status, 404);
+  assert.equal((await request(`/stations/${publicId(1)}`)).status, 404);
+  assert.equal((await request(`/stations/${publicId(2)}`)).status, 404);
   const stations = (await (await request('/stations?pageSize=100')).json()) as {
     data: { list: unknown[] };
   };
@@ -200,7 +210,7 @@ test('detail selects an eligible stream and exposes stream metadata and links', 
   db.connection
     .prepare('INSERT INTO station_link VALUES (?,?,?,?)')
     .run(id(301), id(1), 'web', 'https://site.test');
-  const { data } = (await (await request(`/stations/${id(1)}`)).json()) as {
+  const { data } = (await (await request(`/stations/${publicId(1)}`)).json()) as {
     data: {
       id: string;
       url: string;
@@ -210,7 +220,7 @@ test('detail selects an eligible stream and exposes stream metadata and links', 
       links: unknown[];
     };
   };
-  assert.equal(data.id, id(1));
+  assert.equal(data.id, publicId(1));
   assert.equal(data.url, 'https://backup.test/live');
   assert.equal(data.streams[0].id, id(300));
   assert.equal(data.streams[0].hls, null);
@@ -227,8 +237,8 @@ test('map cursor pagination uses string IDs without gaps', async () => {
   const next = (await (
     await request(`/map/stations?limit=20&after=${first.data.nextCursor}`)
   ).json()) as { data: { list: { id: string }[]; nextCursor: null } };
-  assert.equal(first.data.nextCursor, id(10));
-  assert.equal(next.data.list[0].id, id(11));
+  assert.equal(first.data.nextCursor, publicId(10));
+  assert.equal(next.data.list[0].id, publicId(11));
   assert.equal(next.data.list.length, 15);
   assert.equal(next.data.nextCursor, null);
   for (const path of [
@@ -301,7 +311,7 @@ test('D1-shaped binding and SQLite adapter return identical catalog, detail and 
   env.CACHE_ENABLED = 'false';
   for (const path of [
     '/stations?pageSize=3',
-    `/stations/${id(1)}`,
+    `/stations/${publicId(1)}`,
     `/stations?tagsId=${id(103)}`,
     '/tags',
     '/languages',
@@ -323,7 +333,7 @@ test('cache, CORS, rate limits and sanitized errors remain enforced', async () =
   const first = await request('/tags', { headers: { Origin: 'https://web.test' } });
   const labels = (await first.clone().json()) as { data: { name: string }[] };
   assert.notEqual(labels.data[0].name, 'stale');
-  assert.ok(cache.has('https://api.test/api/tags?_response_schema=country-names-1'));
+  assert.ok(cache.has('https://api.test/api/tags?_response_schema=station-public-id-1'));
   const second = await request('/tags');
   assert.equal(first.headers.get('Access-Control-Allow-Origin'), 'https://web.test');
   assert.equal(second.headers.get('Access-Control-Allow-Origin'), null);
@@ -522,7 +532,7 @@ test('map snapshot gzip, conditional requests and encoding negotiation', async (
   assert.equal(response.headers.get('X-Snapshot-Encoding'), null);
   const data = JSON.parse(gunzipSync(new Uint8Array(await response.arrayBuffer())).toString()).data;
   assert.equal(data.count, 24);
-  assert.deepEqual(data.points[0], [id(2), 'Station 2', -87.90647, 43.0389]);
+  assert.deepEqual(data.points[0], [publicId(2), 'Station 2', -87.90647, 43.0389]);
   const etag = response.headers.get('ETag')!;
   assert.match(etag, /^W\/"[a-f0-9]{64}"$/);
   const unchanged = await request('/map/snapshot', {
@@ -623,7 +633,7 @@ test('catalog returns localized labels and searches all names literally', async 
     ).json()) as { data: { list: unknown[] } };
     assert.ok(page.data.list.length > 0, keyword);
   }
-  const detail = (await (await request(`/stations/${id(1)}`)).json()) as {
+  const detail = (await (await request(`/stations/${publicId(1)}`)).json()) as {
     data: { language: string; languageEn: string; languageZh: string };
   };
   assert.equal(detail.data.language, 'English');
@@ -662,7 +672,7 @@ test('country names localize catalogs and station metadata without changing filt
 
 // 管理端默认拒绝访问，错误密钥不能写库；正确密钥只开放限定的业务接口。
 test('Java admin health and visibility routes require an explicitly configured token', async () => {
-  const route = `/admin/api/stations/${id(1)}/visibility`;
+  const route = `/admin/api/stations/${publicId(1)}/visibility`;
   const options = {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', Authorization: 'Bearer test-admin-secret' },
@@ -712,17 +722,17 @@ test('admin visibility writes preserve other fields and govern all public busine
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', Authorization: 'Bearer test-admin-secret' },
   };
-  const route = `/admin/api/stations/${id(1)}/visibility`;
+  const route = `/admin/api/stations/${publicId(1)}/visibility`;
   const hidden = await request(route, { ...options, body: '{"visibility":"hidden"}' });
   assert.equal(hidden.status, 200);
-  assert.deepEqual(await hidden.json(), { data: { id: id(1), visibility: 'hidden' } });
+  assert.deepEqual(await hidden.json(), { data: { id: publicId(1), visibility: 'hidden' } });
   const after = db.connection.prepare('SELECT * FROM station WHERE id=?').get(id(1));
   assert.deepEqual(
     { ...after, visibility_status: before?.visibility_status, updated_at: before?.updated_at },
     { ...before },
   );
   assert.match(String(after?.updated_at), /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
-  assert.equal((await request(`/stations/${id(1)}`)).status, 404);
+  assert.equal((await request(`/stations/${publicId(1)}`)).status, 404);
   const page = (await (await request('/stations?keyword=100%25')).json()) as {
     data: { list: unknown[] };
   };
@@ -737,14 +747,14 @@ test('admin visibility writes preserve other fields and govern all public busine
   assert.ok(
     !map.data.list.some(
       // 地图与详情采用相同可见性规则。
-      (row) => row.id === id(1),
+      (row) => row.id === publicId(1),
     ),
   );
   assert.equal(
     (await request(route, { ...options, body: '{"visibility":"visible"}' })).status,
     200,
   );
-  assert.equal((await request(`/stations/${id(1)}`)).status, 200);
+  assert.equal((await request(`/stations/${publicId(1)}`)).status, 200);
 });
 
 // 非法输入及缺失实体不能产生写入；管理 CORS 不影响公开 API 的方法限制。
@@ -754,7 +764,7 @@ test('admin rejects invalid payloads and permits authenticated browser preflight
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', Authorization: 'Bearer test-admin-secret' },
   };
-  const route = `/admin/api/stations/${id(1)}/visibility`;
+  const route = `/admin/api/stations/${publicId(1)}/visibility`;
   for (const body of [
     '{}',
     '[]',
@@ -767,7 +777,7 @@ test('admin rejects invalid payloads and permits authenticated browser preflight
   }
   assert.equal(
     (
-      await request(`/admin/api/stations/${id(999)}/visibility`, {
+      await request(`/admin/api/stations/${publicId(999)}/visibility`, {
         ...options,
         body: '{"visibility":"hidden"}',
       })
@@ -807,50 +817,50 @@ test('admin rejects invalid payloads and permits authenticated browser preflight
   assert.ok(preflight.headers.get('Access-Control-Allow-Headers')?.includes('Authorization'));
 });
 
-// 复用 Java 契约测试的业务 schema/样例，确保中文展示和大整数 ID 能在 Worker 侧读取。
-test('Java business fixtures work with Worker catalogs, details and relational filters', async () => {
-  const javaDb = new SQLiteDatabase(':memory:', false);
-  try {
-    javaDb.connection.exec(
-      readFileSync(
-        new URL(
-          '../../worldtuner-api-java/worldtuner-bootstrap/src/test/resources/schema/catalog-test.sql',
-          import.meta.url,
-        ),
-        'utf8',
-      ),
-    );
-    javaDb.connection.exec(
-      readFileSync(
-        new URL(
-          '../../worldtuner-api-java/worldtuner-bootstrap/src/test/resources/schema/catalog-seed.sql',
-          import.meta.url,
-        ),
-        'utf8',
-      ),
-    );
-    env.DB = javaDb;
-    env.CACHE_ENABLED = 'false';
-    const countries = (await (await request('/countries')).json()) as {
-      data: { id: string; name_zh: string; name_en: string }[];
-    };
-    assert.equal(countries.data[0].name_zh, '中国');
-    assert.equal(countries.data[0].name_en, 'China');
-    const page = (await (
-      await request('/stations?countriesId=' + countries.data[0].id)
-    ).json()) as { data: { list: { id: string; countryZh: string; languageZh: string }[] } };
-    assert.ok(page.data.list.length > 0);
-    assert.equal(page.data.list[0].countryZh, '中国');
-    assert.ok(page.data.list[0].languageZh.includes('中文'));
-    const detail = (await (await request('/stations/' + page.data.list[0].id)).json()) as {
-      data: { countryZh: string; streams: unknown[]; links: unknown[] };
-    };
-    assert.equal(detail.data.countryZh, '中国');
-    assert.ok(detail.data.streams.length > 0);
-    assert.ok(Array.isArray(detail.data.links));
-  } finally {
-    javaDb.close();
-  }
+// 本地完整业务夹具验证双语分类、短电台 ID、19 位分类筛选与内部外键链路。
+test('catalog public IDs work across translated lists, detail and relational filters', async () => {
+  db.connection.prepare('UPDATE country SET name_en=?,name_zh=?').run('China', '中国');
+  db.connection.prepare('UPDATE language SET name_en=?,name_zh=?').run('Chinese', '中文');
+  env.CACHE_ENABLED = 'false';
+  const countries = (await (await request('/countries')).json()) as {
+    data: { id: string; name_zh: string; name_en: string }[];
+  };
+  assert.equal(countries.data[0].id, id(101));
+  assert.equal(countries.data[0].name_zh, '中国');
+  const page = (await (await request('/stations?countriesId=' + countries.data[0].id)).json()) as {
+    data: { list: { id: string; countryZh: string; languageZh: string }[] };
+  };
+  assert.equal(page.data.list[0].id, publicId(1));
+  assert.equal(page.data.list[0].countryZh, '中国');
+  assert.equal(page.data.list[0].languageZh, '中文');
+  const detail = (await (await request('/stations/' + page.data.list[0].id)).json()) as {
+    data: { id: string; streams: { id: string }[]; links: unknown[] };
+  };
+  assert.equal(detail.data.id, publicId(1));
+  assert.equal(detail.data.streams[0].id, id(201));
+  assert.ok(Array.isArray(detail.data.links));
+});
+
+// public_id 区分大小写，原主键不能用于详情，未回填电台不泄漏内部 ID。
+test('station public IDs are case sensitive and exclude unfilled records', async () => {
+  assert.equal((await request(`/stations/${id(1)}`)).status, 400);
+  assert.equal((await request('/stations/ab00001')).status, 404);
+  db.connection.prepare('UPDATE station SET public_id=? WHERE id=?').run('ab00001', id(2));
+  const lower = (await (await request('/stations/ab00001')).json()) as { data: { name: string } };
+  assert.equal(lower.data.name, 'Station 2');
+  db.connection.prepare('UPDATE station SET public_id=NULL WHERE id=?').run(id(3));
+  env.CACHE_ENABLED = 'false';
+  assert.equal((await request(`/stations/${publicId(3)}`)).status, 404);
+  const points = (await (await request('/map/stations?limit=100')).json()) as {
+    data: { list: { id: string }[] };
+  };
+  assert.equal(points.data.list.length, 24);
+  assert.ok(
+    points.data.list.every(
+      // 所有公开地图标识均为 Base62，分类与流 ID 不受此规则影响。
+      (point) => /^[0-9A-Za-z]{7}$/.test(point.id),
+    ),
+  );
 });
 
 // SQLite 管理写入使用单独连接，公开查询仍由 SQLite 自身强制只读。
@@ -877,13 +887,13 @@ test('SQLite admin connection can write while the public connection stays read-o
           .run('hidden', id(1)),
       /readonly/i,
     );
-    const response = await request(`/admin/api/stations/${id(1)}/visibility`, {
+    const response = await request(`/admin/api/stations/${publicId(1)}/visibility`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer test-admin-secret' },
       body: '{"visibility":"hidden"}',
     });
     assert.equal(response.status, 200);
-    assert.equal((await request(`/stations/${id(1)}`)).status, 404);
+    assert.equal((await request(`/stations/${publicId(1)}`)).status, 404);
   } finally {
     reader.close();
     writer.close();

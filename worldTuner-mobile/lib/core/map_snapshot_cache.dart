@@ -31,10 +31,10 @@ class FileMapSnapshotCache implements MapSnapshotCache {
     : _directory = directory ?? getApplicationCacheDirectory;
   final Future<Directory> Function() _directory;
 
-  // 获取唯一的版本化缓存文件；文件内验证 API 来源，防止环境间串用数据。
+  // 文件名隔离 public_id 快照契约；文件内验证 API 来源，防止混用旧主键快照。
   Future<File> _file() async {
     final directory = await _directory();
-    return File('${directory.path}/worldtuner-map-tuple-1.json.gz');
+    return File('${directory.path}/worldtuner-map-public-id-1.json.gz');
   }
 
   // 缺失、损坏或其他服务来源的缓存都当作未命中，重新从 API 获取。

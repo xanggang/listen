@@ -15,14 +15,14 @@ export class StationService {
     this.catalog = catalog;
   }
   /**
-   * 只返回公开电台；播放流和链接仅在详情请求时加载。
+   * 按 public_id 读取公开详情，再以内部主键加载播放流和链接，响应不泄漏电台内部主键。
    */
   async detail(id: string) {
-    const row = await this.repository.findById(id);
+    const row = await this.repository.findByPublicId(id);
     if (!row) throw new ApiError(404, 'STATION_NOT_FOUND', 'Station not found');
     const [streams, links] = await Promise.all([
-      this.repository.streams(id),
-      this.repository.links(id),
+      this.repository.streams(row.id),
+      this.repository.links(row.id),
     ]);
     return { ...stationDto(row), streams: streams.map(streamDto), links };
   }

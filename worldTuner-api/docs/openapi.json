@@ -2,8 +2,8 @@
   "openapi": "3.0.3",
   "info": {
     "title": "worldTuner API",
-    "version": "1.0.0",
-    "description": "统一新库 API，支持 Cloudflare D1 和 SQLite。仅 /api 路径，无旧表或旧接口兼容。匿名游客，无用户体系；拒绝未知/重复参数。所有实体 ID 是 19 位字符串。 管理业务接口位于 /admin/api，使用独立 Bearer Token；未配置时拒绝访问。"
+    "version": "2.0.0",
+    "description": "统一新库 API，支持 Cloudflare D1 和 SQLite。仅 /api 路径，无旧表或旧接口兼容。匿名游客，无用户体系；拒绝未知/重复参数。电台对外 id 与地图游标为 7 位区分大小写的 Base62 public_id；国家、标签、语种、播放流和链接 ID 仍为 19 位字符串。电台旧主键不作为请求标识。 管理业务接口位于 /admin/api，使用独立 Bearer Token；未配置时拒绝访问。"
   },
   "servers": [
     {
@@ -199,7 +199,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/EntityId"
+              "$ref": "#/components/schemas/StationPublicId"
             }
           }
         ],
@@ -311,7 +311,7 @@
             "in": "query",
             "required": false,
             "schema": {
-              "$ref": "#/components/schemas/EntityId"
+              "$ref": "#/components/schemas/StationPublicId"
             }
           }
         ],
@@ -341,7 +341,7 @@
                             ],
                             "properties": {
                               "id": {
-                                "$ref": "#/components/schemas/EntityId"
+                                "$ref": "#/components/schemas/StationPublicId"
                               },
                               "name": {
                                 "type": "string"
@@ -361,9 +361,11 @@
                         },
                         "nextCursor": {
                           "type": "string",
-                          "pattern": "^[0-9]{19}$",
-                          "example": "0363513228099059713",
-                          "description": "19 位十进制字符串，保留前导零，禁止转换为 Number。",
+                          "pattern": "^[0-9A-Za-z]{7}$",
+                          "minLength": 7,
+                          "maxLength": 7,
+                          "example": "0aB12xY",
+                          "description": "station.public_id；7 位随机 Base62 字符串，区分大小写，保留前导零。内部 station.id 不对外暴露。",
                           "nullable": true
                         }
                       }
@@ -804,7 +806,7 @@
                             "type": "array",
                             "minItems": 4,
                             "maxItems": 4,
-                            "description": "固定顺序：[19 位字符串 ID, name, longitude, latitude]；OAS 3.0 不支持位置类型校验。",
+                            "description": "固定顺序：[7 位 Base62 public_id, name, longitude, latitude]；OAS 3.0 不支持位置类型校验。",
                             "items": {
                               "oneOf": [
                                 {
@@ -957,7 +959,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/EntityId"
+              "$ref": "#/components/schemas/StationPublicId"
             }
           }
         ],
@@ -1002,7 +1004,7 @@
                       ],
                       "properties": {
                         "id": {
-                          "$ref": "#/components/schemas/EntityId"
+                          "$ref": "#/components/schemas/StationPublicId"
                         },
                         "visibility": {
                           "type": "string",
@@ -1103,7 +1105,7 @@
         ],
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/EntityId"
+            "$ref": "#/components/schemas/StationPublicId"
           },
           "name": {
             "type": "string"
@@ -1366,6 +1368,14 @@
             }
           }
         }
+      },
+      "StationPublicId": {
+        "type": "string",
+        "pattern": "^[0-9A-Za-z]{7}$",
+        "minLength": 7,
+        "maxLength": 7,
+        "example": "0aB12xY",
+        "description": "station.public_id；7 位随机 Base62 字符串，区分大小写，保留前导零。内部 station.id 不对外暴露。"
       }
     },
     "securitySchemes": {

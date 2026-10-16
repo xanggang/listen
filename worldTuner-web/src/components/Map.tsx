@@ -99,7 +99,7 @@ function applyGlobeTheme(globe: MapTilerMap, dark: boolean): void {
 }
 
 /**
- * 绘制安卓端同款卫星地球、独立电台点位及当前播放光圈。
+ * 绘制卫星地球和播放光圈；点选仅回传 7 位电台 public_id。
  */
 export default function Map({ onChange }: MapProps) {
   const container = useRef<HTMLDivElement>(null);
@@ -232,10 +232,12 @@ export default function Map({ onChange }: MapProps) {
           // 点位请求失败时保留地球并显示提示，主动卸载不会显示错误。
           () => { if (!pointsController.signal.aborted) setPointsError(true); },
         );
-        // 点击点位只回传 id，播放器再从 API 获取完整电台详情。
+        // 点击点位只回传 7 位 public_id，播放器再从 API 获取完整电台详情。
         globe.on('click', 'station-points', (event) => {
           const id = event.features?.[0]?.properties?.id;
-          if (typeof id === 'string' && /^\d{19}$/.test(id)) onChangeRef.current?.(id);
+          if (typeof id === 'string' && /^[0-9A-Za-z]{7}$/.test(id)) {
+            onChangeRef.current?.(id);
+          }
         });
         // 鼠标进入或离开电台时只改变指针，不增加地图控件。
         globe.on('mouseenter', 'station-points', () => {

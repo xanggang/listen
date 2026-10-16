@@ -9,6 +9,9 @@ CREATE TABLE country (
 
 CREATE TABLE station (
   id TEXT PRIMARY KEY NOT NULL CHECK (length(id) = 19 AND id NOT GLOB '*[^0-9]*'),
+  -- 对外随机 ID；导入事务提交前由脚本补齐，不改变内部关联。
+  public_id TEXT COLLATE BINARY
+    CHECK (public_id IS NULL OR (length(public_id) = 7 AND public_id NOT GLOB '*[^0-9A-Za-z]*')),
   name TEXT NOT NULL CHECK (length(trim(name)) > 0),
   website TEXT,
   favicon TEXT,
@@ -34,6 +37,7 @@ CREATE TABLE station (
 CREATE INDEX idx_station_country ON station(country_id, id);
 CREATE INDEX idx_station_visibility_catalog ON station(visibility_status, catalog_status, id);
 CREATE INDEX idx_station_votes ON station(votes DESC, id ASC);
+CREATE UNIQUE INDEX idx_station_public_id ON station(public_id COLLATE BINARY);
 
 CREATE TABLE station_stream (
   id TEXT PRIMARY KEY NOT NULL CHECK (length(id) = 19 AND id NOT GLOB '*[^0-9]*'),

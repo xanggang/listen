@@ -11,7 +11,8 @@ import { MetricsRepository } from '../src/modules/metrics/metrics.repository.ts'
 
 const apiRoot = fileURLToPath(new URL('../', import.meta.url));
 const catalogPath = resolve(
-  process.env.SQLITE_PATH ?? resolve(apiRoot, '../worldTuner-data/v2/data/worldtuner-v2.sqlite'),
+  process.env.SQLITE_PATH ??
+    resolve(apiRoot, '../worldTuner-data/v2/data/worldtuner-v2-public.sqlite'),
 );
 const metricsPath = resolve(
   process.env.METRICS_SQLITE_PATH ?? resolve(apiRoot, '.local/metrics.sqlite'),
@@ -53,6 +54,19 @@ for (const table of ['tag', 'language', 'country']) {
       );
     }
   }
+}
+// 对外 ID 必须先离线回填；错误配置在启动时报告，不在请求中修改业务库。
+const stationColumns = catalog.connection.prepare('PRAGMA table_info(station)').all();
+// 检查固定电台表是否具备新的对外标识列。
+if (!stationColumns.some((column) => column.name === 'public_id')) {
+  catalog.close();
+  throw new Error(
+    'Missing station.public_id. Run v2/src/station-public-ids.mjs and set SQLITE_PATH to its output before starting API.',
+  );
+}
+if (catalog.connection.prepare('SELECT 1 FROM station WHERE public_id IS NULL LIMIT 1').get()) {
+  catalog.close();
+  throw new Error('Missing station public IDs. Backfill station.public_id before starting API.');
 }
 mkdirSync(dirname(metricsPath), { recursive: true });
 const metrics = new SQLiteDatabase(metricsPath, false);
