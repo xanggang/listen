@@ -14,7 +14,7 @@
     "binding": "METRICS_DB",
     "database_name": "worldtuner-operations",
     "database_id": "00000000-0000-0000-0000-000000000000",
-    "migrations_dir": "migrations/operations"
+    "migrations_dir": "../worldTuner-data/operations/migrations"
   }],
   "ratelimits": [
     { "name": "READ_LIMITER", "namespace_id": "2026092401", "simple": { "limit": 180, "period": 60 } },

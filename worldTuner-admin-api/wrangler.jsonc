@@ -1,0 +1,17 @@
+{
+  "$schema":"node_modules/wrangler/config-schema.json",
+  "name":"worldtuner-admin",
+  "main":"src/index.ts",
+  "compatibility_date":"2025-12-01",
+  "workers_dev":false,
+  "preview_urls":false,
+  "observability":{"enabled":true},
+  "assets":{"binding":"ASSETS","directory":"../worldTuner-admin/dist","run_worker_first":true,"not_found_handling":"single-page-application"},
+  "vars":{"DEPLOYMENT_ENV":"production","ADMIN_ORIGIN":"https://admin.example.com","ACCESS_ISSUER":"","ACCESS_AUDIENCE":""},
+  "d1_databases":[
+    {"binding":"DB","database_name":"tuner","database_id":"81316922-1a07-407f-be7d-51a383ee242a","migrations_dir":"../worldTuner-data/v2/migrations"},
+    {"binding":"METRICS_DB","database_name":"worldtuner-operations","database_id":"00000000-0000-0000-0000-000000000000","migrations_dir":"../worldTuner-data/operations/migrations"}
+  ],
+  "ratelimits":[{"name":"ADMIN_LIMITER","namespace_id":"2026101601","simple":{"limit":120,"period":60}}],
+  "triggers":{"crons":["*/10 * * * *"]}
+}

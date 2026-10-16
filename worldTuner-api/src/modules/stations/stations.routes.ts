@@ -18,9 +18,9 @@ stationRoutes.get(
   searchRateLimit,
   cacheResponse(
     /**
-     * 关键词搜索不使用公共缓存，普通列表缓存五分钟。
+     * 关键词搜索不使用公共缓存，普通列表缓存一分钟。
      */
-    (c) => (c.req.query('keyword')?.trim() ? 0 : 300),
+    (c) => (c.req.query('keyword')?.trim() ? 0 : 60),
   ),
   /**
    * 使用验证后的参数调用电台服务并返回统一 JSON 包装。
@@ -38,7 +38,7 @@ stationRoutes.get(
       return { id: stationPublicId(params.id, 'id') };
     },
   ),
-  cacheResponse(300),
+  cacheResponse(60),
   /**
    * 读取电台详情；不存在时由服务层抛出统一异常。
    */

@@ -9,7 +9,7 @@ export const tagsRoutes = new Hono<AppEnv>();
 tagsRoutes.get(
   '/',
   validator('query', (_, c) => parseTagQuery(new URL(c.req.url).searchParams)),
-  cacheResponse(3600),
+  cacheResponse(60),
   // 支持按名称搜索和偏移量分页，旧客户端仍收到 data 数组。
   async (c) => {
     const { q, limit, offset } = c.req.valid('query');

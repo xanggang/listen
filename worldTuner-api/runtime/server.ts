@@ -71,7 +71,10 @@ if (catalog.connection.prepare('SELECT 1 FROM station WHERE public_id IS NULL LI
 mkdirSync(dirname(metricsPath), { recursive: true });
 const metrics = new SQLiteDatabase(metricsPath, false);
 metrics.connection.exec(
-  readFileSync(new URL('../migrations/operations/0001_operations.sql', import.meta.url), 'utf8'),
+  readFileSync(
+    new URL('../../worldTuner-data/operations/migrations/0001_operations.sql', import.meta.url),
+    'utf8',
+  ),
 );
 const env: ApiBindings = {
   DB: catalog,

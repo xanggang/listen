@@ -35,7 +35,7 @@ pnpm dev --ip 0.0.0.0
 
 `wrangler.jsonc` 已绑定新建的 D1 数据库 `tuner`（ID：`81316922-1a07-407f-be7d-51a383ee242a`）。不要把新迁移应用到原来的 `listen` 旧库。
 
-业务 D1 的 SQL 由 data 项目维护，Wrangler 引用 `../worldTuner-data/v2/migrations/`，独立统计 D1 使用 `migrations/operations/`。`METRICS_DB` 的 ID 当前为占位值，发布前创建独立库并替换；不可填业务库的 ID。新业务 D1 先迁移，再导入上面的数据 SQL，验证后部署。线上 Web 的 Origin 要写入 `ALLOWED_ORIGINS`。远程迁移、导入与部署属于独立发布操作，本次开发没有执行。
+业务 D1 的 SQL 由 data 项目维护，Wrangler 引用 `../worldTuner-data/v2/migrations/`，独立统计 D1 使用 `../worldTuner-data/operations/migrations/`。`METRICS_DB` 的 ID 当前为占位值，发布前创建独立库并替换；不可填业务库的 ID。新业务 D1 先迁移，再导入上面的数据 SQL，验证后部署。线上 Web 的 Origin 要写入 `ALLOWED_ORIGINS`。远程迁移、导入与部署属于独立发布操作，本次开发没有执行。
 
 `worldTuner-data/v2/schema.sql` 直接创建包含 7 位随机 `public_id` 及区分大小写唯一索引的 `station` 表，内部 19 位主键和所有外键保持不变。已有电台需用 [本地回填工具](../worldTuner-data/v2/README.md#为-station-增加随机-public_id) 生成 public_id；迁移 SQL 不自动回填远程记录。向空库导入数据时，先应用全部迁移，再从 `worldtuner-v2-public.sqlite` 导出数据 SQL。电台列表、详情、地图快照、点位游标和管理接口的 `id` 均映射为 public_id，详情通过内部主键加载关联流与链接；公开接口不会回退使用 station.id。未回填 public_id 的电台不进入公开结果和分类计数。
 
@@ -46,7 +46,7 @@ pnpm dev --ip 0.0.0.0
 - `src/modules/`：按业务划分 routes、schema、service、repository 和 DTO。
 - `src/middleware/`：请求上下文、CORS、限流、错误及 Worker 缓存。
 - `src/apps/client-app.ts`：客户端路由装配，不导入管理模块。
-- `../worldTuner-data/v2/schema.sql`：唯一业务表结构；`../worldTuner-data/v2/migrations/`：业务 D1 迁移入口；`migrations/operations/`：统计迁移。每库只保留一个空库初始化基线，根目录不再保留重复 SQL。
+- `../worldTuner-data/v2/schema.sql`：唯一业务表结构；`../worldTuner-data/v2/migrations/`：业务 D1 迁移入口；`../worldTuner-data/operations/migrations/`：统计迁移。每库只保留一个空库初始化基线，根目录不再保留重复 SQL。
 
 ## scripts
 
@@ -83,17 +83,17 @@ npm run migrate:v2:catalog-names -- --db /实际路径/worldtuner-v2.sqlite --ap
 
 D1 空库统一执行 `worldTuner-data/v2/schema.sql`，已包含标签、语言和国家中英文列。本地运行 `pnpm db:migrate:local`；正式库运行 `pnpm exec wrangler d1 migrations apply DB --remote`。译名在 data 项目处理后随完整数据导入，不依赖空库 UPDATE。本次没有操作远程库。
 
-字典缓存仍保存所有语言字段，不按客户端语言拆分。JSON Cache API 内部键使用 `_response_schema=station-public-id-1`，避免发布后命中不含译名的旧缓存；客户端仍调用原 URL，地图快照独立使用 `tuple-public-id-1` 缓存版本。今后改变响应格式时同步更新该内部版本。
+字典缓存仍保存所有语言字段，不按客户端语言拆分。JSON Cache API 内部键使用 `_response_schema=station-public-id-admin-1`，避免发布后命中不含译名的旧缓存；客户端仍调用原 URL，地图快照独立使用 `tuple-public-id-1` 缓存版本。今后改变响应格式时同步更新该内部版本。
 
 ## 国家名称（后续扩展）
 
-国家接口现在也返回 `name_en`、`name_zh`，电台 DTO 新增 `countryEn`、`countryZh`，原 `country` 不变。国家中文来自现有本地映射，不在请求时访问第三方。SQLite 先执行 data 项目的 `migrate:v2:country-names -- --db /实际路径/catalog.sqlite --apply`（自动备份），再重启服务；D1 初始化基线已包含国家中英文列，译名随处理后的数据导入。JSON 缓存内部版本现为 `station-public-id-1`。完整覆盖报告与命令见主项目 `docs/country-localization.md`。
+国家接口现在也返回 `name_en`、`name_zh`，电台 DTO 新增 `countryEn`、`countryZh`，原 `country` 不变。国家中文来自现有本地映射，不在请求时访问第三方。SQLite 先执行 data 项目的 `migrate:v2:country-names -- --db /实际路径/catalog.sqlite --apply`（自动备份），再重启服务；D1 初始化基线已包含国家中英文列，译名随处理后的数据导入。JSON 缓存内部版本现为 `station-public-id-admin-1`。完整覆盖报告与命令见主项目 `docs/country-localization.md`。
 
 ## 当前迭代范围
 
-Worker 默认入口 `src/index.ts` 与 `dev:sqlite` 都只提供客户端 API。管理前后端暂缓；旧组合应用 `src/app.ts` 仅供历史契约回归测试，不参与默认部署，配置 `ADMIN_TOKEN` 也不会开放管理路径。
+Worker 默认入口 `src/index.ts` 与 `dev:sqlite` 都只提供客户端 API。管理端已完全迁出本项目，旧管理路由和鉴权代码已删除。
 
-统计必须显式绑定独立 `METRICS_DB`，缺少绑定时上报返回 503，电台、搜索和地图继续可用。每日汇总暂由客户端 Worker 的 Cron 运行，待管理端恢复开发再迁移职责。
+统计必须显式绑定独立 `METRICS_DB`，缺少绑定时上报返回 503，电台、搜索和地图继续可用。访问统计日汇总仍由客户端 Worker 的 Cron 执行，管理 Worker 负责审计投递与清理，不重复运行统计汇总。
 
 启动、双库部署及历史数据切换步骤见 [客户端迭代与部署](../docs/客户端迭代与部署.md)。Web 保持现有 `LISTEN_API` Service Binding，安卓继续通过 `API_BASE_URL` 配置地址。
 
@@ -104,3 +104,9 @@ OpenAPI 2.0.0 表示本次电台 ID 契约切换，不兼容原 19 位电台 ID 
 SQLite 启动前先生成包含 public_id 的处理库，再将 `SQLITE_PATH` 指向该文件（已有 `.env.sqlite` 也要手动更新）；启动检查会拒绝缺列或未完成回填的库。D1 发布前先初始化空库，再导入已回填 public_id 的数据，随后更新 API、Web 和移动端。初始化 SQL 不会生成电台的 public_id，已有远程数据不能直接重复插入。远程发布与数据写入均需单独执行。
 
 业务结构只维护 `worldTuner-data/v2/schema.sql`。`worldTuner-data/v2/migrations/0001_catalog.sql` 是指向它的相对符号链接，让 Wrangler 保持编号迁移记录；API 的初始化命令不变。发布或复制代码时保留 data/API 相邻目录和符号链接。
+
+## 独立管理端
+
+管理后端已迁到相邻 `worldTuner-admin-api` 项目，管理前端为 `worldTuner-admin`。本项目不包含管理源码、鉴权依赖、管理脚本或管理 Worker 配置；客户端 API 与管理 API 分别安装依赖、测试、构建及部署。
+
+两库迁移统一由 `worldTuner-data` 维护，两个 Worker 绑定相同的业务/运营 D1。管理后端启动和部署见 [管理 API README](../worldTuner-admin-api/README.md)，契约见 [管理 OpenAPI](../worldTuner-admin-api/docs/openapi.json)。公开列表/详情/分类缓存为 60 秒，地图按单独配置。

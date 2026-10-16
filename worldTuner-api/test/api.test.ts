@@ -2,7 +2,6 @@ import { test, beforeEach, afterEach, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import worker from '../src/index.ts';
-import { app as legacyApp } from '../src/app.ts';
 import { SQLiteDatabase } from '../runtime/sqlite.ts';
 import { LocalRateLimiter } from '../runtime/rate-limit.ts';
 import type { ApiBindings } from '../src/types.ts';
@@ -34,7 +33,10 @@ function fixture(): SQLiteDatabase {
     readFileSync(new URL('../../worldTuner-data/v2/schema.sql', import.meta.url), 'utf8'),
   );
   database.connection.exec(
-    readFileSync(new URL('../migrations/operations/0001_operations.sql', import.meta.url), 'utf8'),
+    readFileSync(
+      new URL('../../worldTuner-data/operations/migrations/0001_operations.sql', import.meta.url),
+      'utf8',
+    ),
   );
   database.connection
     .prepare('INSERT INTO country (id, name, code) VALUES (?, ?, ?)')
@@ -105,18 +107,12 @@ afterEach(() => db.close());
  * 调用真实 Worker HTTP 入口，等待缓存任务后返回响应。
  */
 async function request(path: string, options: RequestInit = {}): Promise<Response> {
-  // 历史管理契约不属于公开 Worker，单独通过未部署的组合应用验证。
-  const target = path.startsWith('/admin/') ? legacyApp : worker;
-  const response = await target.fetch(
-    new Request(`https://api.test${path.startsWith('/admin/') ? path : `/api${path}`}`, options),
-    env,
-    {
-      // 捕获后台缓存任务，让响应断言保持确定性。
-      waitUntil(promise: Promise<unknown>) {
-        pending.push(promise);
-      },
-    } as ExecutionContext,
-  );
+  const response = await worker.fetch(new Request(`https://api.test/api${path}`, options), env, {
+    // 捕获后台缓存任务，让响应断言保持确定性。
+    waitUntil(promise: Promise<unknown>) {
+      pending.push(promise);
+    },
+  } as ExecutionContext);
   await Promise.all(pending);
   pending = [];
   return response;
@@ -324,7 +320,7 @@ test('cache, CORS, rate limits and sanitized errors remain enforced', async () =
   const first = await request('/tags', { headers: { Origin: 'https://web.test' } });
   const labels = (await first.clone().json()) as { data: { name: string }[] };
   assert.notEqual(labels.data[0].name, 'stale');
-  assert.ok(cache.has('https://api.test/api/tags?_response_schema=station-public-id-1'));
+  assert.ok(cache.has('https://api.test/api/tags?_response_schema=station-public-id-admin-1'));
   const second = await request('/tags');
   assert.equal(first.headers.get('Access-Control-Allow-Origin'), 'https://web.test');
   assert.equal(second.headers.get('Access-Control-Allow-Origin'), null);
@@ -342,7 +338,10 @@ test('cache, CORS, rate limits and sanitized errors remain enforced', async () =
 test('metrics support atomic PV UV writes, rollup and separate databases', async () => {
   const metrics = new SQLiteDatabase(':memory:', false);
   metrics.connection.exec(
-    readFileSync(new URL('../migrations/operations/0001_operations.sql', import.meta.url), 'utf8'),
+    readFileSync(
+      new URL('../../worldTuner-data/operations/migrations/0001_operations.sql', import.meta.url),
+      'utf8',
+    ),
   );
   env.METRICS_DB = metrics;
   try {
@@ -672,153 +671,6 @@ test('country names localize catalogs and station metadata without changing filt
   }
 });
 
-// 管理端默认拒绝访问，错误密钥不能写库；正确密钥只开放限定的业务接口。
-test('Java admin health and visibility routes require an explicitly configured token', async () => {
-  const route = `/admin/api/stations/${publicId(1)}/visibility`;
-  const options = {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer test-admin-secret' },
-    body: JSON.stringify({ visibility: 'hidden' }),
-  };
-  assert.equal((await request('/admin/api/health')).status, 401);
-  assert.equal((await request(route, options)).status, 401);
-  env.ADMIN_TOKEN = 'test-admin-secret';
-  assert.equal(
-    (
-      await request(route, {
-        ...options,
-        headers: { ...options.headers, Authorization: 'Bearer wrong-secret' },
-      })
-    ).status,
-    401,
-  );
-  assert.equal(
-    db.connection.prepare('SELECT visibility_status status FROM station WHERE id=?').get(id(1))
-      ?.status,
-    'visible',
-  );
-  const health = await request('/admin/api/health', {
-    headers: { Authorization: 'Bearer test-admin-secret' },
-  });
-  assert.equal(health.status, 200);
-  assert.deepEqual(await health.json(), {
-    data: { status: 'ok', service: 'worldtuner-admin-api' },
-  });
-  assert.equal(health.headers.get('Cache-Control'), 'no-store');
-  assert.equal(
-    (
-      await request('/admin/api/health?unexpected=1', {
-        headers: { Authorization: 'Bearer test-admin-secret' },
-      })
-    ).status,
-    400,
-  );
-});
-
-// 下架结果在无缓存的公开详情、搜索、分类及地图中均不可见，上架后恢复原始 ID。
-test('admin visibility writes preserve other fields and govern all public business reads', async () => {
-  env.CACHE_ENABLED = 'false';
-  env.ADMIN_TOKEN = 'test-admin-secret';
-  const before = db.connection.prepare('SELECT * FROM station WHERE id=?').get(id(1));
-  const options = {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer test-admin-secret' },
-  };
-  const route = `/admin/api/stations/${publicId(1)}/visibility`;
-  const hidden = await request(route, { ...options, body: '{"visibility":"hidden"}' });
-  assert.equal(hidden.status, 200);
-  assert.deepEqual(await hidden.json(), { data: { id: publicId(1), visibility: 'hidden' } });
-  const after = db.connection.prepare('SELECT * FROM station WHERE id=?').get(id(1));
-  assert.deepEqual(
-    { ...after, visibility_status: before?.visibility_status, updated_at: before?.updated_at },
-    { ...before },
-  );
-  assert.match(String(after?.updated_at), /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
-  assert.equal((await request(`/stations/${publicId(1)}`)).status, 404);
-  const page = (await (await request('/stations?keyword=100%25')).json()) as {
-    data: { list: unknown[] };
-  };
-  assert.equal(page.data.list.length, 0);
-  const countries = (await (await request('/countries')).json()) as {
-    data: { stationcount: number }[];
-  };
-  assert.equal(countries.data[0].stationcount, 24);
-  const map = (await (await request('/map/stations?limit=5000')).json()) as {
-    data: { list: { id: string }[] };
-  };
-  assert.ok(
-    !map.data.list.some(
-      // 地图与详情采用相同可见性规则。
-      (row) => row.id === publicId(1),
-    ),
-  );
-  assert.equal(
-    (await request(route, { ...options, body: '{"visibility":"visible"}' })).status,
-    200,
-  );
-  assert.equal((await request(`/stations/${publicId(1)}`)).status, 200);
-});
-
-// 非法输入及缺失实体不能产生写入；管理 CORS 不影响公开 API 的方法限制。
-test('admin rejects invalid payloads and permits authenticated browser preflight', async () => {
-  env.ADMIN_TOKEN = 'test-admin-secret';
-  const options = {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer test-admin-secret' },
-  };
-  const route = `/admin/api/stations/${publicId(1)}/visibility`;
-  for (const body of [
-    '{}',
-    '[]',
-    'null',
-    '{"visibility":"deleted"}',
-    '{"visibility":true}',
-    'invalid',
-  ]) {
-    assert.equal((await request(route, { ...options, body })).status, 400, body);
-  }
-  assert.equal(
-    (
-      await request(`/admin/api/stations/${publicId(999)}/visibility`, {
-        ...options,
-        body: '{"visibility":"hidden"}',
-      })
-    ).status,
-    404,
-  );
-  assert.equal(
-    (
-      await request('/admin/api/stations/bad/visibility', {
-        ...options,
-        body: '{"visibility":"hidden"}',
-      })
-    ).status,
-    400,
-  );
-  assert.equal(
-    (
-      await request(route, {
-        ...options,
-        headers: { ...options.headers, 'Content-Type': 'text/plain' },
-        body: '{}',
-      })
-    ).status,
-    415,
-  );
-  assert.equal((await request(route, { ...options, body: 'x'.repeat(1025) })).status, 413);
-  const preflight = await request(route, {
-    method: 'OPTIONS',
-    headers: {
-      Origin: 'https://web.test',
-      'Access-Control-Request-Method': 'PUT',
-      'Access-Control-Request-Headers': 'authorization,content-type',
-    },
-  });
-  assert.equal(preflight.status, 204);
-  assert.ok(preflight.headers.get('Access-Control-Allow-Methods')?.includes('PUT'));
-  assert.ok(preflight.headers.get('Access-Control-Allow-Headers')?.includes('Authorization'));
-});
-
 // 本地完整业务夹具验证双语分类、短电台 ID、19 位分类筛选与内部外键链路。
 test('catalog public IDs work across translated lists, detail and relational filters', async () => {
   db.connection.prepare('UPDATE country SET name_en=?,name_zh=?').run('China', '中国');
@@ -865,47 +717,9 @@ test('station public IDs are case sensitive and exclude unfilled records', async
   );
 });
 
-// SQLite 管理写入使用单独连接，公开查询仍由 SQLite 自身强制只读。
-test('SQLite admin connection can write while the public connection stays read-only', async () => {
-  const { mkdtempSync, rmSync } = await import('node:fs');
-  const { tmpdir } = await import('node:os');
-  const { join } = await import('node:path');
-  const { backup } = await import('node:sqlite');
-  const directory = mkdtempSync(join(tmpdir(), 'worldtuner-admin-'));
-  const file = join(directory, 'catalog.sqlite');
-  await backup(db.connection, file);
-  const reader = new SQLiteDatabase(file);
-  const writer = new SQLiteDatabase(file, false);
-  try {
-    env.DB = reader;
-    env.ADMIN_DB = writer;
-    env.ADMIN_TOKEN = 'test-admin-secret';
-    env.CACHE_ENABLED = 'false';
-    assert.throws(
-      // 验证公开连接没有因添加管理路由而变为可写。
-      () =>
-        reader.connection
-          .prepare('UPDATE station SET visibility_status=? WHERE id=?')
-          .run('hidden', id(1)),
-      /readonly/i,
-    );
-    const response = await request(`/admin/api/stations/${publicId(1)}/visibility`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer test-admin-secret' },
-      body: '{"visibility":"hidden"}',
-    });
-    assert.equal(response.status, 200);
-    assert.equal((await request(`/stations/${publicId(1)}`)).status, 404);
-  } finally {
-    reader.close();
-    writer.close();
-    rmSync(directory, { recursive: true, force: true });
-  }
-});
-
 // 即使误配历史管理密钥，公开入口也不能读取管理状态或修改电台。
 test('client entry never exposes legacy admin routes', async () => {
-  env.ADMIN_TOKEN = 'test-admin-secret';
+  Object.assign(env, { ADMIN_TOKEN: 'test-admin-secret' });
   for (const [path, method] of [
     ['/admin/api/health', 'GET'],
     [`/admin/api/stations/${publicId(1)}/visibility`, 'PUT'],
@@ -961,7 +775,9 @@ test('split migration directories isolate business and operations schemas', () =
     const database = new SQLiteDatabase(':memory:', false);
     try {
       const directory = new URL(
-        kind === 'catalog' ? '../../worldTuner-data/v2/migrations/' : '../migrations/operations/',
+        kind === 'catalog'
+          ? '../../worldTuner-data/v2/migrations/'
+          : '../../worldTuner-data/operations/migrations/',
         import.meta.url,
       );
       for (const name of readdirSync(directory)

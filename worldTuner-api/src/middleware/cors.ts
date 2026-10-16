@@ -20,11 +20,7 @@ export const corsPolicy: MiddlewareHandler<AppEnv> =
           .includes(origin)
           ? origin
           : undefined,
-      allowMethods: c.req.path.startsWith('/admin/api/')
-        ? ['GET', 'PUT', 'OPTIONS']
-        : ['GET', 'POST', 'OPTIONS'],
-      allowHeaders: c.req.path.startsWith('/admin/api/')
-        ? ['Content-Type', 'Authorization']
-        : ['Content-Type', 'If-None-Match'],
+      allowMethods: ['GET', 'POST', 'OPTIONS'],
+      allowHeaders: ['Content-Type', 'If-None-Match'],
       exposeHeaders: ['X-Request-Id', 'Retry-After', 'ETag'],
     })(c, next);

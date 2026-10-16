@@ -13,7 +13,7 @@ languagesRoutes.get(
      */,
     (_, c) => parseCatalogQuery(new URL(c.req.url).searchParams, 1000),
   ),
-  cacheResponse(3600),
+  cacheResponse(60),
   /**
    * 调用字典服务并封装语言列表的公开响应。
    */
