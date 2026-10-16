@@ -9,10 +9,11 @@ import { ensureStationPublicIds, migrateStationPublicIds } from '../src/station-
 const id = '1234567890123456789';
 
 /**
- * 从旧迁移建表，构造原主键、外键和一个额外表，验证整库复制不会漏数据。
+ * 默认从初始化基线还原缺少 public_id 的旧表，验证离线回填；legacy=false 验证新库。
+ * @param {boolean} legacy 是否模拟旧库结构。
  * @returns {{directory: string, input: string, output: string}} 临时文件路径，由测试清理。
  */
-function fixture() {
+function fixture(legacy = true) {
   const directory = mkdtempSync(join(tmpdir(), 'worldtuner-public-id-'));
   const input = join(directory, 'source.sqlite');
   const output = join(directory, 'public.sqlite');
@@ -20,10 +21,13 @@ function fixture() {
   try {
     db.exec(
       readFileSync(
-        new URL('../../../worldTuner-api/migrations/0001_catalog.sql', import.meta.url),
+        new URL('../schema.sql', import.meta.url),
         'utf8',
       ),
     );
+    if (legacy) {
+      db.exec('DROP INDEX idx_station_public_id; ALTER TABLE station DROP COLUMN public_id;');
+    }
     db.exec(`
       INSERT INTO country (id,name,code) VALUES ('${id}','China','CN');
       INSERT INTO station (id,name,country_id,source_type,created_at,updated_at,votes)
@@ -114,17 +118,11 @@ test('rejects rewritten primary keys and invalid relations, cleaning failed outp
   }
 });
 
-// D1 升级 SQL 与本地回填兼容，唯一索引区分大小写并拒绝重复值。
+// D1 初始化基线直接包含对外 ID，唯一索引区分大小写并拒绝重复值。
 test('D1 migration and new schema support the same public ID constraints', () => {
-  const { directory, input } = fixture();
+  const { directory, input } = fixture(false);
   const db = new DatabaseSync(input);
   try {
-    db.exec(
-      readFileSync(
-        new URL('../../../worldTuner-api/migrations/0008_station_public_id.sql', import.meta.url),
-        'utf8',
-      ),
-    );
     db.exec(`UPDATE station SET public_id='Ab123xy';
       INSERT INTO station (id,public_id,name,source_type,created_at,updated_at)
       VALUES ('1234567890123456790','ab123xy','Radio B','radio_browser','2026','2026');`);

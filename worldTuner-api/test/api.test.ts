@@ -1,7 +1,8 @@
 import { test, beforeEach, afterEach, mock } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import worker from '../src/index.ts';
+import { app as legacyApp } from '../src/app.ts';
 import { SQLiteDatabase } from '../runtime/sqlite.ts';
 import { LocalRateLimiter } from '../runtime/rate-limit.ts';
 import type { ApiBindings } from '../src/types.ts';
@@ -30,23 +31,11 @@ let cache: Map<string, Response>;
 function fixture(): SQLiteDatabase {
   const database = new SQLiteDatabase(':memory:', false);
   database.connection.exec(
-    readFileSync(new URL('../migrations/0001_catalog.sql', import.meta.url), 'utf8'),
+    readFileSync(new URL('../../worldTuner-data/v2/schema.sql', import.meta.url), 'utf8'),
   );
   database.connection.exec(
-    readFileSync(new URL('../migrations/0002_visit_metrics.sql', import.meta.url), 'utf8'),
+    readFileSync(new URL('../migrations/operations/0001_operations.sql', import.meta.url), 'utf8'),
   );
-  // 按部署顺序应用增量迁移，测试不依赖过时的初始 schema。
-  for (const migration of [
-    '0003_tag_name_zh.sql',
-    '0004_language_name_zh.sql',
-    '0005_catalog_name_en.sql',
-    '0006_country_names.sql',
-    '0008_station_public_id.sql',
-  ]) {
-    database.connection.exec(
-      readFileSync(new URL(`../migrations/${migration}`, import.meta.url), 'utf8'),
-    );
-  }
   database.connection
     .prepare('INSERT INTO country (id, name, code) VALUES (?, ?, ?)')
     .run(id(101), 'China', 'CN');
@@ -116,7 +105,9 @@ afterEach(() => db.close());
  * 调用真实 Worker HTTP 入口，等待缓存任务后返回响应。
  */
 async function request(path: string, options: RequestInit = {}): Promise<Response> {
-  const response = await worker.fetch(
+  // 历史管理契约不属于公开 Worker，单独通过未部署的组合应用验证。
+  const target = path.startsWith('/admin/') ? legacyApp : worker;
+  const response = await target.fetch(
     new Request(`https://api.test${path.startsWith('/admin/') ? path : `/api${path}`}`, options),
     env,
     {
@@ -351,7 +342,7 @@ test('cache, CORS, rate limits and sanitized errors remain enforced', async () =
 test('metrics support atomic PV UV writes, rollup and separate databases', async () => {
   const metrics = new SQLiteDatabase(':memory:', false);
   metrics.connection.exec(
-    readFileSync(new URL('../migrations/0002_visit_metrics.sql', import.meta.url), 'utf8'),
+    readFileSync(new URL('../migrations/operations/0001_operations.sql', import.meta.url), 'utf8'),
   );
   env.METRICS_DB = metrics;
   try {
@@ -410,14 +401,25 @@ test('metrics support atomic PV UV writes, rollup and separate databases', async
   }
 });
 
-// 初始迁移不可改写；依次升级后的列契约必须与 data 的最新 schema 一致。
+// 空库初始化基线必须与 data 的最新 schema 一致。
 test('API migrated catalog columns match the latest data schema', () => {
   const latest = new SQLiteDatabase(':memory:', false);
   try {
     latest.connection.exec(
       readFileSync(new URL('../../worldTuner-data/v2/schema.sql', import.meta.url), 'utf8'),
     );
-    for (const table of ['tag', 'language', 'station', 'station_tag', 'station_language']) {
+    for (const table of [
+      'country',
+      'tag',
+      'language',
+      'station',
+      'station_stream',
+      'station_link',
+      'station_source',
+      'station_tag',
+      'station_language',
+      'moderation_record',
+    ]) {
       // 物理列顺序可因增量迁移不同，按字段名比较定义。
       const columns = (database: SQLiteDatabase) =>
         database.connection
@@ -898,5 +900,91 @@ test('SQLite admin connection can write while the public connection stays read-o
     reader.close();
     writer.close();
     rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+// 即使误配历史管理密钥，公开入口也不能读取管理状态或修改电台。
+test('client entry never exposes legacy admin routes', async () => {
+  env.ADMIN_TOKEN = 'test-admin-secret';
+  for (const [path, method] of [
+    ['/admin/api/health', 'GET'],
+    [`/admin/api/stations/${publicId(1)}/visibility`, 'PUT'],
+  ]) {
+    const response = await worker.fetch(
+      new Request(`https://api.test${path}`, {
+        method,
+        headers: { Authorization: 'Bearer test-admin-secret', 'Content-Type': 'application/json' },
+        ...(method === 'PUT' ? { body: JSON.stringify({ visibility: 'hidden' }) } : {}),
+      }),
+      env,
+      {} as ExecutionContext,
+    );
+    assert.equal(response.status, 404);
+  }
+  assert.equal(
+    db.connection
+      .prepare('SELECT visibility_status FROM station WHERE public_id=?')
+      .get(publicId(1))?.visibility_status,
+    'visible',
+  );
+});
+
+// 统计依赖缺失或误用目录连接时明确失败，不阻塞客户端业务，也不写回目录库。
+test('missing operations binding fails metrics only and never falls back to catalog', async () => {
+  for (const metricsDb of [undefined, db]) {
+    env.METRICS_DB = metricsDb;
+    const response = await request('/metrics/visit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        visitorId: '123e4567-e89b-42d3-a456-426614174000',
+        page: 'map',
+        source: 'android',
+      }),
+    });
+    assert.equal(response.status, 503);
+    const body = (await response.json()) as { error: { code: string } };
+    assert.equal(body.error.code, 'METRICS_UNAVAILABLE');
+    assert.equal((await request('/health')).status, 200);
+    assert.equal((await request('/stations')).status, 200);
+    await assert.rejects(worker.scheduled({} as ScheduledController, env), /Metrics database/);
+  }
+  assert.equal(
+    db.connection.prepare('SELECT COUNT(*) AS count FROM metric_daily_views').get()?.count,
+    0,
+  );
+});
+
+// 两库从各自部署目录独立初始化，验证业务表与统计表没有串库。
+test('split migration directories isolate business and operations schemas', () => {
+  for (const kind of ['catalog', 'operations']) {
+    const database = new SQLiteDatabase(':memory:', false);
+    try {
+      const directory = new URL(
+        kind === 'catalog' ? '../../worldTuner-data/v2/migrations/' : '../migrations/operations/',
+        import.meta.url,
+      );
+      for (const name of readdirSync(directory)
+        .filter(
+          // 仅执行 SQL，文档等文件不进入迁移。
+          (name) => name.endsWith('.sql'),
+        )
+        .sort()) {
+        const sql = readFileSync(new URL(name, directory), 'utf8');
+        database.connection.exec(sql);
+      }
+      const tables = database.connection
+        .prepare("SELECT name FROM sqlite_master WHERE type='table'")
+        .all()
+        .map(
+          // 表名用于校验两库边界，不读取任何真实业务数据。
+          (row) => String(row.name),
+        );
+      assert.equal(tables.includes('station'), kind === 'catalog');
+      assert.equal(tables.includes('metric_daily_views'), kind === 'operations');
+      assert.deepEqual(database.connection.prepare('PRAGMA foreign_key_check').all(), []);
+    } finally {
+      database.close();
+    }
   }
 });

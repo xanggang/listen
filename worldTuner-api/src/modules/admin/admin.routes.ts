@@ -1,3 +1,5 @@
+import { AdminService } from './admin.service.ts';
+import { AdminRepository } from './admin.repository.ts';
 import { Hono } from 'hono';
 import type { AppEnv } from '../../types.ts';
 import { adminAuth } from '../../middleware/admin-auth.ts';
@@ -35,6 +37,11 @@ adminRoutes.put(
     } catch {
       throw new ApiError(400, 'INVALID_PARAMETER', 'Invalid JSON body');
     }
-    return c.json({ data: await c.get('services').admin.setVisibility(id, parseVisibility(body)) });
+    return c.json({
+      data: await new AdminService(new AdminRepository(c.env.ADMIN_DB ?? c.env.DB)).setVisibility(
+        id,
+        parseVisibility(body),
+      ),
+    });
   },
 );

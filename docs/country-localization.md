@@ -34,7 +34,7 @@ npm run migrate:v2:country-names -- --db /实际路径/catalog.sqlite --apply
 
 随后重启 API。当前本地默认库已经完成此操作，无须再重复迁移。
 
-D1 在 worldTuner-api 下应用增量迁移 `0006_country_names.sql`（先前迁移应已按顺序应用）：
+D1 已按远程空库统一整理为 `worldTuner-data/v2/schema.sql`，直接包含国家中英文列。先在本地处理译名，再初始化 D1 并导入完整数据：
 
 ```bash
 pnpm db:migrate:local
@@ -80,6 +80,6 @@ npm run migrate:v2:country-names -- --db /opt/worldtuner/worldtuner-v2.sqlite --
 sudo systemctl restart worldtuner
 ```
 
-或者先备份服务器目录库，再同步本地已补齐的业务库。不要覆盖服务器的 `metrics.sqlite`。D1 通过新增 `0007_country_names_complete.sql` 补齐，历史迁移不改写。本次未操作服务器。
+或者先备份服务器目录库，再同步本地已补齐的业务库。不要覆盖服务器的 `metrics.sqlite`。D1 的译名随本地处理后的数据导入，不再单独执行国家补充迁移。本次未操作服务器。
 
 验证：4 项数据迁移测试、5 项 Flutter 国家面板/排行榜测试及 Flutter analyze 通过。

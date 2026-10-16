@@ -83,29 +83,19 @@ test('explicit France alias translates display without rewriting invalid code', 
   }
 });
 
-// D1 补充迁移使用相同名称，且不会覆盖已有人工译名或泛化异常代码。
-test('D1 country completion migration preserves existing translations', () => {
+// D1 初始化基线支持本地译名回填，导入前处理保留人工名称和稳定 ID。
+test('D1 baseline supports country localization without overwriting translations', () => {
   const db = new DatabaseSync(':memory:');
   try {
-    db.exec(
-      "CREATE TABLE country (id TEXT PRIMARY KEY,name TEXT,code TEXT,name_zh TEXT); INSERT INTO country VALUES ('1','Afghanistan','AF',NULL),('2','France','XX',NULL),('3','Other','XX',NULL),('4','Niue','NU','自定义译名');",
-    );
-    db.exec(
-      readFileSync(
-        new URL(
-          '../../../worldTuner-api/migrations/0007_country_names_complete.sql',
-          import.meta.url,
-        ),
-        'utf8',
-      ),
-    );
-    assert.equal(db.prepare("SELECT name_zh FROM country WHERE id='1'").get().name_zh, '阿富汗');
-    assert.equal(db.prepare("SELECT name_zh FROM country WHERE id='2'").get().name_zh, '法国');
-    assert.equal(db.prepare("SELECT name_zh FROM country WHERE id='3'").get().name_zh, null);
-    assert.equal(
-      db.prepare("SELECT name_zh FROM country WHERE id='4'").get().name_zh,
-      '自定义译名',
-    );
+    db.exec(readFileSync(new URL('../schema.sql', import.meta.url), 'utf8'));
+    db.exec(`INSERT INTO country (id,name,code,name_zh) VALUES
+      ('1234567890123456701','Afghanistan','AF',NULL),
+      ('1234567890123456702','France','XX',NULL),
+      ('1234567890123456703','Niue','NU','自定义译名');`);
+    ensureCountryNames(db);
+    assert.equal(db.prepare("SELECT name_zh FROM country WHERE code='AF'").get().name_zh, '阿富汗');
+    assert.equal(db.prepare("SELECT name_zh FROM country WHERE code='XX'").get().name_zh, '法国');
+    assert.equal(db.prepare("SELECT name_zh FROM country WHERE code='NU'").get().name_zh, '自定义译名');
   } finally {
     db.close();
   }

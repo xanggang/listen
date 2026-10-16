@@ -13,7 +13,7 @@ Worker 使用自己的 UTC 接收时间确定日期，分别对 `day + visitorId
 
 ## 本地验证
 
-新迁移 `0002_visit_metrics.sql` 只新增统计表，不修改电台表。启动本地 Worker 前运行：
+新迁移 `0001_operations.sql` 只新增统计表，不修改电台表。启动本地 Worker 前运行：
 
 ```sh
 cd /Users/lin/Documents/www/lin/worldtuner/worldTuner-api

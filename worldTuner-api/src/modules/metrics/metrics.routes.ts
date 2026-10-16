@@ -8,7 +8,9 @@ export const metricsRoutes = new Hono<AppEnv>();
 
 metricsRoutes.post(
   '/visit',
-  /** 限制请求体大小、字段和页面名后写入统计；不返回可查询的用户数据。 */
+  /**
+   * 先校验请求，再写入独立统计库；配置缺失返回 503，不影响业务读取。
+   */
   async (c) => {
     validateParams(new URL(c.req.url).searchParams, []);
     if (!c.req.header('Content-Type')?.toLowerCase().startsWith('application/json'))
@@ -23,7 +25,8 @@ metricsRoutes.post(
     } catch {
       throw new ApiError(400, 'INVALID_METRIC', 'Invalid JSON body');
     }
-    await c.get('services').metrics.recordVisit(parseVisitInput(body));
+    const input = parseVisitInput(body);
+    await c.get('services').metrics.recordVisit(input);
     return c.json({ data: { recorded: true } });
   },
 );

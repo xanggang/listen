@@ -1,15 +1,10 @@
-import { Hono } from 'hono';
-import type { AppEnv } from './types.ts';
+import { createBaseApp } from './apps/base-app.ts';
 import { ApiError } from './shared/errors.ts';
-import { requestContext } from './middleware/context.ts';
-import { corsPolicy } from './middleware/cors.ts';
-import { requestRateLimit } from './middleware/rate-limit.ts';
-import { errorHandler } from './middleware/errors.ts';
 import { adminRoutes } from './modules/admin/admin.routes.ts';
 import { apiRoutes } from './routes/api.ts';
 
-export const app = new Hono<AppEnv>();
-app.use('*', requestContext, corsPolicy, requestRateLimit);
+// 历史组合应用仅保留兼容测试；客户端 Worker 和 SQLite 不使用此入口。
+export const app = createBaseApp();
 app.route('/api', apiRoutes);
 app.route('/admin/api', adminRoutes);
 app.notFound(
@@ -24,4 +19,3 @@ app.notFound(
     throw new ApiError(404, 'NOT_FOUND', 'Endpoint not found');
   },
 );
-app.onError(errorHandler);

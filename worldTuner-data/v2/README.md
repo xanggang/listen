@@ -34,9 +34,9 @@ node v2/src/station-public-ids.mjs \
 
 ### 导入 D1
 
-远程旧库应用 `worldTuner-api/migrations/0008_station_public_id.sql` 即可增加字段及唯一索引，不需要改动 19 位主键约束。该 SQL 只升级结构，不会给远程已有记录生成随机值。
+D1 空库执行 `worldTuner-data/v2/schema.sql`，直接创建完整结构及 public_id 唯一索引；数据需先在本地回填，建表不会生成随机 ID。
 
-如果导入完整的已处理本地数据，应从 `worldtuner-v2-public.sqlite` 导出，使用现有 `db:export:catalog` 工具即可包含 public_id。目标业务表必须为空且已应用全部迁移；导出数据不能直接重复插入已有记录的远程库。对已经包含 public_id 的完整 schema 不要再次执行 `0008`。
+如果导入完整的已处理本地数据，应从 `worldtuner-v2-public.sqlite` 导出，使用现有 `db:export:catalog` 工具即可包含 public_id。目标业务表必须为空且已应用全部迁移；导出数据不能直接重复插入已有记录的远程库。初始化 SQL 只执行一次，不要对已有表重复执行。
 
 API、电台地图、Web 与移动端已统一把 `station.public_id` 作为电台响应字段 `id`，详情和地图游标也使用该短 ID。内部关联仍使用 station.id；国家、标签、语种、流与链接 ID 保持原样。API 的 SQLite 来源需指向本工具输出的库。
 
@@ -45,3 +45,5 @@ API、电台地图、Web 与移动端已统一把 `station.public_id` 作为电�
 ```bash
 node --test v2/test/station-public-ids.test.mjs
 ```
+
+业务结构只维护 `worldTuner-data/v2/schema.sql`。`worldTuner-data/v2/migrations/0001_catalog.sql` 是指向它的相对符号链接，让 Wrangler 保持编号迁移记录；API 的初始化命令不变。发布或复制代码时保留 data/API 相邻目录和符号链接。

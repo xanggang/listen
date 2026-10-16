@@ -1,5 +1,4 @@
-import { AdminRepository } from './modules/admin/admin.repository.ts';
-import { AdminService } from './modules/admin/admin.service.ts';
+import { requireMetricsDatabase } from './database/metrics-database.ts';
 import type { SqlDatabase } from './database/database.ts';
 import { CatalogRepository } from './modules/catalog/catalog.repository.ts';
 import { CatalogService } from './modules/catalog/catalog.service.ts';
@@ -11,19 +10,20 @@ import { MetricsRepository } from './modules/metrics/metrics.repository.ts';
 import { MetricsService } from './modules/metrics/metrics.service.ts';
 
 /**
- * 组装统一业务服务；SQLite 可单独注入统计库，D1 默认使用同一绑定；管理写入可注入独立连接。
+ * 只组装客户端业务服务；统计在使用时校验独立数据库，不隐式写入目录库。
  */
-export function createServices(
-  db: SqlDatabase,
-  metricsDb: SqlDatabase = db,
-  adminDb: SqlDatabase = db,
-) {
+export function createServices(db: SqlDatabase, metricsDb?: SqlDatabase) {
   const catalog = new CatalogService(new CatalogRepository(db));
   return {
     catalog,
-    admin: new AdminService(new AdminRepository(adminDb)),
     map: new MapService(new MapRepository(db)),
     stations: new StationService(new StationRepository(db), catalog),
-    metrics: new MetricsService(new MetricsRepository(metricsDb)),
+    /**
+     * 延迟创建统计服务；缺配置时仅统计上报失败，业务读取仍然可用。
+     */
+    get metrics(): MetricsService {
+      const database = requireMetricsDatabase({ DB: db, METRICS_DB: metricsDb });
+      return new MetricsService(new MetricsRepository(database));
+    },
   };
 }

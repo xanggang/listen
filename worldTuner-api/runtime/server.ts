@@ -2,7 +2,7 @@ import { serve } from '@hono/node-server';
 import { readFileSync, existsSync, mkdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { app } from '../src/app.ts';
+import { clientApp } from '../src/apps/client-app.ts';
 import type { ApiBindings } from '../src/types.ts';
 import { SQLiteDatabase } from './sqlite.ts';
 import { LocalRateLimiter } from './rate-limit.ts';
@@ -71,16 +71,10 @@ if (catalog.connection.prepare('SELECT 1 FROM station WHERE public_id IS NULL LI
 mkdirSync(dirname(metricsPath), { recursive: true });
 const metrics = new SQLiteDatabase(metricsPath, false);
 metrics.connection.exec(
-  readFileSync(new URL('../migrations/0002_visit_metrics.sql', import.meta.url), 'utf8'),
+  readFileSync(new URL('../migrations/operations/0001_operations.sql', import.meta.url), 'utf8'),
 );
-// 仅显式配置管理员密钥才打开独立写连接，公开 API 继续使用原只读连接。
-const adminCatalog = process.env.ADMIN_TOKEN?.trim()
-  ? new SQLiteDatabase(catalogPath, false)
-  : undefined;
 const env: ApiBindings = {
   DB: catalog,
-  ADMIN_DB: adminCatalog,
-  ADMIN_TOKEN: process.env.ADMIN_TOKEN,
   METRICS_DB: metrics,
   CACHE_ENABLED: 'false',
   MAP_SNAPSHOT_CACHE_TTL_SECONDS: process.env.MAP_SNAPSHOT_CACHE_TTL_SECONDS,
@@ -99,7 +93,7 @@ const server = serve(
     // 使用真实连接地址覆盖客户端伪造的 CF 标头，再进入共同的 HTTP 中间件。
     fetch: (request, nodeEnv) => {
       request.headers.set('CF-Connecting-IP', nodeEnv.incoming.socket.remoteAddress ?? 'unknown');
-      return app.fetch(request, env);
+      return clientApp.fetch(request, env);
     },
   },
   // 仅输出服务地址和数据库路径，不记录用户标识或播放流参数。
@@ -129,10 +123,9 @@ function shutdown(): void {
   stopping = true;
   clearInterval(rollupTimer);
   server.close(
-    // 所有 HTTP 请求结束后关闭目录、管理写入及统计连接。
+    // 所有 HTTP 请求结束后关闭只读目录及独立统计连接。
     () => {
       catalog.close();
-      adminCatalog?.close();
       metrics.close();
     },
   );

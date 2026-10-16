@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit && tsc -p tsconfig.runtime.json",
     "test": "node --experimental-strip-types --test test/*.test.ts",
     "build": "wrangler deploy --dry-run --outdir dist",
-    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local && wrangler d1 migrations apply METRICS_DB --local",
     "check": "pnpm format:check && pnpm typecheck && pnpm test && pnpm build",
     "format": "prettier --write src runtime test",
     "format:check": "prettier --check src runtime test",

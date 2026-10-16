@@ -36,7 +36,7 @@
 ## 更新顺序
 
 1. 当前本地默认 SQLite 已完成升级，重启 API 后使用新代码。其他 SQLite 部署先在 worldTuner-data 执行 `npm run migrate:v2:catalog-names -- --db /实际路径/catalog.sqlite` 预览，再加 `--apply` 备份并迁移。
-2. D1 按历史迁移顺序应用到 `0005_catalog_name_en.sql`，再更新 Worker；本次没有修改远程数据库。具体命令见 API README。
+2. D1 已按远程空库统一为 `worldTuner-data/v2/schema.sql`，直接创建完整译名字段，再导入已处理数据并更新 Worker；本次没有修改远程数据库。具体命令见 API README。
 3. 更新 Web，刷新页面；移动端完整重启 App 重新加载字典。后续切换语言只重算展示，不额外请求字典。
 4. 初始 `name_en` 是复制原名，尚未对全部名称做人工英文翻译。可以独立修正 `name_en`，不改原名、匹配键与关系；部署新译名后按 API 缓存 TTL 等待刷新或调整响应缓存版本。
 
