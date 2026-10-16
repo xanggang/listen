@@ -394,6 +394,8 @@ button {
 .station-row__info p { overflow: hidden; margin: 4px 0 0; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 .station-row__favorite { display: grid; width: 40px; height: 40px; flex: 0 0 40px; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--muted); font-size: 22px; }
 .station-row__favorite[aria-pressed='true'] { color: #f43f5e; }
+.station-row__locate { display: grid; width: 40px; height: 40px; flex: 0 0 40px; place-items: center; border-radius: 50%; color: var(--muted); }
+.station-row__locate:hover { color: var(--primary); background: var(--surface); }
 .station-row__play { display: grid; width: 40px; height: 40px; flex: 0 0 40px; place-items: center; border: 0; border-radius: 50%; background: var(--primary-soft); color: var(--primary); font-size: 20px; }
 
 .podium { display: flex; align-items: flex-end; gap: 9px; margin: 28px 0 22px; }

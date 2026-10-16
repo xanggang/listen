@@ -1,18 +1,47 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
+import {
+  App,
+  Button,
+  Card,
+  Col,
+  Collapse,
+  Descriptions,
+  Drawer,
+  Flex,
+  Form,
+  Input,
+  InputNumber,
+  Popconfirm,
+  Row,
+  Select,
+  Space,
+  Switch,
+  Tabs,
+  Tag,
+  Typography,
+} from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import type { TableProps } from 'antd';
 import type { Page, Station, StationDetail, Stream } from '../lib/contracts';
 import { useDebounced, useResource } from '../lib/hooks';
 import { apiRequest, save, errorMessage } from '../lib/api';
 import { CatalogFilter } from '../components/CatalogFilter';
 import {
+  DataTable,
   Notice,
   PageHeader,
-  Pager,
-  ResourceState,
+  RefreshButton,
   Status,
 } from '../components/common';
 
+const statusOptions = [
+  { value: 'active', label: '可用' },
+  { value: 'unverified', label: '未验证' },
+  { value: 'unavailable', label: '不可用' },
+];
+
 /**
- * 电台管理包含完整目录、关联筛选与软上下架；只有 owner 可以进入写入操作。
+ * 电台管理使用服务端筛选和分页，详情重新读取最新版本，viewer 仅允许查看。
  */
 export function StationsPage({ writable }: { writable: boolean }) {
   const [q, setQ] = useState('');
@@ -24,8 +53,12 @@ export function StationsPage({ writable }: { writable: boolean }) {
   const [languageId, setLanguageId] = useState('');
   const [tagId, setTagId] = useState('');
   const [detail, setDetail] = useState<StationDetail>();
-  const [message, setMessage] = useState('');
-  const [busy, setBusy] = useState(false);
+  const [editorRevision, setEditorRevision] = useState(0);
+  const [notice, setNotice] = useState<{
+    text: string;
+    type: 'success' | 'error';
+  }>();
+  const [opening, setOpening] = useState<string>();
   const params = new URLSearchParams({ page: String(page), q: keyword });
   for (const [key, value] of Object.entries({
     visibility,
@@ -37,200 +70,255 @@ export function StationsPage({ writable }: { writable: boolean }) {
     if (value) params.set(key, value);
   const resource = useResource<Page<Station>>(`/admin/api/stations?${params}`);
   /**
-   * 选择时重新获取详情，避免用列表缓存中的旧版本开始编辑。
+   * 打开前重新读取详情，避免使用列表中的旧版本提交写入。
    */
   async function open(id: string) {
-    setBusy(true);
-    setMessage('');
+    setOpening(id);
+    setNotice(undefined);
     try {
       setDetail(await apiRequest<StationDetail>(`/admin/api/stations/${id}`));
     } catch (error) {
-      setMessage(errorMessage(error));
+      setNotice({ text: errorMessage(error), type: 'error' });
     } finally {
-      setBusy(false);
+      setOpening(undefined);
     }
   }
   /**
-   * 保存成功后刷新列表，并以服务器返回版本更新编辑器。
+   * 写入成功刷新列表并使用服务端新版本重建编辑器，公开端缓存提示保留可见。
    */
   function updated(value: StationDetail) {
     setDetail(value);
     resource.refresh();
-    setMessage(
-      '已保存。服务端列表/详情缓存为 60 秒，地图按配置 TTL 更新；App 已加载的页面可能需重新进入或重启。',
-    );
+    setNotice({
+      type: 'success',
+      text: '已保存。公开列表与详情缓存最长 60 秒，地图按配置 TTL 更新；App 已加载的页面需重新进入或重启。',
+    });
   }
+  /**
+   * 清空所有筛选并返回第一页，保持远程字典关联值一致。
+   */
+  function reset() {
+    setQ('');
+    setVisibility('');
+    setStatus('');
+    setCountryId('');
+    setLanguageId('');
+    setTagId('');
+    setPage(1);
+  }
+  const columns: TableProps<Station>['columns'] = [
+    {
+      title: '电台名称 / ID',
+      dataIndex: 'name',
+      width: 240,
+      // 仅展示 public_id；不自动加载外部图标 URL。
+      render: (_, station) => (
+        <>
+          <Typography.Text strong>{station.name}</Typography.Text>
+          <div className="secondary-line mono">{station.id}</div>
+        </>
+      ),
+    },
+    {
+      title: '国家 / 地区',
+      dataIndex: 'country',
+      width: 150,
+      // 缺失地理信息保持明确占位。
+      render: (_, station) => (
+        <>
+          {station.country ?? '—'}
+          <div className="secondary-line">{station.place ?? '—'}</div>
+        </>
+      ),
+    },
+    {
+      title: '上架状态',
+      dataIndex: 'visibility',
+      width: 110,
+      // 可见性与流可用性分列，避免混淆。
+      render: (value: string) => <Status value={value} />,
+    },
+    {
+      title: '目录状态',
+      dataIndex: 'status',
+      width: 110,
+      // 状态标签保留所有后端枚举。
+      render: (value: string) => <Status value={value} />,
+    },
+    { title: '来源', dataIndex: 'source', width: 100 },
+    { title: '更新时间 UTC', dataIndex: 'updatedAt', width: 190 },
+    {
+      title: '操作',
+      fixed: 'right',
+      width: 110,
+      // 单次只打开一个详情，其他行暂时禁用，防止慢请求覆盖。
+      render: (_, station) => (
+        <Button
+          type="link"
+          loading={opening === station.id}
+          disabled={Boolean(opening) && opening !== station.id}
+          onClick={
+            // 只读账号仍可读取电台和播放流。
+            () => void open(station.id)
+          }
+        >
+          {writable ? '查看 / 编辑' : '查看详情'}
+        </Button>
+      ),
+    },
+  ];
   return (
     <>
       <PageHeader
         title="电台管理"
-        description="统一管理电台基本信息、播放流与上下架状态"
-        action={<button onClick={resource.refresh}>刷新列表</button>}
+        description="管理电台目录、基本信息和播放流，维护内容上下架状态"
+        action={
+          <RefreshButton
+            loading={resource.loading}
+            onClick={resource.refresh}
+          />
+        }
       />
-      <Notice message={message} />
-      <section className="panel">
-        <div className="toolbar">
-          <label className="grow">
-            查找电台
-            <input
+      <Notice message={notice?.text ?? ''} type={notice?.type} />
+      <Card className="filter-card">
+        <div className="filter-grid">
+          <div className="filter-field">
+            <Typography.Text type="secondary">查找电台</Typography.Text>
+            <Input
+              allowClear
+              prefix={<SearchOutlined />}
+              aria-label="查找电台"
               placeholder="电台名称或 7 位 ID"
               value={q}
               onChange={
-                // 搜索条件变化时返回第一页，再由防抖值查询接口。
+                // 搜索防抖后查询完整目录，并从第一页开始。
                 (event) => {
                   setQ(event.target.value);
                   setPage(1);
                 }
               }
             />
-          </label>
-          <label>
-            可见性
-            <select
+          </div>
+          <div className="filter-field">
+            <Typography.Text type="secondary">上架状态</Typography.Text>
+            <Select
+              aria-label="上架状态"
               value={visibility}
+              options={[
+                { value: '', label: '全部状态' },
+                { value: 'visible', label: '已上架' },
+                { value: 'hidden', label: '已下架' },
+              ]}
               onChange={
-                // 显示隐藏电台供重新上架，不复用公开可见筛选。
-                (event) => {
-                  setVisibility(event.target.value);
-                  setPage(1);
-                }
-              }
-            >
-              <option value="">全部状态</option>
-              <option value="visible">已上架</option>
-              <option value="hidden">已下架</option>
-            </select>
-          </label>
-          <label>
-            目录状态
-            <select
-              value={status}
-              onChange={
-                // 可查看来源标记为失效的电台并修正播放流。
-                (event) => {
-                  setStatus(event.target.value);
-                  setPage(1);
-                }
-              }
-            >
-              <option value="">全部</option>
-              <option value="active">可用</option>
-              <option value="unverified">未验证</option>
-              <option value="unavailable">不可用</option>
-            </select>
-          </label>
-        </div>
-        <details className="filters">
-          <summary>国家、语言与标签筛选</summary>
-          <div className="filter-grid">
-            <CatalogFilter
-              kind="countries"
-              label="国家/地区"
-              value={countryId}
-              onChange={
-                // 应用国家关联筛选，分类 ID 保持字符串。
-                (id) => {
-                  setCountryId(id);
-                  setPage(1);
-                }
-              }
-            />
-            <CatalogFilter
-              kind="languages"
-              label="语言"
-              value={languageId}
-              onChange={
-                // 语言关联独立于界面语言。
-                (id) => {
-                  setLanguageId(id);
-                  setPage(1);
-                }
-              }
-            />
-            <CatalogFilter
-              kind="tags"
-              label="标签"
-              value={tagId}
-              onChange={
-                // 标签精确关联筛选，不使用名称模糊匹配。
-                (id) => {
-                  setTagId(id);
+                // 可独立查询隐藏电台以重新上架。
+                (value) => {
+                  setVisibility(value);
                   setPage(1);
                 }
               }
             />
           </div>
-        </details>
-        <ResourceState
-          loading={resource.loading}
-          error={resource.error}
-          empty={resource.data?.list.length === 0}
-          retry={resource.refresh}
+          <div className="filter-field">
+            <Typography.Text type="secondary">目录状态</Typography.Text>
+            <Select
+              aria-label="目录状态"
+              value={status}
+              options={[{ value: '', label: '全部状态' }, ...statusOptions]}
+              onChange={
+                // 目录状态筛选独立于可见性。
+                (value) => {
+                  setStatus(value);
+                  setPage(1);
+                }
+              }
+            />
+          </div>
+          <Flex align="end">
+            <Button onClick={reset}>重置筛选</Button>
+          </Flex>
+        </div>
+        <Collapse
+          ghost
+          items={[
+            {
+              key: 'advanced',
+              label: '更多筛选：国家 / 地区、语言、标签',
+              children: (
+                <div className="filter-grid">
+                  <CatalogFilter
+                    kind="countries"
+                    label="国家 / 地区"
+                    value={countryId}
+                    onChange={
+                      // 按稳定国家 ID 筛选。
+                      (id) => {
+                        setCountryId(id);
+                        setPage(1);
+                      }
+                    }
+                  />
+                  <CatalogFilter
+                    kind="languages"
+                    label="语言"
+                    value={languageId}
+                    onChange={
+                      // 语言变化重置分页。
+                      (id) => {
+                        setLanguageId(id);
+                        setPage(1);
+                      }
+                    }
+                  />
+                  <CatalogFilter
+                    kind="tags"
+                    label="标签"
+                    value={tagId}
+                    onChange={
+                      // 标签变化重置分页。
+                      (id) => {
+                        setTagId(id);
+                        setPage(1);
+                      }
+                    }
+                  />
+                </div>
+              ),
+            },
+          ]}
         />
-        {resource.data && (
-          <>
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>电台</th>
-                    <th>国家/地区</th>
-                    <th>状态</th>
-                    <th>来源</th>
-                    <th>更新时间</th>
-                    <th>操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {resource.data.list.map(
-                    // 行 ID 使用 public_id，不在 UI 展示内部主键。
-                    (station) => (
-                      <tr key={station.id}>
-                        <td>
-                          <strong>{station.name}</strong>
-                          <small className="mono">{station.id}</small>
-                        </td>
-                        <td>
-                          {station.country ?? '—'}
-                          <small>{station.place ?? '—'}</small>
-                        </td>
-                        <td>
-                          <Status value={station.visibility} />
-                          <small>
-                            <Status value={station.status} />
-                          </small>
-                        </td>
-                        <td>{station.source}</td>
-                        <td className="mono">{station.updatedAt}</td>
-                        <td>
-                          <button
-                            disabled={busy}
-                            onClick={
-                              // 只读角色仍可查看电台与流，不显示写按钮。
-                              () => void open(station.id)
-                            }
-                          >
-                            {writable ? '查看 / 编辑' : '查看详情'}
-                          </button>
-                        </td>
-                      </tr>
-                    ),
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <Pager page={page} total={resource.data.total} onChange={setPage} />
-          </>
-        )}
-      </section>
+      </Card>
+      <Card
+        title="电台列表"
+        extra={
+          <Typography.Text type="secondary">
+            {resource.data
+              ? `共 ${resource.data.total.toLocaleString()} 个电台`
+              : '完整目录'}
+          </Typography.Text>
+        }
+      >
+        <DataTable
+          resource={resource}
+          columns={columns}
+          page={page}
+          onChange={setPage}
+        />
+      </Card>
       {detail && (
         <StationEditor
-          key={`${detail.id}-${detail.updatedAt}`}
+          key={`${detail.id}-${detail.updatedAt}-${editorRevision}`}
           station={detail}
           writable={writable}
           onSaved={updated}
+          onReload={
+            // 即使服务端版本未变，重新加载也应清除用户确认放弃的草稿。
+            (value) => {
+              setDetail(value);
+              setEditorRevision(editorRevision + 1);
+            }
+          }
           onClose={
-            // 关闭详情不修改服务器已保存的状态。
+            // 关闭前由编辑器检查尚未保存的输入。
             () => setDetail(undefined)
           }
         />
@@ -240,58 +328,67 @@ export function StationsPage({ writable }: { writable: boolean }) {
 }
 
 /**
- * 详情编辑器以读取版本提交，保存失败保留输入，409 提示重新加载避免覆盖。
+ * 电台抽屉以乐观锁版本保存，切换编辑对象和关闭前确认放弃输入，失败保留表单。
  */
 function StationEditor({
   station,
   writable,
   onSaved,
+  onReload,
   onClose,
 }: {
   station: StationDetail;
   writable: boolean;
   onSaved: (station: StationDetail) => void;
+  onReload: (station: StationDetail) => void;
   onClose: () => void;
 }) {
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState('');
-  const [countryId, setCountryId] = useState(station.countryId ?? '');
+  const [error, setError] = useState('');
+  const [dirty, setDirty] = useState(false);
+  const [tab, setTab] = useState('basic');
+  const [streamId, setStreamId] = useState(station.streams[0]?.id);
+  const { modal } = App.useApp();
   /**
-   * 提交允许编辑的基本字段；空坐标同时为 null，服务器再检查坐标范围。
+   * 未保存输入时使用受主题控制的确认框；请求进行中不允许离开当前编辑器。
    */
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
+  function leave(action: () => void) {
+    if (busy) return;
+    if (!dirty) {
+      action();
+      return;
+    }
+    modal.confirm({
+      title: '放弃未保存的修改？',
+      content: '当前输入尚未保存，继续后将丢失这些修改。',
+      okText: '放弃修改',
+      cancelText: '继续编辑',
+      okButtonProps: { danger: true },
+      onOk: action,
+    });
+  }
+  /**
+   * 重新取回服务端最新版本，冲突恢复不自动重放写入。
+   */
+  async function reload() {
     setBusy(true);
-    setMessage('');
+    setError('');
     try {
-      onSaved(
-        await save<StationDetail>(`/admin/api/stations/${station.id}`, {
-          expectedUpdatedAt: station.updatedAt,
-          name: String(form.get('name')),
-          status: String(form.get('status')),
-          place: String(form.get('place')) || null,
-          countryId: countryId || null,
-          website: String(form.get('website')) || null,
-          favicon: String(form.get('favicon')) || null,
-          latitude:
-            form.get('latitude') === '' ? null : Number(form.get('latitude')),
-          longitude:
-            form.get('longitude') === '' ? null : Number(form.get('longitude')),
-        }),
+      onReload(
+        await apiRequest<StationDetail>(`/admin/api/stations/${station.id}`),
       );
-    } catch (error) {
-      setMessage(errorMessage(error));
+    } catch (reason) {
+      setError(errorMessage(reason));
     } finally {
       setBusy(false);
     }
   }
   /**
-   * 上下架与基本信息保存分开，明确状态改变且使用相同乐观锁。
+   * 上下架独立提交；保留版本检查，成功后使用服务器结果刷新。
    */
   async function toggleVisibility() {
     setBusy(true);
-    setMessage('');
+    setError('');
     try {
       onSaved(
         await save<StationDetail>(
@@ -302,245 +399,469 @@ function StationEditor({
           },
         ),
       );
-    } catch (error) {
-      setMessage(errorMessage(error));
+    } catch (reason) {
+      setError(errorMessage(reason));
     } finally {
       setBusy(false);
     }
   }
   /**
-   * 获取最新服务器状态，用于冲突恢复；明确丢弃尚未保存的编辑。
+   * 标记用户输入，程序初始化值不会触发此回调。
    */
-  async function reload() {
-    if (!window.confirm('重新加载会丢弃未保存的修改，是否继续？')) return;
-    setBusy(true);
-    try {
-      onSaved(
-        await apiRequest<StationDetail>(`/admin/api/stations/${station.id}`),
-      );
-    } catch (error) {
-      setMessage(errorMessage(error));
-    } finally {
-      setBusy(false);
-    }
+  function changed() {
+    setDirty(true);
   }
+  // 仅挂载一个播放流编辑表单，避免保存某个流时丢弃其他流的草稿。
+  const stream = station.streams.find((item) => item.id === streamId);
   return (
-    <div className="modal-backdrop">
-      <section
-        className="editor"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="station-title"
+    <Drawer
+      open
+      title={writable ? '电台详情与编辑' : '电台详情'}
+      size={760}
+      mask={{ closable: false }}
+      keyboard={!busy}
+      closable={!busy}
+      onClose={
+        // 显式关闭也必须确认未保存内容。
+        () => leave(onClose)
+      }
+      footer={
+        <Flex justify="space-between" align="center" gap={12} wrap>
+          <Typography.Text type="secondary">
+            {dirty ? '有未保存的修改' : '已加载服务器版本'}
+          </Typography.Text>
+          <Space>
+            <Button
+              disabled={busy}
+              onClick={
+                // 重载会丢弃输入，先执行相同的离开确认。
+                () =>
+                  leave(
+                    // 确认后才获取最新版本。
+                    () => void reload(),
+                  )
+              }
+            >
+              重新加载
+            </Button>
+            <Button
+              disabled={busy}
+              onClick={
+                // 取消编辑不写入服务器。
+                () => leave(onClose)
+              }
+            >
+              关闭
+            </Button>
+            {writable && (
+              <Button
+                type="primary"
+                loading={busy}
+                htmlType="submit"
+                form={tab === 'basic' ? 'station-form' : 'stream-form'}
+                disabled={tab === 'streams' && !stream}
+              >
+                保存{tab === 'basic' ? '基本信息' : '播放流'}
+              </Button>
+            )}
+          </Space>
+        </Flex>
+      }
+    >
+      <Flex
+        align="start"
+        justify="space-between"
+        gap={16}
+        wrap
+        className="detail-heading"
       >
-        <div className="editor-heading">
-          <div>
-            <small className="mono">{station.id}</small>
-            <h2 id="station-title">{station.name}</h2>
-          </div>
-          <button onClick={onClose} disabled={busy}>
-            关闭
-          </button>
+        <div>
+          <Typography.Title level={4}>{station.name}</Typography.Title>
+          <Typography.Text type="secondary" copyable>
+            {station.id}
+          </Typography.Text>
         </div>
-        <Notice message={message} />
-        <div className="toolbar">
+        <Space>
           <Status value={station.visibility} />
           <Status value={station.status} />
-          <button
-            onClick={
-              // 冲突时手动取回最新版本，不自动覆盖输入。
-              () => void reload()
+        </Space>
+      </Flex>
+      <Notice message={error} type="error" />
+      <Descriptions
+        size="small"
+        column={2}
+        items={[
+          { key: 'source', label: '数据来源', children: station.source },
+          {
+            key: 'updated',
+            label: '更新时间 UTC',
+            children: station.updatedAt,
+          },
+        ]}
+      />
+      {writable && (
+        <div className="visibility-action">
+          <Popconfirm
+            title={
+              station.visibility === 'visible'
+                ? '确认下架这个电台？'
+                : '确认上架这个电台？'
             }
-            disabled={busy}
+            description={
+              dirty
+                ? '当前还有未保存的表单修改，请先保存或重新加载。'
+                : '此操作将更新电台在公开目录中的可见性。'
+            }
+            disabled={busy || dirty}
+            onConfirm={toggleVisibility}
+            okText="确认"
+            cancelText="取消"
           >
-            重新加载
-          </button>
-          {writable && (
-            <button
-              className={
-                station.visibility === 'visible' ? 'danger' : 'primary'
-              }
-              onClick={
-                // 状态修改失败时留在编辑器，反馈可见且不会重试写操作。
-                () => void toggleVisibility()
-              }
-              disabled={busy}
+            <Button
+              danger={station.visibility === 'visible'}
+              disabled={busy || dirty}
             >
               {station.visibility === 'visible' ? '下架电台' : '上架电台'}
-            </button>
-          )}
+            </Button>
+          </Popconfirm>
         </div>
-        <form onSubmit={submit}>
-          <fieldset disabled={!writable || busy}>
-            <div className="form-grid">
-              <label>
-                目录状态
-                <select name="status" defaultValue={station.status}>
-                  <option value="active">可用</option>
-                  <option value="unverified">未验证</option>
-                  <option value="unavailable">不可用</option>
-                </select>
-              </label>
-              {[
-                ['name', '电台名称', station.name],
-                ['place', '地区/城市', station.place ?? ''],
-                ['website', '网站地址', station.website ?? ''],
-                ['favicon', '图标地址', station.favicon ?? ''],
-                ['latitude', '纬度', station.latitude ?? ''],
-                ['longitude', '经度', station.longitude ?? ''],
-              ].map(
-                // 固定字段生成表单；URL 不作为图片自动加载，避免外部跟踪与请求。
-                ([name, label, value]) => (
-                  <label key={name}>
-                    {label}
-                    <input
-                      name={String(name)}
-                      defaultValue={String(value)}
-                      required={name === 'name'}
-                      maxLength={
-                        name === 'website' || name === 'favicon' ? 2048 : 200
-                      }
-                    />
-                  </label>
-                ),
+      )}
+      <Tabs
+        activeKey={tab}
+        onChange={
+          // 切换编辑区需要确认丢弃当前草稿。
+          (key) =>
+            leave(
+              // 卸载当前表单并清除草稿标记。
+              () => {
+                setTab(key);
+                setDirty(false);
+                setError('');
+              },
+            )
+        }
+        items={[
+          { key: 'basic', label: '基本信息' },
+          { key: 'streams', label: `播放流 (${station.streams.length})` },
+        ]}
+      />
+      {tab === 'basic' ? (
+        <StationForm
+          station={station}
+          disabled={!writable || busy}
+          onSaved={onSaved}
+          onBusy={setBusy}
+          onError={setError}
+          onChanged={changed}
+        />
+      ) : (
+        <>
+          <div className="stream-selector">
+            <Select
+              aria-label="选择播放流"
+              value={streamId}
+              placeholder="暂无播放流"
+              disabled={busy}
+              options={station.streams.map(
+                // 主流标记只读，不在本次编辑中改变。
+                (item) => ({
+                  value: item.id,
+                  label: `${item.isPrimary ? '主播放流' : '备用流'} · ${item.codec ?? '未知编码'} · ${item.id}`,
+                }),
               )}
-              <CatalogFilter
-                kind="countries"
-                label={`国家/地区（当前：${station.country ?? '未设置'}）`}
-                value={countryId}
-                onChange={setCountryId}
-              />
-            </div>
-            {writable && (
-              <button className="primary" type="submit" disabled={busy}>
-                保存基本信息
-              </button>
-            )}
-          </fieldset>
-        </form>
-        <h3>播放流 · {station.streams.length}</h3>
-        {station.streams.map(
-          // 每个流表单独立提交，父电台版本变化时整个编辑器重建。
-          (stream) => (
-            <StreamEditor
+              onChange={
+                // 同一时间只编辑一个流，切换前保留放弃确认。
+                (id) =>
+                  leave(
+                    // 已确认放弃旧流草稿。
+                    () => {
+                      setStreamId(id);
+                      setDirty(false);
+                      setError('');
+                    },
+                  )
+              }
+            />
+          </div>
+          {stream ? (
+            <StreamForm
               key={stream.id}
               station={station}
               stream={stream}
-              writable={writable}
+              disabled={!writable || busy}
               onSaved={onSaved}
+              onBusy={setBusy}
+              onError={setError}
+              onChanged={changed}
             />
-          ),
-        )}
-      </section>
-    </div>
+          ) : (
+            <Notice message="这个电台尚无播放流。" />
+          )}
+        </>
+      )}
+    </Drawer>
   );
 }
 
+type EditorCallbacks = {
+  disabled: boolean;
+  onSaved: (station: StationDetail) => void;
+  onBusy: (busy: boolean) => void;
+  onError: (message: string) => void;
+  onChanged: () => void;
+};
+type StationValues = Pick<
+  StationDetail,
+  'name' | 'status' | 'place' | 'website' | 'favicon' | 'latitude' | 'longitude'
+>;
+
 /**
- * 已有流编辑仅更改 URL、编码与 HLS 信息，保留主流标记和 ID。
+ * 基本信息使用表单字段校验，坐标必须成对提供；写入仍由 API 检查约束与版本。
  */
-function StreamEditor({
+function StationForm({
+  station,
+  disabled,
+  onSaved,
+  onBusy,
+  onError,
+  onChanged,
+}: { station: StationDetail } & EditorCallbacks) {
+  const [countryId, setCountryId] = useState(station.countryId ?? '');
+  /**
+   * 表单验证通过才提交；失败保留输入并显示安全错误与请求 ID。
+   */
+  async function submit(values: StationValues) {
+    if ((values.latitude == null) !== (values.longitude == null)) {
+      onError('经度和纬度必须同时填写或同时清空。');
+      return;
+    }
+    onBusy(true);
+    onError('');
+    try {
+      onSaved(
+        await save<StationDetail>(`/admin/api/stations/${station.id}`, {
+          ...values,
+          expectedUpdatedAt: station.updatedAt,
+          countryId: countryId || null,
+          place: values.place || null,
+          website: values.website || null,
+          favicon: values.favicon || null,
+          latitude: values.latitude ?? null,
+          longitude: values.longitude ?? null,
+        }),
+      );
+    } catch (reason) {
+      onError(errorMessage(reason));
+    } finally {
+      onBusy(false);
+    }
+  }
+  return (
+    <Form
+      id="station-form"
+      layout="vertical"
+      disabled={disabled}
+      initialValues={station}
+      onFinish={submit}
+      onValuesChange={onChanged}
+    >
+      <Row gutter={20}>
+        <Col xs={24} sm={16}>
+          <Form.Item
+            name="name"
+            label="电台名称"
+            rules={[
+              {
+                required: true,
+                whitespace: true,
+                max: 200,
+                message: '请输入 1–200 个字符的电台名称',
+              },
+            ]}
+          >
+            <Input maxLength={200} showCount />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={8}>
+          <Form.Item
+            name="status"
+            label="目录状态"
+            rules={[{ required: true }]}
+          >
+            <Select options={statusOptions} />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Form.Item label={`国家 / 地区（${station.country ?? '未设置'}）`}>
+            <CatalogFilter
+              kind="countries"
+              label="国家 / 地区"
+              value={countryId}
+              disabled={disabled}
+              onChange={
+                // 远程关联字段不由 Form 管理，显式标记草稿变化。
+                (id) => {
+                  setCountryId(id);
+                  onChanged();
+                }
+              }
+            />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Form.Item name="place" label="地区 / 城市" rules={[{ max: 200 }]}>
+            <Input maxLength={200} />
+          </Form.Item>
+        </Col>
+        <Col span={24}>
+          <Form.Item
+            name="website"
+            label="网站地址"
+            rules={[
+              { type: 'url', message: '请输入完整的网站 URL' },
+              { max: 2048 },
+            ]}
+          >
+            <Input placeholder="https://" maxLength={2048} />
+          </Form.Item>
+        </Col>
+        <Col span={24}>
+          <Form.Item
+            name="favicon"
+            label="图标地址"
+            extra="仅保存地址，不自动加载外部图片。"
+            rules={[
+              { type: 'url', message: '请输入完整的图标 URL' },
+              { max: 2048 },
+            ]}
+          >
+            <Input placeholder="https://" maxLength={2048} />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            name="latitude"
+            label="纬度"
+            rules={[{ type: 'number', min: -90, max: 90 }]}
+          >
+            <InputNumber
+              min={-90}
+              max={90}
+              placeholder="-90 至 90"
+              className="full-width"
+            />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            name="longitude"
+            label="经度"
+            rules={[{ type: 'number', min: -180, max: 180 }]}
+          >
+            <InputNumber
+              min={-180}
+              max={180}
+              placeholder="-180 至 180"
+              className="full-width"
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+    </Form>
+  );
+}
+
+type StreamValues = {
+  url: string;
+  resolvedUrl: string | null;
+  codec: string | null;
+  bitrate: number | null;
+  isHls: boolean;
+};
+/**
+ * 播放流只编辑允许字段；ID、归属和主流标记保持只读，保存携带父电台版本。
+ */
+function StreamForm({
   station,
   stream,
-  writable,
+  disabled,
   onSaved,
-}: {
-  station: StationDetail;
-  stream: Stream;
-  writable: boolean;
-  onSaved: (station: StationDetail) => void;
-}) {
-  const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState('');
+  onBusy,
+  onError,
+  onChanged,
+}: { station: StationDetail; stream: Stream } & EditorCallbacks) {
   /**
-   * 播放流保存带电台版本与流 ID，由服务端再验证流归属。
+   * 独立保存当前播放流，空可选值显式提交 null，不自动重试冲突写入。
    */
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    setBusy(true);
-    setMessage('');
+  async function submit(values: StreamValues) {
+    onBusy(true);
+    onError('');
     try {
       onSaved(
         await save<StationDetail>(
           `/admin/api/stations/${station.id}/streams/${stream.id}`,
           {
+            ...values,
             expectedUpdatedAt: station.updatedAt,
-            url: String(form.get('url')),
-            resolvedUrl: String(form.get('resolvedUrl')) || null,
-            codec: String(form.get('codec')) || null,
-            bitrate:
-              form.get('bitrate') === '' ? null : Number(form.get('bitrate')),
-            isHls: form.get('isHls') === 'on',
+            resolvedUrl: values.resolvedUrl || null,
+            codec: values.codec || null,
+            bitrate: values.bitrate ?? null,
           },
         ),
       );
-    } catch (error) {
-      setMessage(errorMessage(error));
+    } catch (reason) {
+      onError(errorMessage(reason));
     } finally {
-      setBusy(false);
+      onBusy(false);
     }
   }
   return (
-    <form className="stream-form" onSubmit={submit}>
-      <div className="panel-heading">
-        <span className="mono">{stream.id}</span>
-        <span className="badge">
-          {stream.isPrimary ? '主播放流' : '备用流'}
-        </span>
-      </div>
-      <Notice message={message} />
-      <fieldset disabled={!writable || busy}>
-        <div className="form-grid">
-          <label>
-            原始 URL
-            <input
-              name="url"
-              defaultValue={stream.url}
-              required
-              maxLength={2048}
+    <Form
+      id="stream-form"
+      layout="vertical"
+      disabled={disabled}
+      initialValues={{ ...stream, isHls: stream.isHls === 1 }}
+      onFinish={submit}
+      onValuesChange={onChanged}
+    >
+      <Space className="section-notice">
+        <Tag>{stream.isPrimary ? '主播放流' : '备用流'}</Tag>
+        <Typography.Text type="secondary">{stream.id}</Typography.Text>
+      </Space>
+      <Form.Item
+        name="url"
+        label="原始 URL"
+        rules={[{ required: true, whitespace: true, max: 2048 }]}
+      >
+        <Input maxLength={2048} />
+      </Form.Item>
+      <Form.Item name="resolvedUrl" label="解析 URL" rules={[{ max: 2048 }]}>
+        <Input maxLength={2048} />
+      </Form.Item>
+      <Row gutter={20}>
+        <Col span={12}>
+          <Form.Item name="codec" label="编码" rules={[{ max: 40 }]}>
+            <Input maxLength={40} placeholder="例如 MP3、AAC" />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            name="bitrate"
+            label="比特率 (kbps)"
+            rules={[{ type: 'integer', min: 0, max: 100000 }]}
+          >
+            <InputNumber
+              min={0}
+              max={100000}
+              precision={0}
+              className="full-width"
             />
-          </label>
-          <label>
-            解析 URL
-            <input
-              name="resolvedUrl"
-              defaultValue={stream.resolvedUrl ?? ''}
-              maxLength={2048}
-            />
-          </label>
-          <label>
-            编码
-            <input
-              name="codec"
-              defaultValue={stream.codec ?? ''}
-              maxLength={40}
-            />
-          </label>
-          <label>
-            比特率
-            <input
-              name="bitrate"
-              type="number"
-              min="0"
-              max="100000"
-              defaultValue={stream.bitrate ?? ''}
-            />
-          </label>
-          <label className="checkbox">
-            <input
-              type="checkbox"
-              name="isHls"
-              defaultChecked={stream.isHls === 1}
-            />
-            HLS 播放流
-          </label>
-        </div>
-        {writable && (
-          <button type="submit" disabled={busy}>
-            保存播放流
-          </button>
-        )}
-      </fieldset>
-    </form>
+          </Form.Item>
+        </Col>
+      </Row>
+      <Form.Item name="isHls" label="HLS 播放流" valuePropName="checked">
+        <Switch />
+      </Form.Item>
+    </Form>
   );
 }

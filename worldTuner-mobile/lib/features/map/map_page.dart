@@ -16,21 +16,25 @@ import '../stations/station.dart';
 import '../stations/station_library.dart';
 import 'globe_message.dart';
 import 'map_point.dart';
+import 'station_map_request.dart';
 
 // 用本地地球页面渲染卫星影像和地形，电台业务仍由 Flutter 处理。
 class MapPage extends StatefulWidget {
+  // 保留主地图实例；focusRequest 变化时消费一次列表定位请求。
   const MapPage({
     super.key,
     required this.api,
     required this.player,
     required this.library,
     required this.text,
+    this.focusRequest,
   });
 
   final ApiClient api;
   final PlayerController player;
   final StationLibrary library;
   final AppText text;
+  final StationMapRequest? focusRequest;
 
   // 创建可保留地球视角和所选电台的页面状态。
   @override
@@ -51,6 +55,7 @@ class _MapPageState extends State<MapPage> {
   String? _selectedId;
   Station? _selectedStation;
   String? _shownPlayingStationId;
+  StationMapRequest? _handledFocusRequest;
 
   // 并行加载 API 点位和地球页面，任一方完成后尝试同步数据。
   @override
@@ -63,10 +68,16 @@ class _MapPageState extends State<MapPage> {
     unawaited(_loadPoints());
   }
 
-  // 父组件更换播放器时转移监听，避免旧实例继续向地球发送播放状态。
+  // 消费新的定位请求；父组件更换播放器时转移监听。
   @override
   void didUpdateWidget(covariant MapPage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusRequest != widget.focusRequest) {
+      // 等导航与 WebView 完成本帧布局，再移动相机或显示缺失坐标提示。
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        unawaited(_focusRequestedStation());
+      });
+    }
     if (oldWidget.player == widget.player) return;
     oldWidget.player.removeListener(_syncPlayingStation);
     widget.player.addListener(_syncPlayingStation);
@@ -175,6 +186,45 @@ class _MapPageState extends State<MapPage> {
         )
         .toList();
     await _runGlobeScript('setStations', stations);
+    await _focusRequestedStation();
+  }
+
+  // 等待地球及点位就绪后定位并展示卡片；无坐标时提示，不移动到默认坐标。
+  Future<void> _focusRequestedStation() async {
+    final request = widget.focusRequest;
+    if (!mounted ||
+        !_globeReady ||
+        _pointsLoading ||
+        request == null ||
+        request == _handledFocusRequest) {
+      return;
+    }
+    final station = request.station;
+    final point = _pointsById[station.id];
+    final latitude = point?.latitude ?? station.geoLat;
+    final longitude = point?.longitude ?? station.geoLong;
+    _handledFocusRequest = request;
+    if (latitude == null ||
+        longitude == null ||
+        !latitude.isFinite ||
+        !longitude.isFinite ||
+        latitude.abs() > 90 ||
+        longitude.abs() > 180) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(widget.text.get('stationLocationMissing'))),
+      );
+      return;
+    }
+    // 只展示所选电台卡片，不调用播放器；与地图点选请求共享过期结果保护。
+    setState(() {
+      _selectedId = station.id;
+      _selectedStation = station;
+    });
+    await _runGlobeScript('focusStation', {
+      'id': station.id,
+      'latitude': latitude,
+      'longitude': longitude,
+    });
   }
 
   // 只为实际播放且有有效坐标的电台传递点位；暂停、缓冲或失败时移除光圈。
@@ -277,6 +327,7 @@ class _MapPageState extends State<MapPage> {
       _error = false;
     });
     _shownPlayingStationId = null;
+    _handledFocusRequest = null;
     unawaited(_loadPoints());
     if (AppConfig.mapTilerKey.isNotEmpty) {
       unawaited(_webView.reload());

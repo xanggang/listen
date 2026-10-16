@@ -10,6 +10,7 @@ import '../../core/api_client.dart';
 import '../../core/app_text.dart';
 import '../../core/metrics_reporter.dart';
 import '../map/map_page.dart';
+import '../map/station_map_request.dart';
 import '../player/player_bar.dart';
 import '../player/player_controller.dart';
 import '../settings/settings_controller.dart';
@@ -47,6 +48,17 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
   bool _showVip = false;
+  StationMapRequest? _mapRequest;
+
+  // 接收列表定位请求，复用主地图并记录地图访问；不触发播放。
+  bool _showStationOnMap(StationMapRequest request) {
+    setState(() {
+      _mapRequest = request;
+      _showVip = false;
+    });
+    _selectPage(0);
+    return true;
+  }
 
   // 切换选中的主页面，不销毁其他页面的滚动或地图位置。
   void _selectPage(int index) {
@@ -87,100 +99,107 @@ class _HomeShellState extends State<HomeShell> {
                   ? Brightness.light
                   : Brightness.dark,
             );
-    return PopScope(
-      canPop: !_showVip,
-      // Android 系统返回键优先关闭权益页。
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop && _showVip) _closeVip();
-      },
-      child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: overlayStyle,
-        child: Scaffold(
-          backgroundColor: palette.canvas,
-          body: SafeArea(
-            top: _showVip || _index != 0,
-            bottom: false,
-            child: Column(
-              children: [
-                Expanded(
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: Visibility(
-                          visible: !_showVip,
-                          maintainState: true,
-                          child: IndexedStack(
-                            index: _index,
-                            children: [
-                              MapPage(
-                                api: widget.api,
-                                player: widget.player,
-                                library: widget.library,
-                                text: widget.text,
-                              ),
-                              Column(
-                                children: [
-                                  Expanded(
-                                    child: DiscoverPage(
-                                      api: widget.api,
-                                      player: widget.player,
-                                      library: widget.library,
-                                      text: widget.text,
+    return NotificationListener<StationMapRequest>(
+      onNotification: _showStationOnMap,
+      child: PopScope(
+        canPop: !_showVip,
+        // Android 系统返回键优先关闭权益页。
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop && _showVip) _closeVip();
+        },
+        child: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: overlayStyle,
+          child: Scaffold(
+            backgroundColor: palette.canvas,
+            body: SafeArea(
+              top: _showVip || _index != 0,
+              bottom: false,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: Visibility(
+                            visible: !_showVip,
+                            maintainState: true,
+                            child: IndexedStack(
+                              index: _index,
+                              children: [
+                                MapPage(
+                                  focusRequest: _mapRequest,
+                                  api: widget.api,
+                                  player: widget.player,
+                                  library: widget.library,
+                                  text: widget.text,
+                                ),
+                                Column(
+                                  children: [
+                                    Expanded(
+                                      child: DiscoverPage(
+                                        api: widget.api,
+                                        player: widget.player,
+                                        library: widget.library,
+                                        text: widget.text,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  const AetherHeader(),
-                                  Expanded(
-                                    child: LeaderboardPage(
-                                      api: widget.api,
-                                      player: widget.player,
-                                      library: widget.library,
-                                      text: widget.text,
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    const AetherHeader(),
+                                    Expanded(
+                                      child: LeaderboardPage(
+                                        api: widget.api,
+                                        player: widget.player,
+                                        library: widget.library,
+                                        text: widget.text,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  const AetherHeader(),
-                                  Expanded(
-                                    child: SettingsPage(
-                                      settings: widget.settings,
-                                      player: widget.player,
-                                      library: widget.library,
-                                      text: widget.text,
-                                      onViewVip: _openVip,
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    const AetherHeader(),
+                                    Expanded(
+                                      child: SettingsPage(
+                                        settings: widget.settings,
+                                        player: widget.player,
+                                        library: widget.library,
+                                        text: widget.text,
+                                        onViewVip: _openVip,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      if (_showVip)
-                        Positioned.fill(
-                          child: VipPage(text: widget.text, onBack: _closeVip),
-                        ),
-                      if (_index == 0 && !_showVip) const _MapBrand(),
-                    ],
+                        if (_showVip)
+                          Positioned.fill(
+                            child: VipPage(
+                              text: widget.text,
+                              onBack: _closeVip,
+                            ),
+                          ),
+                        if (_index == 0 && !_showVip) const _MapBrand(),
+                      ],
+                    ),
                   ),
-                ),
-                PlayerBar(
-                  player: widget.player,
-                  library: widget.library,
-                  text: widget.text,
-                ),
-                if (!_showVip)
-                  _BottomNavigation(
-                    index: _index,
+                  PlayerBar(
+                    player: widget.player,
+                    library: widget.library,
                     text: widget.text,
-                    onSelected: _selectPage,
                   ),
-              ],
+                  if (!_showVip)
+                    _BottomNavigation(
+                      index: _index,
+                      text: widget.text,
+                      onSelected: _selectPage,
+                    ),
+                ],
+              ),
             ),
           ),
         ),

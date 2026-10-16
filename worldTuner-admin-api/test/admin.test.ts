@@ -64,7 +64,6 @@ beforeEach(async () => {
     METRICS_DB: ops,
     DEPLOYMENT_ENV: 'local',
     ADMIN_ORIGIN: 'http://127.0.0.1:5173',
-    ADMIN_LOCAL_TOKEN: token,
   };
   csrf = '';
   const response = await call('/me');
@@ -78,10 +77,10 @@ afterEach(() => {
 });
 
 /**
- * 调用独立管理入口；默认模拟同源浏览器身份，测试可显式覆盖安全标头。
+ * 调用独立管理入口；默认模拟无凭据的同源本地浏览器，生产用例显式提供 Access 标头。
  */
-async function call(path: string, options: RequestInit = {}, authenticated = true) {
-  const headers = new Headers({ ...(authenticated ? { Authorization: `Bearer ${token}` } : {}) });
+async function call(path: string, options: RequestInit = {}) {
+  const headers = new Headers();
   if (options.method && options.method !== 'GET') {
     headers.set('Origin', env.ADMIN_ORIGIN);
     headers.set('Content-Type', 'application/json');
@@ -100,9 +99,10 @@ async function call(path: string, options: RequestInit = {}, authenticated = tru
   );
 }
 
-// 角色、CSRF 与凭据只由受保护会话接口返回，所有管理响应 no-store。
-test('admin authentication fails closed and me returns bounded session', async () => {
-  assert.equal((await call('/me', {}, false)).status, 401);
+// local + loopback 无需密钥即可读取会话与目录，仍检查管理员是否启用，响应 no-store。
+test('local loopback sessions need no key and enforce enabled admin mapping', async () => {
+  assert.equal((await call('/me')).status, 200);
+  assert.equal((await call('/stations')).status, 200);
   const response = await call('/me');
   assert.equal(response.headers.get('Cache-Control'), 'no-store');
   const body = (await response.json()) as { data: { id: string; role: string; csrfToken: string } };
@@ -113,7 +113,7 @@ test('admin authentication fails closed and me returns bounded session', async (
   assert.equal((await call('/me')).status, 403);
 });
 
-// 本地密钥不能在生产环境或非 loopback URL 使用，静态资源也不绕过生产鉴权。
+// 无凭据或开发 bearer 均不能绕过生产 Access，local 模式也拒绝非 loopback URL。
 test('production rejects local bearer and protects static assets', async () => {
   env.DEPLOYMENT_ENV = 'production';
   env.ASSETS = {
@@ -121,6 +121,7 @@ test('production rejects local bearer and protects static assets', async () => {
     fetch: async () => new Response('private admin html'),
   } as unknown as Fetcher;
   assert.equal((await call('/me')).status, 401);
+  assert.equal((await call('/me', { headers: { Authorization: `Bearer ${token}` } })).status, 401);
   assert.equal((await call('/')).status, 401);
   env.DEPLOYMENT_ENV = 'local';
   assert.equal(
@@ -441,10 +442,22 @@ test('Access validates signed JWT, audience, issuer, expiry and explicit admin m
       .sign(privateKey);
   }
   const valid = await signed();
-  assert.equal(
-    (await call('/me', { headers: { 'Cf-Access-Jwt-Assertion': valid } }, false)).status,
-    200,
-  );
+  env.ASSETS = {
+    // 模拟经过 Access 验证后提供的生产页面，HTML 与实体头保持原样。
+    fetch: async () =>
+      new Response('<html><head><title>Admin</title></head><body></body></html>', {
+        headers: { 'Content-Type': 'text/html', ETag: 'old-asset', 'Content-Length': '100' },
+      }),
+  } as unknown as Fetcher;
+  const page = await call('/', { headers: { 'Cf-Access-Jwt-Assertion': valid } });
+  assert.equal(await page.text(), '<html><head><title>Admin</title></head><body></body></html>');
+  const policy = page.headers.get('Content-Security-Policy') ?? '';
+  assert.ok(policy.includes("style-src 'self' 'unsafe-inline'"));
+  assert.ok(policy.includes("script-src 'self';"));
+  assert.ok(!policy.includes('nonce-'));
+  assert.equal(page.headers.get('ETag'), 'old-asset');
+  assert.equal(page.headers.get('Cache-Control'), 'no-store');
+  assert.equal((await call('/me', { headers: { 'Cf-Access-Jwt-Assertion': valid } })).status, 200);
   for (const invalid of [
     await signed('wrong'),
     await signed('admin-audience', 'https://evil.invalid'),
@@ -452,25 +465,21 @@ test('Access validates signed JWT, audience, issuer, expiry and explicit admin m
     `${valid.slice(0, -10)}abcdefghij`,
   ])
     assert.equal(
-      (await call('/me', { headers: { 'Cf-Access-Jwt-Assertion': invalid } }, false)).status,
+      (await call('/me', { headers: { 'Cf-Access-Jwt-Assertion': invalid } })).status,
       401,
     );
   assert.equal(
     (
-      await call(
-        '/me',
-        {
-          headers: {
-            'Cf-Access-Jwt-Assertion': await signed(
-              'admin-audience',
-              issuer,
-              Math.floor(Date.now() / 1000) + 300,
-              'unknown-sub',
-            ),
-          },
+      await call('/me', {
+        headers: {
+          'Cf-Access-Jwt-Assertion': await signed(
+            'admin-audience',
+            issuer,
+            Math.floor(Date.now() / 1000) + 300,
+            'unknown-sub',
+          ),
         },
-        false,
-      )
+      })
     ).status,
     403,
   );

@@ -736,7 +736,7 @@
     "/map/snapshot": {
       "get": {
         "operationId": "mapSnapshot",
-        "description": "全部公开且有有效坐标的电台，不分页、不聚合。四字段元组，坐标保留五位小数。默认 TTL 300 秒，支持 gzip、弱 ETag；不接受查询参数。",
+        "description": "全部公开且有有效坐标的电台，不分页、不聚合。三字段元组 [id, longitude, latitude]，不包含名称，坐标保留五位小数。默认 TTL 300 秒，支持 gzip、弱 ETag；不接受查询参数。",
         "parameters": [
           {
             "in": "header",
@@ -807,9 +807,9 @@
                           "type": "array",
                           "items": {
                             "type": "array",
-                            "minItems": 4,
-                            "maxItems": 4,
-                            "description": "固定顺序：[7 位 Base62 public_id, name, longitude, latitude]；OAS 3.0 不支持位置类型校验。",
+                            "minItems": 3,
+                            "maxItems": 3,
+                            "description": "固定顺序：[7 位 Base62 public_id, longitude, latitude]；名称通过电台详情接口获取。OAS 3.0 不支持位置类型校验。",
                             "items": {
                               "oneOf": [
                                 {
@@ -821,8 +821,7 @@
                               ]
                             },
                             "example": [
-                              "0363513228099059713",
-                              "Radio",
+                              "0aB12xY",
                               -87.90647,
                               43.0389
                             ]

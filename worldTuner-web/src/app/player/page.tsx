@@ -1,5 +1,5 @@
 'use client';
-import { useCallback } from 'react';
+import { Suspense, useCallback } from 'react';
 import Map from '@/components/Map';
 import { getStationById } from '@/app/actions/actions';
 import { useStationStore } from '@/app/store/useStationStore';
@@ -33,7 +33,9 @@ export default function PlayerPage() {
 
   return (
     <div className="w-full h-full">
-      <Map onChange={onChange}></Map>
+      <Suspense fallback={null}>
+        <Map onChange={onChange} />
+      </Suspense>
     </div>
   );
 }

@@ -4,9 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { useTheme } from 'next-themes';
-import { Map as MapTilerMap, MapStyle, config } from '@maptiler/sdk';
+import { useSearchParams } from 'next/navigation';
+import { Map as MapTilerMap, config } from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import { loadStationFeatures } from '@/lib/map-stations';
+import { createGlobeOptions } from '@/lib/globe-options';
 import { useStationStore } from '@/app/store/useStationStore';
 
 interface MapProps {
@@ -99,7 +101,7 @@ function applyGlobeTheme(globe: MapTilerMap, dark: boolean): void {
 }
 
 /**
- * 绘制卫星地球和播放光圈；点选仅回传 7 位电台 public_id。
+ * 绘制卫星地球；station 查询参数在点位就绪后定位，不调用播放回调。
  */
 export default function Map({ onChange }: MapProps) {
   const container = useRef<HTMLDivElement>(null);
@@ -110,6 +112,12 @@ export default function Map({ onChange }: MapProps) {
   const stationIds = useRef<Set<string>>(new Set());
   const [hudVisible, setHudVisible] = useState(true);
   const [pointsError, setPointsError] = useState(false);
+  const [stationFeatures, setStationFeatures] = useState<GeoJSON.FeatureCollection<GeoJSON.Point> | null>(null);
+  const requestedStationId = useSearchParams().get('station');
+  const focusedFeature = stationFeatures?.features.find(
+    // 只从已验证的当前快照中解析坐标，不信任 URL 传入的经纬度。
+    (feature) => feature.properties?.id === requestedStationId,
+  );
   const playingStationId = useStationStore(
     /**
  * 暂停或尚未选台时清除地图上的播放标记。
@@ -133,23 +141,11 @@ export default function Map({ onChange }: MapProps) {
       const loadedStationIds = stationIds.current;
       config.apiKey = process.env.NEXT_PUBLIC_MAPTILER_KEY || '5dPy611BtAufNGOyAaVt';
       const globe = new MapTilerMap({
+        ...createGlobeOptions(),
         container: container.current,
-        style: MapStyle.SATELLITE,
-        projection: 'globe',
-        terrain: true,
-        terrainExaggeration: 1.35,
-        center: [20, 25],
-        zoom: 0.9,
-        minZoom: -1,
-        maxZoom: 15,
-        maxPitch: 85,
         space: {
           color: document.documentElement.classList.contains('dark') ? '#0e1321' : '#f8fafc',
         },
-        halo: true,
-        navigationControl: false,
-        geolocateControl: false,
-        terrainControl: false,
       });
       map.current = globe;
 
@@ -198,6 +194,18 @@ export default function Map({ onChange }: MapProps) {
           },
         });
         globe.addLayer({
+          id: 'focused-station',
+          type: 'circle',
+          source: 'stations',
+          filter: ['==', ['get', 'id'], ''],
+          paint: {
+            'circle-color': '#ffffff',
+            'circle-radius': 9,
+            'circle-stroke-color': '#0284c7',
+            'circle-stroke-width': 3,
+          },
+        });
+        globe.addLayer({
           id: 'active-station-core',
           type: 'circle',
           source: 'stations',
@@ -216,6 +224,7 @@ export default function Map({ onChange }: MapProps) {
           // 每批保留独立点位并同步播放光圈；卸载后不再更新地图。
           (features) => {
             if (map.current !== globe) return;
+            setStationFeatures(features);
             const source = globe.getSource('stations');
             if (source && 'setData' in source && typeof source.setData === 'function') {
               (source as { setData: (data: GeoJSON.FeatureCollection<GeoJSON.Point>) => void }).setData(features);
@@ -266,6 +275,19 @@ export default function Map({ onChange }: MapProps) {
   );
 
   useEffect(
+    // 页面切换或 URL 电台变化后定位一次；等待快照加载，不修改正在播放的电台。
+    () => {
+      const globe = map.current;
+      if (!globe || !mapReady.current) return;
+      globe.setFilter('focused-station', ['==', ['get', 'id'], focusedFeature?.properties?.id ?? '']);
+      if (!focusedFeature) return;
+      const [longitude, latitude] = focusedFeature.geometry.coordinates;
+      globe.flyTo({ center: [longitude, latitude], zoom: 7, pitch: 0, duration: 1400 });
+    },
+    [focusedFeature],
+  );
+
+  useEffect(
     /**
  * 播放、暂停或切台时只更新播放点位，不重建地球和普通点位。
  */
@@ -299,6 +321,11 @@ export default function Map({ onChange }: MapProps) {
       {pointsError && <div className="globe-error" role="status">
         {locale === 'zh' ? '电台点位暂时无法加载' : 'Station points unavailable'}
       </div>}
+      {requestedStationId && stationFeatures && !focusedFeature && !pointsError && (
+        <div className="globe-error" role="status">
+          {locale === 'zh' ? '该电台暂无位置信息' : 'Location unavailable for this station'}
+        </div>
+      )}
       <div className={`globe-hud${hudVisible ? '' : ' is-hidden'}`} aria-hidden="true">
         <div className="globe-hud__ring" />
         <div className="globe-hud__ring globe-hud__ring--dashed" />

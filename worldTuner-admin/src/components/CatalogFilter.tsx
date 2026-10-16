@@ -1,80 +1,86 @@
 import { useState } from 'react';
+import { Button, Empty, Select, Space, Typography } from 'antd';
 import type { CatalogKind, CatalogItem, Page } from '../lib/contracts';
 import { useDebounced, useResource } from '../lib/hooks';
 /**
- * 分类筛选通过服务端搜索访问完整字典，保留已选项，避免只支持前几十个标签。
+ * 远程搜索完整分类字典；已选项跨搜索保留，未加载的初始 ID 使用明确兜底文案。
  */
 export function CatalogFilter({
   kind,
   label,
   value,
   onChange,
+  disabled = false,
 }: {
   kind: CatalogKind;
   label: string;
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }) {
   const [q, setQ] = useState('');
   const [selected, setSelected] = useState<CatalogItem>();
   const keyword = useDebounced(q);
-  const { data, error } = useResource<Page<CatalogItem>>(
+  const resource = useResource<Page<CatalogItem>>(
     `/admin/api/catalog/${kind}?pageSize=50&q=${encodeURIComponent(keyword)}`,
   );
-  const options = data?.list ?? [];
-  const visible =
-    selected &&
-    !options.some(
-      // 已选项目不在新搜索结果时仍保留，筛选值不会无声丢失。
-      (row) => row.id === selected.id,
-    )
-      ? [selected, ...options]
-      : options;
+  const options = [...(resource.data?.list ?? [])];
+  // 仅补充缺失的已选分类，避免候选 ID 重复。
+  if (selected && !options.some((row) => row.id === selected.id))
+    options.unshift(selected);
+  // 初始选项可能位于远程字典其他页，仍然保留其关联。
+  const hasValue = options.some((row) => row.id === value);
   return (
-    <label className="catalog-filter">
-      <span>{label}</span>
-      <input
-        aria-label={`搜索${label}`}
-        placeholder={`搜索${label}…`}
-        value={q}
-        onChange={
-          // 关键字只用于查找候选分类，选择后才改变电台筛选。
-          (event) => setQ(event.target.value)
+    <div className="filter-field">
+      <Typography.Text type="secondary">{label}</Typography.Text>
+      <Select
+        aria-label={label}
+        disabled={disabled}
+        showSearch={{ filterOption: false, onSearch: setQ }}
+        allowClear
+        loading={resource.loading}
+        value={value || undefined}
+        placeholder={`全部${label}`}
+        options={[
+          ...(value && !hasValue
+            ? [{ value, label: `当前选择 · ${value}` }]
+            : []),
+          // 字典优先显示中文，其次英文和来源原名。
+          ...options.map((row) => ({
+            value: row.id,
+            label: row.nameZh ?? row.nameEn ?? row.name,
+          })),
+        ]}
+        notFoundContent={
+          resource.error ? (
+            <Space orientation="vertical">
+              <Typography.Text type="danger">分类加载失败</Typography.Text>
+              <Button size="small" onClick={resource.refresh}>
+                重试
+              </Button>
+            </Space>
+          ) : resource.loading ? (
+            '正在搜索…'
+          ) : (
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description="没有匹配的分类"
+            />
+          )
         }
-      />
-      <select
-        aria-label={`选择${label}`}
-        value={value}
         onChange={
-          // 保存完整已选项，切换查询后仍能显示译名。
-          (event) => {
-            const id = event.target.value;
+          // 清空只移除关联，选择时保留完整名称用于后续搜索显示。
+          (id: string | undefined) => {
             setSelected(
               options.find(
-                // 使用分类 ID 作为稳定关联键。
+                // 匹配字典的稳定 ID，不依赖译名。
                 (row) => row.id === id,
               ),
             );
-            onChange(id);
+            onChange(id ?? '');
           }
         }
-      >
-        <option value="">全部{label}</option>
-        {value &&
-          !visible.some(
-            // 编辑器初始分类可能尚不在候选前 50 项中，仍明确保留选择。
-            (row) => row.id === value,
-          ) && <option value={value}>当前选择 · {value}</option>}
-        {visible.map(
-          // 优先显示中文，英文与原名兜底，不修改实际分类 ID。
-          (row) => (
-            <option key={row.id} value={row.id}>
-              {row.nameZh ?? row.nameEn ?? row.name}
-            </option>
-          ),
-        )}
-      </select>
-      {error && <small className="error">分类加载失败，修改搜索词可重试</small>}
-    </label>
+      />
+    </div>
   );
 }

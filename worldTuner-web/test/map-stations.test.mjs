@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadStationFeatures } from '../src/lib/map-stations.ts';
 
-// 全量元组一次获取，区分大小写的 public_id、中文名称及同坐标的不同电台保持原样。
+// 全量元组一次获取，仅传 public_id 和坐标，同坐标的不同电台保持原样。
 test('地图一次加载全量元组并启用浏览器缓存', async () => {
   const ids = ['0aB12xY', '0Ab12Xy'];
   let calls = 0;
@@ -19,13 +19,14 @@ test('地图一次加载全量元组并启用浏览器缓存', async () => {
           count: 2,
           points: ids.map(
             // 相同坐标保留两个独立 ID，不能进行点位聚合。
-            (id) => [id, '电台', -87.90647, 43.0389],
+            (id) => [id, -87.90647, 43.0389],
           ),
         },
       });
     },
   );
   assert.equal(calls, 1);
+  assert.deepEqual(result.features[0].properties, { id: ids[0] });
   assert.deepEqual(
     result.features.map(
       // ID 不经过 Number 转换。
@@ -40,8 +41,9 @@ test('地图一次加载全量元组并启用浏览器缓存', async () => {
 test('坏元组、错误计数和 HTTP 失败中止加载', async () => {
   for (const data of [
     { count: 1, points: [] },
-    { count: 1, points: [['0363513228099059713', 'Old ID', 120, 30]] },
-    { count: 1, points: [['0aB12xY', 'Bad', 120, 100]] },
+    { count: 1, points: [['0aB12xY', 'Old name', 120, 30]] },
+    { count: 1, points: [['0363513228099059713', 120, 30]] },
+    { count: 1, points: [['0aB12xY', 120, 100]] },
   ]) {
     await assert.rejects(
       loadStationFeatures(

@@ -9,9 +9,6 @@ import type { AdminBindings } from '../src/types.ts';
 import { deliverAudit } from '../src/audit/audit.repository.ts';
 
 const apiRoot = fileURLToPath(new URL('../', import.meta.url));
-const token = process.env.ADMIN_LOCAL_TOKEN;
-if (!token || token.length < 32)
-  throw new Error('Set ADMIN_LOCAL_TOKEN to at least 32 characters in .env.sqlite');
 const catalogPath = resolve(
   process.env.SQLITE_PATH ??
     resolve(apiRoot, '../worldTuner-data/v2/data/worldtuner-v2-public.sqlite'),
@@ -48,7 +45,6 @@ const env: AdminBindings = {
   DB: catalog,
   METRICS_DB: metrics,
   DEPLOYMENT_ENV: 'local',
-  ADMIN_LOCAL_TOKEN: token,
   ADMIN_ORIGIN: process.env.ADMIN_ORIGIN ?? 'http://127.0.0.1:5173',
   ADMIN_LIMITER: new LocalRateLimiter(120),
 };
@@ -64,7 +60,7 @@ const server = serve(
       return adminApp.fetch(request, env);
     },
   },
-  // 不输出本地密钥、请求正文或播放流地址。
+  // 仅输出本地监听地址，不记录请求正文或播放流地址。
   () => console.log(`worldTuner Admin API http://127.0.0.1:${port}`),
 );
 const timer = setInterval(

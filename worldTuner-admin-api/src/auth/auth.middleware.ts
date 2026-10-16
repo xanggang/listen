@@ -6,7 +6,7 @@ import { csrfToken, secretsEqual } from './csrf.ts';
 
 /**
  * 所有页面与 API 统一鉴权；生产只接受经过签名验证且在运营库启用的 Access 身份。
- * 本地密钥仅可在显式 local 环境与 loopback URL 使用，不是生产后备登录方式。
+ * 显式 local 环境且 URL 为 loopback 时自动使用本地管理员，生产不使用此分支。
  */
 export const authenticateAdmin = createMiddleware<AdminEnv>(async (c, next) => {
   let issuer: string;
@@ -16,17 +16,8 @@ export const authenticateAdmin = createMiddleware<AdminEnv>(async (c, next) => {
     if (!['localhost', '127.0.0.1', '[::1]'].includes(new URL(c.req.url).hostname)) {
       throw new ApiError(403, 'LOCAL_ONLY', 'Local authentication requires loopback');
     }
-    credential = c.req.header('Authorization')?.replace(/^Bearer /, '') ?? '';
-    // 静态页面不含数据，允许在本地先加载登录界面；API 必须验证开发密钥。
-    if (!c.req.path.startsWith('/admin/api/')) return next();
-    if (
-      !c.env.ADMIN_LOCAL_TOKEN ||
-      c.env.ADMIN_LOCAL_TOKEN.length < 32 ||
-      !credential ||
-      !(await secretsEqual(credential, c.env.ADMIN_LOCAL_TOKEN))
-    ) {
-      throw new ApiError(401, 'UNAUTHORIZED', 'Local admin token required');
-    }
+    // 本地开发无需浏览器凭据，CSRF 仍绑定本地身份与服务进程。
+    credential = '';
     issuer = 'local';
     subject = 'local-owner';
   } else {

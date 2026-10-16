@@ -1,6 +1,10 @@
 import type { ReactNode } from 'react';
+import { Alert, Button, Empty, Flex, Table, Tag, Typography } from 'antd';
+import type { TableProps } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
+
 /**
- * 管理页面统一标题、说明与操作区域。
+ * 页面标题统一展示业务说明和主要操作，窄屏允许操作区自然换行。
  */
 export function PageHeader({
   title,
@@ -12,23 +16,28 @@ export function PageHeader({
   action?: ReactNode;
 }) {
   return (
-    <header className="page-header">
+    <Flex
+      className="page-header"
+      justify="space-between"
+      align="center"
+      gap={16}
+      wrap
+    >
       <div>
-        <div className="eyebrow">WORKSPACE / ADMINISTRATION</div>
-        <h1>{title}</h1>
-        <p>{description}</p>
+        <Typography.Title level={3}>{title}</Typography.Title>
+        <Typography.Text type="secondary">{description}</Typography.Text>
       </div>
       {action}
-    </header>
+    </Flex>
   );
 }
+
 /**
- * 显示真实加载、空列表与失败状态，失败保留手动重试入口。
+ * 请求失败保留原始安全错误和重试入口；加载态与空态交给列表组件处理。
  */
 export function ResourceState({
   loading,
   error,
-  empty,
   retry,
 }: {
   loading: boolean;
@@ -36,92 +45,129 @@ export function ResourceState({
   empty?: boolean;
   retry: () => void;
 }) {
-  if (loading)
-    return (
-      <div className="state" role="status">
-        正在加载…
-      </div>
-    );
-  if (error)
-    return (
-      <div className="state error" role="alert">
-        <p>{error}</p>
-        <button onClick={retry}>重新加载</button>
-      </div>
-    );
-  if (empty) return <div className="state">当前条件下没有数据</div>;
-  return null;
-}
-/**
- * 有界分页不改变筛选，页大小与服务端管理契约一致。
- */
-export function Pager({
-  page,
-  total,
-  onChange,
-}: {
-  page: number;
-  total: number;
-  onChange: (page: number) => void;
-}) {
-  const pages = Math.max(1, Math.ceil(total / 20));
-  return (
-    <div className="pager">
-      <span>
-        共 {total.toLocaleString()} 条 · 第 {page} / {pages} 页
-      </span>
-      <div>
-        <button
-          disabled={page <= 1}
-          onClick={
-            // 返回上一页，保留当前查询条件。
-            () => onChange(page - 1)
-          }
-        >
-          上一页
-        </button>
-        <button
-          disabled={page >= pages}
-          onClick={
-            // 前进到下一页，不超出总页数。
-            () => onChange(page + 1)
-          }
-        >
-          下一页
-        </button>
-      </div>
-    </div>
-  );
-}
-/**
- * 保存反馈统一使用 live region，失败不关闭编辑窗口。
- */
-export function Notice({ message }: { message: string }) {
-  return message ? (
-    <div className="notice" role="status">
-      {message}
-    </div>
+  return !loading && error ? (
+    <Alert
+      className="section-notice"
+      type="error"
+      showIcon
+      title="数据加载失败"
+      description={error}
+      action={
+        <Button size="small" onClick={retry}>
+          重试
+        </Button>
+      }
+    />
   ) : null;
 }
+
 /**
- * 标签文案保持业务含义，未知状态保留原值便于诊断。
+ * 业务反馈保留在页面中；保存失败必须显式传 error，避免误报成功。
+ */
+export function Notice({
+  message,
+  type = 'info',
+}: {
+  message: string;
+  type?: 'info' | 'success' | 'error';
+}) {
+  return message ? (
+    <Alert
+      className="section-notice"
+      role={type === 'error' ? 'alert' : 'status'}
+      type={type}
+      showIcon
+      title={message}
+    />
+  ) : null;
+}
+
+/**
+ * 固定业务状态映射为语义标签，未知状态保留原值方便排查。
  */
 export function Status({ value }: { value: string }) {
-  const names: Record<string, string> = {
-    visible: '已上架',
-    hidden: '已下架',
-    active: '可用',
-    unverified: '未验证',
-    unavailable: '不可用',
-    open: '待处理',
-    resolved: '已解决',
-    ignored: '已忽略',
+  const states: Record<string, { label: string; color?: string }> = {
+    visible: { label: '已上架', color: 'success' },
+    hidden: { label: '已下架' },
+    active: { label: '可用', color: 'success' },
+    unverified: { label: '未验证', color: 'warning' },
+    unavailable: { label: '不可用', color: 'error' },
+    open: { label: '待处理', color: 'processing' },
+    resolved: { label: '已解决', color: 'success' },
+    ignored: { label: '已忽略' },
   };
   return (
-    <span
-      className={`badge ${['visible', 'active', 'resolved'].includes(value) ? 'positive' : ''}`}
-    >
-      {names[value] ?? value}
-    </span>
+    <Tag color={states[value]?.color}>{states[value]?.label ?? value}</Tag>
+  );
+}
+
+/**
+ * 服务端分页表格固定每页 20 条，查询中显示 loading，失败不会伪装为空数据。
+ */
+export function DataTable<T extends { id: string }>({
+  resource,
+  columns,
+  page,
+  onChange,
+}: {
+  resource: {
+    data?: { list: T[]; total: number };
+    loading: boolean;
+    error: string;
+    refresh: () => void;
+  };
+  columns: TableProps<T>['columns'];
+  page: number;
+  onChange: (page: number) => void;
+}) {
+  return (
+    <>
+      <ResourceState {...resource} retry={resource.refresh} />
+      <Table<T>
+        rowKey="id"
+        columns={columns}
+        dataSource={resource.data?.list ?? []}
+        loading={resource.loading}
+        scroll={{ x: 850 }}
+        locale={{
+          emptyText: resource.error ? (
+            '加载失败，请重试'
+          ) : (
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description="暂无符合条件的数据"
+            />
+          ),
+        }}
+        pagination={{
+          current: page,
+          pageSize: 20,
+          total: resource.data?.total ?? 0,
+          showSizeChanger: false,
+          showQuickJumper: true,
+          hideOnSinglePage: false,
+          // 总数来自服务端，不能用当前页记录数代替。
+          showTotal: (total) => `共 ${total.toLocaleString()} 条`,
+          onChange,
+        }}
+      />
+    </>
+  );
+}
+
+/**
+ * 通用刷新操作保留当前查询条件，加载期间防止重复点击。
+ */
+export function RefreshButton({
+  loading,
+  onClick,
+}: {
+  loading: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <Button icon={<ReloadOutlined />} loading={loading} onClick={onClick}>
+      刷新
+    </Button>
   );
 }

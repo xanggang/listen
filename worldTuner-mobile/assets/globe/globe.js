@@ -16,7 +16,10 @@
     window.AetherBridge.postMessage(JSON.stringify({ type, ...fields }));
   }
 
-  // 创建基于真实卫星影像和高程 DEM 的可旋转地球。
+  /**
+   * 创建真实卫星影像与高程 DEM 地球；底图固定为 satellite-v4，与 Web 保持一致。
+   * config 提供公开地图 key 与主题；已有地图时保留原视角，不重复创建实例。
+   */
   function initialize(config) {
     if (map) return;
     if (!window.maptilersdk || !config || typeof config.key !== 'string') {
@@ -29,7 +32,8 @@
     try {
       map = new maptilersdk.Map({
         container: 'globe',
-        style: maptilersdk.MapStyle.SATELLITE,
+        // 固定样式 URL，避免 SDK 别名在升级后改变底图。
+        style: 'https://api.maptiler.com/maps/satellite-v4/style.json',
         projection: 'globe',
         terrain: true,
         terrainExaggeration: 1.35,
@@ -113,6 +117,21 @@
         'circle-radius': 6,
         'circle-stroke-color': theme === 'dark' ? '#00f2fe' : '#0284c7',
         'circle-stroke-width': 2,
+      },
+    });
+    map.addSource('focused-station', {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+    });
+    map.addLayer({
+      id: 'focused-station',
+      type: 'circle',
+      source: 'focused-station',
+      paint: {
+        'circle-color': '#ffffff',
+        'circle-radius': 9,
+        'circle-stroke-color': '#0284c7',
+        'circle-stroke-width': 3,
       },
     });
     map.on('click', onStationClick);
@@ -250,5 +269,27 @@
     map.setPaintProperty('active-station-core', 'circle-stroke-color', color);
   }
 
-  window.AetherGlobe = { initialize, setStations, setActiveStation, setTheme };
+  // 定位使用已校验的电台坐标；仅调整相机，播放状态继续由 Flutter 控制。
+  function focusStation(station) {
+    if (!ready || !station || !validStationId(station.id) ||
+      !Number.isFinite(station.latitude) || Math.abs(station.latitude) > 90 ||
+      !Number.isFinite(station.longitude) || Math.abs(station.longitude) > 180) return;
+    map.resize();
+    map.getSource('focused-station').setData({
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [station.longitude, station.latitude] },
+        properties: { id: station.id },
+      }],
+    });
+    map.flyTo({
+      center: [station.longitude, station.latitude],
+      zoom: 7,
+      pitch: 0,
+      duration: 1400,
+    });
+  }
+
+  window.AetherGlobe = { initialize, setStations, setActiveStation, setTheme, focusStation };
 })();

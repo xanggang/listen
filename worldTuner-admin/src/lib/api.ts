@@ -1,5 +1,4 @@
 import type { Session } from './contracts.ts';
-let localToken = '';
 let csrf = '';
 export class AdminApiError extends Error {
   readonly status: number;
@@ -12,13 +11,6 @@ export class AdminApiError extends Error {
     this.status = status;
     this.requestId = requestId;
   }
-}
-/**
- * 本地调试密钥只保存在当前页面内存，不写 localStorage、URL 或安装产物。
- */
-export function setLocalToken(token: string) {
-  localToken = token;
-  csrf = '';
 }
 /**
  * 同源请求仅访问管理 API，写请求携带内存 CSRF；失败保留 HTTP 状态和请求 ID。
@@ -34,7 +26,6 @@ export async function apiRequest<T>(
   if (!path.startsWith('/admin/api/') || path.includes('://'))
     throw new Error('Invalid admin API path');
   const headers: Record<string, string> = { Accept: 'application/json' };
-  if (localToken) headers.Authorization = `Bearer ${localToken}`;
   if (options.method === 'PUT') {
     headers['Content-Type'] = 'application/json';
     headers['X-CSRF-Token'] = csrf;

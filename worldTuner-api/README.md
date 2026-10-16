@@ -66,7 +66,7 @@ pnpm dev --ip 0.0.0.0
 
 ## 全量地图与缓存
 
-首页使用 `GET /api/map/snapshot` 获取 `[id, name, 经度, 纬度]` 全量元组，支持 gzip、ETag/304。`MAP_SNAPSHOT_CACHE_TTL_SECONDS` 默认 300；Worker 在 `wrangler.jsonc` 配置，SQLite 在 `.env.sqlite` 配置，0 禁用。详见[地图缓存文档](../docs/map-snapshot-cache.md)。
+首页使用 `GET /api/map/snapshot` 获取 `[id, 经度, 纬度]` 全量元组，支持 gzip、ETag/304。`MAP_SNAPSHOT_CACHE_TTL_SECONDS` 默认 300；Worker 在 `wrangler.jsonc` 配置，SQLite 在 `.env.sqlite` 配置，0 禁用。详见[地图缓存文档](../docs/map-snapshot-cache.md)。
 
 ## 标签与语言展示名迁移
 
@@ -83,7 +83,7 @@ npm run migrate:v2:catalog-names -- --db /实际路径/worldtuner-v2.sqlite --ap
 
 D1 空库统一执行 `worldTuner-data/v2/schema.sql`，已包含标签、语言和国家中英文列。本地运行 `pnpm db:migrate:local`；正式库运行 `pnpm exec wrangler d1 migrations apply DB --remote`。译名在 data 项目处理后随完整数据导入，不依赖空库 UPDATE。本次没有操作远程库。
 
-字典缓存仍保存所有语言字段，不按客户端语言拆分。JSON Cache API 内部键使用 `_response_schema=station-public-id-admin-1`，避免发布后命中不含译名的旧缓存；客户端仍调用原 URL，地图快照独立使用 `tuple-public-id-1` 缓存版本。今后改变响应格式时同步更新该内部版本。
+字典缓存仍保存所有语言字段，不按客户端语言拆分。JSON Cache API 内部键使用 `_response_schema=station-public-id-admin-1`，避免发布后命中不含译名的旧缓存；客户端仍调用原 URL，地图快照独立使用 `tuple-public-id-coordinates-1` 缓存版本。今后改变响应格式时同步更新该内部版本。
 
 ## 国家名称（后续扩展）
 
@@ -99,7 +99,7 @@ Worker 默认入口 `src/index.ts` 与 `dev:sqlite` 都只提供客户端 API。
 
 ## 电台 public_id 切换
 
-OpenAPI 2.0.0 表示本次电台 ID 契约切换，不兼容原 19 位电台 ID 请求；URL 仍使用 `/api/stations/{id}`，响应字段名仍为 `id`，不会额外返回内部主键或重复的 public_id 字段。分类筛选参数继续接受 19 位 ID。点位分页的 after/nextCursor 为 7 位 public_id，按 BINARY 顺序比较和排序；完整地图元组为 `[public_id,name,longitude,latitude]`。
+OpenAPI 2.0.0 表示本次电台 ID 契约切换，不兼容原 19 位电台 ID 请求；URL 仍使用 `/api/stations/{id}`，响应字段名仍为 `id`，不会额外返回内部主键或重复的 public_id 字段。分类筛选参数继续接受 19 位 ID。点位分页的 after/nextCursor 为 7 位 public_id，按 BINARY 顺序比较和排序；完整地图元组为 `[public_id,longitude,latitude]`。
 
 SQLite 启动前先生成包含 public_id 的处理库，再将 `SQLITE_PATH` 指向该文件（已有 `.env.sqlite` 也要手动更新）；启动检查会拒绝缺列或未完成回填的库。D1 发布前先初始化空库，再导入已回填 public_id 的数据，随后更新 API、Web 和移动端。初始化 SQL 不会生成电台的 public_id，已有远程数据不能直接重复插入。远程发布与数据写入均需单独执行。
 

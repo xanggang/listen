@@ -533,7 +533,7 @@ test('map snapshot gzip, conditional requests and encoding negotiation', async (
   assert.equal(response.headers.get('X-Snapshot-Encoding'), null);
   const data = JSON.parse(gunzipSync(new Uint8Array(await response.arrayBuffer())).toString()).data;
   assert.equal(data.count, 24);
-  assert.deepEqual(data.points[0], [publicId(2), 'Station 2', -87.90647, 43.0389]);
+  assert.deepEqual(data.points[0], [publicId(2), -87.90647, 43.0389]);
   const etag = response.headers.get('ETag')!;
   assert.match(etag, /^W\/"[a-f0-9]{64}"$/);
   const unchanged = await request('/map/snapshot', {
@@ -575,8 +575,8 @@ test('snapshot expires, changes ETag and supports zero TTL', async () => {
       const first = await request('/map/snapshot');
       const etag = first.headers.get('ETag')!;
       db.connection
-        .prepare('UPDATE station SET name = ? WHERE id = ?')
-        .run(`Changed ${edge}`, id(1));
+        .prepare('UPDATE station SET longitude = ? WHERE id = ?')
+        .run(edge === 'false' ? 110 : 111, id(1));
       now += 10000;
       const cached = await request('/map/snapshot', { headers: { 'If-None-Match': etag } });
       assert.equal(cached.status, 304);
@@ -586,14 +586,21 @@ test('snapshot expires, changes ETag and supports zero TTL', async () => {
       assert.equal(refreshed.status, 200);
       assert.notEqual(refreshed.headers.get('ETag'), etag);
       assert.equal(
-        ((await refreshed.json()) as { data: { points: string[][] } }).data.points[0][1],
-        `Changed ${edge}`,
+        ((await refreshed.json()) as { data: { points: [string, number, number][] } }).data
+          .points[0][1],
+        edge === 'false' ? 110 : 111,
       );
       now += 61000;
     }
     env.MAP_SNAPSHOT_CACHE_TTL_SECONDS = '0';
     const before = await request('/map/snapshot');
+    // 名称不再属于快照，改名不应改变 ETag；坐标变化才会使缓存失效。
     db.connection.prepare('UPDATE station SET name = ? WHERE id = ?').run('Immediate', id(1));
+    const renamed = await request('/map/snapshot', {
+      headers: { 'If-None-Match': before.headers.get('ETag')! },
+    });
+    assert.equal(renamed.status, 304);
+    db.connection.prepare('UPDATE station SET longitude = ? WHERE id = ?').run(120, id(1));
     const after = await request('/map/snapshot', {
       headers: { 'If-None-Match': before.headers.get('ETag')! },
     });

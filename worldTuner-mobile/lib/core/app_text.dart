@@ -8,6 +8,8 @@ class AppText {
   String get(String key) {
     const zh = <String, String>{
       'map': '地图',
+      'showOnMap': '在地图上定位',
+      'stationLocationMissing': '该电台暂无位置信息',
       'discover': '发现',
       'charts': '排行榜',
       'settings': '设置',
@@ -173,6 +175,8 @@ class AppText {
     };
     const en = <String, String>{
       'map': 'Map',
+      'showOnMap': 'Show on map',
+      'stationLocationMissing': 'Location unavailable for this station',
       'discover': 'Discover',
       'charts': 'Charts',
       'settings': 'Settings',

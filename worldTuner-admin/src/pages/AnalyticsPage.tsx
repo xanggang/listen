@@ -1,9 +1,28 @@
 import { useState } from 'react';
+import {
+  Alert,
+  Card,
+  Col,
+  Row,
+  Select,
+  Space,
+  Statistic,
+  Table,
+  Tag,
+  Typography,
+} from 'antd';
+import {
+  BarChartOutlined,
+  GlobalOutlined,
+  CheckCircleOutlined,
+} from '@ant-design/icons';
+import type { ReactNode } from 'react';
 import type { Analytics, Overview } from '../lib/contracts';
 import { useResource } from '../lib/hooks';
-import { PageHeader, ResourceState } from '../components/common';
+import { PageHeader, RefreshButton, ResourceState } from '../components/common';
+
 /**
- * 总览与分析共享真实 UTC 统计，分平台展示 UV/MAU，不将日 UV 累加成总用户数。
+ * 总览与分析共享 UTC 真实统计；范围最多 31 天，UV 与 MAU 始终按平台独立展示。
  */
 export function AnalyticsPage({ overview = false }: { overview?: boolean }) {
   const [days, setDays] = useState(7);
@@ -17,199 +36,206 @@ export function AnalyticsPage({ overview = false }: { overview?: boolean }) {
     to,
     ...(source ? { source } : {}),
   });
-  const { data, loading, error, refresh } = useResource<Overview>(
+  const resource = useResource<Overview>(
     `/admin/api/analytics${overview ? '/overview' : ''}?${query}`,
   );
-  const pv =
-    data?.daily.reduce(
-      // PV 可以跨日相加，UV 在下表按日分别展示。
-      (total, row) => total + row.pv,
-      0,
-    ) ?? 0;
+  const { data } = resource;
+  // PV 可跨日相加，匿名 UV 不累计为总用户数。
+  const pv = data?.daily.reduce((total, row) => total + row.pv, 0) ?? 0;
+  // 目录分组互斥，可以汇总为真实电台总数。
   const stations =
+    data?.catalog?.reduce((total, row) => total + row.count, 0) ?? 0;
+  const visible =
     data?.catalog?.reduce(
-      // 每个电台只属于一个状态分组，不重复累计。
-      (total, row) => total + row.count,
+      // 上架数量不等同于播放可用数量。
+      (total, row) => total + (row.visibility === 'visible' ? row.count : 0),
       0,
     ) ?? 0;
-  const visible =
-    data?.catalog
-      ?.filter(
-        // 这里只统计上架数量，不能解释为全部可播放电台。
-        (row) => row.visibility === 'visible',
-      )
-      .reduce(
-        // 汇总上架状态下的不同目录状态。
-        (total, row) => total + row.count,
-        0,
-      ) ?? 0;
   return (
     <>
       <PageHeader
         title={overview ? '工作台' : '访问分析'}
-        description="匿名访客统计 · UTC 时区 · Web 与 Android 独立计数"
-        action={<button onClick={refresh}>刷新数据</button>}
+        description={
+          overview
+            ? '查看电台内容概况与近期访问表现'
+            : '按日期与平台查看匿名访问数据，了解实际使用情况'
+        }
+        action={
+          <RefreshButton
+            loading={resource.loading}
+            onClick={resource.refresh}
+          />
+        }
       />
-      <div className="toolbar">
-        <label>
-          时间范围
-          <select
-            value={days}
-            onChange={
-              // 切换有限时间范围，避免无界扫描去重表。
-              (event) => setDays(Number(event.target.value))
-            }
-          >
-            <option value="7">最近 7 天</option>
-            <option value="14">最近 14 天</option>
-            <option value="31">最近 31 天</option>
-          </select>
-        </label>
-        <label>
-          平台
-          <select
-            value={source}
-            onChange={
-              // 平台过滤应用于日/月统计的同一查询。
-              (event) => setSource(event.target.value)
-            }
-          >
-            <option value="">全部平台</option>
-            <option value="web">Web</option>
-            <option value="android">Android</option>
-          </select>
-        </label>
-        <span className="muted">
-          {from} — {to}
-        </span>
-      </div>
-      <ResourceState loading={loading} error={error} retry={refresh} />
-      {data && (
-        <>
-          <div className="stats">
+      <Card className="filter-card">
+        <Space wrap size="large">
+          <Space>
+            <Typography.Text type="secondary">时间范围</Typography.Text>
+            <Select
+              aria-label="时间范围"
+              value={days}
+              options={[
+                { value: 7, label: '最近 7 天' },
+                { value: 14, label: '最近 14 天' },
+                { value: 31, label: '最近 31 天' },
+              ]}
+              onChange={setDays}
+            />
+          </Space>
+          <Space>
+            <Typography.Text type="secondary">平台</Typography.Text>
+            <Select
+              aria-label="统计平台"
+              className="status-filter"
+              value={source}
+              options={[
+                { value: '', label: '全部平台' },
+                { value: 'web', label: 'Web' },
+                { value: 'android', label: 'Android' },
+              ]}
+              onChange={setSource}
+            />
+          </Space>
+          <Typography.Text type="secondary">
+            {from} 至 {to} · UTC
+          </Typography.Text>
+        </Space>
+      </Card>
+      <ResourceState {...resource} retry={resource.refresh} />
+      {!resource.error && (
+        <Row gutter={[16, 16]} className="metric-row">
+          <Col xs={24} md={overview ? 8 : 24}>
             <Metric
               title="页面访问 PV"
               value={pv}
               note={`最近 ${days} 天有效页面访问`}
+              icon={<BarChartOutlined />}
+              loading={resource.loading}
             />
-            {overview && (
-              <>
+          </Col>
+          {overview && (
+            <>
+              <Col xs={24} md={8}>
                 <Metric
                   title="电台总数"
                   value={stations}
-                  note="包含隐藏及未验证电台"
+                  note="包含已下架及未验证电台"
+                  icon={<GlobalOutlined />}
+                  loading={resource.loading}
                 />
+              </Col>
+              <Col xs={24} md={8}>
                 <Metric
                   title="已上架电台"
                   value={visible}
-                  note="播放可用性由目录状态与流共同决定"
+                  note="可见数量，播放可用性由目录与流共同决定"
+                  icon={<CheckCircleOutlined />}
+                  loading={resource.loading}
                 />
-              </>
-            )}
-          </div>
-          <MetricsTables data={data} />
-        </>
+              </Col>
+            </>
+          )}
+        </Row>
       )}
+      {data && <MetricsTables data={data} />}
     </>
   );
 }
+
 /**
- * 指标卡只展示已加载接口结果，不用演示值填补空数据。
+ * 指标卡在真实数据返回前展示骨架，不使用演示数字或加载中的零值。
  */
 function Metric({
   title,
   value,
   note,
+  icon,
+  loading,
 }: {
   title: string;
   value: number;
   note: string;
+  icon: ReactNode;
+  loading: boolean;
 }) {
   return (
-    <article className="metric">
-      <span>{title}</span>
-      <strong>{value.toLocaleString()}</strong>
-      <small>{note}</small>
-    </article>
+    <Card loading={loading}>
+      <Statistic
+        title={
+          <Space>
+            {icon}
+            {title}
+          </Space>
+        }
+        value={value}
+      />
+      <Typography.Paragraph type="secondary" className="metric-note">
+        {note}
+      </Typography.Paragraph>
+    </Card>
   );
 }
+
 /**
- * 逐日、逐月展示独立访客口径，避免将活跃匿名访客误称注册用户或新增装机。
+ * 日 UV 与月 MAU 使用服务端去重结果；本地表格分页只影响呈现，不改变统计口径。
  */
 function MetricsTables({ data }: { data: Analytics }) {
   return (
-    <div className="analytics-grid">
-      <section className="panel">
-        <div className="panel-heading">
-          <h2>每日访问</h2>
-          <span className="muted">PV / 日 UV</span>
-        </div>
-        {!data.daily.length ? (
-          <div className="state">暂无访问统计</div>
-        ) : (
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>日期 UTC</th>
-                  <th>平台</th>
-                  <th>PV</th>
-                  <th>UV</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.daily.map(
-                  // 日期与平台共同标识一行，不混合独立访客身份。
-                  (row) => (
-                    <tr key={`${row.day}-${row.source}`}>
-                      <td>{row.day}</td>
-                      <td>{row.source}</td>
-                      <td>{row.pv.toLocaleString()}</td>
-                      <td>{row.uv.toLocaleString()}</td>
-                    </tr>
-                  ),
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-      <section className="panel">
-        <div className="panel-heading">
-          <h2>月活跃访客</h2>
-          <span className="muted">月内去重 MAU</span>
-        </div>
-        {!data.monthly.length ? (
-          <div className="state">暂无月活数据</div>
-        ) : (
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>月份</th>
-                  <th>平台</th>
-                  <th>MAU</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.monthly.map(
-                  // MAU 由服务器月内去重计算，不能用日 UV 相加代替。
-                  (row) => (
-                    <tr key={`${row.month}-${row.source}`}>
-                      <td>{row.month}</td>
-                      <td>{row.source}</td>
-                      <td>{row.mau.toLocaleString()}</td>
-                    </tr>
-                  ),
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-        <p className="panel-note">
-          匿名标识不跨端合并；本月为截至当前的累计月活，不代表新增用户。
-        </p>
-      </section>
-    </div>
+    <Row gutter={[16, 16]}>
+      <Col xs={24} xl={14}>
+        <Card title="每日访问" extra={<Tag>PV / 日 UV</Tag>}>
+          <Table<Analytics['daily'][number]>
+            size="middle"
+            dataSource={data.daily}
+            rowKey={
+              // 平台和日期共同组成独立统计行。
+              (row) => `${row.day}-${row.source}`
+            }
+            scroll={{ x: 460 }}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: false,
+              hideOnSinglePage: true,
+            }}
+            columns={[
+              { title: '日期 UTC', dataIndex: 'day' },
+              { title: '平台', dataIndex: 'source' },
+              { title: 'PV', dataIndex: 'pv', align: 'right' },
+              { title: 'UV', dataIndex: 'uv', align: 'right' },
+            ]}
+          />
+        </Card>
+      </Col>
+      <Col xs={24} xl={10}>
+        <Card title="月活跃访客" extra={<Tag>MAU</Tag>}>
+          <Table<Analytics['monthly'][number]>
+            size="middle"
+            dataSource={data.monthly}
+            rowKey={
+              // 月度匿名标识不跨平台合并。
+              (row) => `${row.month}-${row.source}`
+            }
+            scroll={{ x: 360 }}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: false,
+              hideOnSinglePage: true,
+            }}
+            columns={[
+              { title: '月份', dataIndex: 'month' },
+              { title: '平台', dataIndex: 'source' },
+              { title: 'MAU', dataIndex: 'mau', align: 'right' },
+            ]}
+          />
+          <Alert
+            className="analytics-note"
+            type="info"
+            showIcon
+            title="统计口径"
+            description="Web 与 Android 独立计数。本月为截至当前的累计月活；日 UV 不可相加作为总用户数。"
+          />
+        </Card>
+      </Col>
+    </Row>
   );
 }

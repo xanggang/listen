@@ -35,17 +35,17 @@ export class MapRepository {
     return results;
   }
   /**
-   * 只输出 public_id 和地图字段，以二进制字符顺序排序，保证快照和 ETag 稳定。
+   * 全量快照只查询 public_id 和经纬度，不读取名称；排序保证 ETag 稳定。
    */
-  async findAll(): Promise<MapPointRow[]> {
+  async findAll(): Promise<Omit<MapPointRow, 'name'>[]> {
     const { results } = await this.db
       .prepare(
-        `SELECT s.public_id AS id, s.name, s.latitude AS geoLat, s.longitude AS geoLong
+        `SELECT s.public_id AS id, s.latitude AS geoLat, s.longitude AS geoLong
        FROM station s WHERE ${publicStation}
        AND s.latitude BETWEEN -90 AND 90 AND s.longitude BETWEEN -180 AND 180
        ORDER BY s.public_id COLLATE BINARY ASC`,
       )
-      .all<MapPointRow>();
+      .all<Omit<MapPointRow, 'name'>>();
     return results;
   }
 }

@@ -1,7 +1,7 @@
 import type { SqlDatabase } from '../../database/database.ts';
 import { MapRepository } from './map.repository.ts';
 
-export type MapTuple = [id: string, name: string, longitude: number, latitude: number];
+export type MapTuple = [id: string, longitude: number, latitude: number];
 export interface MapSnapshot {
   body: Uint8Array<ArrayBuffer>;
   gzip: Uint8Array<ArrayBuffer>;
@@ -43,14 +43,14 @@ export async function getMapSnapshot(db: SqlDatabase, ttl: number): Promise<MapS
 }
 
 /**
- * 只序列化四个地图字段；经纬度保留五位小数，ID 保持字符串。
+ * 只序列化 ID 和经纬度三个字段；坐标保留五位小数，名称由详情接口提供。
  * 内容哈希作为弱 ETag，让 identity 和 gzip 两种编码共用内容版本。
  */
 async function buildSnapshot(db: SqlDatabase, expiresAt: number): Promise<MapSnapshot> {
   const rows = await new MapRepository(db).findAll();
   const points: MapTuple[] = rows.map(
     // 坐标顺序固定为经度、纬度，与 GeoJSON 一致。
-    (row) => [row.id, row.name, Number(row.geoLong.toFixed(5)), Number(row.geoLat.toFixed(5))],
+    (row) => [row.id, Number(row.geoLong.toFixed(5)), Number(row.geoLat.toFixed(5))],
   );
   const body = new Uint8Array(
     new TextEncoder().encode(JSON.stringify({ data: { count: points.length, points } })),

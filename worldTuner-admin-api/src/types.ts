@@ -15,7 +15,6 @@ export interface AdminBindings {
   ACCESS_ISSUER?: string;
   ACCESS_AUDIENCE?: string;
   CSRF_SECRET?: string;
-  ADMIN_LOCAL_TOKEN?: string;
   CLOUDFLARE_ACCOUNT_ID?: string;
 }
 export type AdminEnv = {

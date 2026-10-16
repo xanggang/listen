@@ -2,6 +2,12 @@
 
 Web 界面沿用 Android 客户端的 Aether 设计色板、Inter/Plus Jakarta Sans 字体、四栏导航和常驻胶囊播放器。地图页使用 MapTiler 的卫星 3D 地球与地形；发现、榜单、我的和 VIP 规划页使用同一套深浅主题样式。语言在“我的”页面切换，主题可选跟随系统、浅色或深色。
 
+Web 与 Android 均使用 MapTiler SDK JS 4.1.0，显式指定 `https://api.maptiler.com/maps/satellite-v4/style.json`，避免 `MapStyle.SATELLITE` 在不同 SDK 版本中解析到不同底图。Web 公共配置位于 `src/lib/globe-options.ts`：启用 globe 投影、DEM 地形及 1.35 倍地形夸张，初始视角与安卓一致。主题切换只调整空间色及辅助图层配色；近景地形效果仍取决于瓦片加载、缩放和倾斜角度。修改后重启 Web 开发服务并刷新页面；安卓脚本随安装包打包，需重新运行应用加载更新。
+
+电台行在收藏按钮前提供地图定位链接 `/player?station=<public_id>`。地图加载当前快照后查找对应 ID，平滑定位、放大到 zoom 7 并显示定位标记；无点位时显示“暂无位置信息”。定位链接支持刷新和分享，只调整地图，不调用播放或收藏动作。
+
+地图快照仅包含 `[public_id, longitude, latitude]`，不再传输名称。地图点选和播放光圈按 ID 工作，名称由详情接口获取；需与三字段契约的 API 配套更新。
+
 无账户版本的收藏与最近播放只保存在当前浏览器的本地存储中。点击地图、发现或榜单中的电台会更新最近播放；最近播放最多保留 30 台。播放器和电台列表均可切换收藏，音频加载失败会退出播放态并显示提示。清除浏览器站点数据会清除这些本地记录。地球页通过同源 `/api/map/snapshot` 一次获取全量地图元组，不聚合点位，使用浏览器 HTTP 缓存及 ETag。缓存时间由 API 配置，见[地图缓存文档](../docs/map-snapshot-cache.md)。
 
 Web 路由进入时通过同源 `/api/metrics/visit` 向独立 Worker 上报最小匿名访问量，用于 PV、日 UV 和月活汇总。只发送浏览器本地随机 UUID 和固定页面名，不上传查询参数或搜索词；上报失败不影响页面。口径见 [`worldTuner-api/docs/metrics.md`](../worldTuner-api/docs/metrics.md)。

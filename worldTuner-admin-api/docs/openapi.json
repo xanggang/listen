@@ -3,7 +3,7 @@
   "info": {
     "title": "WorldTuner Admin API",
     "version": "0.1.0",
-    "description": "独立管理 Worker，与客户端 /api 分开部署。生产 Access JWT + 显式管理员映射；viewer 只读、owner 可写；PUT 同源且必须 X-CSRF-Token。开发 local bearer 仅在 loopback + local 模式使用，生产永不回退。本次不实现客户端错误上报或网页日志代理。"
+    "description": "独立管理 Worker，与客户端 /api 分开部署。生产 Access JWT + 显式管理员映射；viewer 只读、owner 可写；PUT 同源且必须 X-CSRF-Token。开发仅在 loopback + local 模式自动使用本地管理员，无需登录密钥；写入仍校验同源、角色及 CSRF，生产永不回退。本次不实现客户端错误上报或网页日志代理。"
   },
   "servers": [
     {

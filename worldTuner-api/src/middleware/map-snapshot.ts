@@ -31,7 +31,7 @@ function matchesEtag(value: string | undefined, etag: string): boolean {
 
 /**
  * 返回完整地图快照：Worker 使用边缘 Cache API，SQLite 使用进程缓存。
- * 缓存键隔离 public_id 契约、编码和 TTL；内部过期时间避免多层缓存延长有效期。
+ * 缓存键隔离无名称的三字段契约、编码和 TTL；内部过期时间避免多层缓存延长有效期。
  * 只缓存公开正文，不缓存请求标识、CORS、304 或失败响应。
  */
 export async function mapSnapshotResponse(c: Context<AppEnv>): Promise<Response> {
@@ -40,7 +40,7 @@ export async function mapSnapshotResponse(c: Context<AppEnv>): Promise<Response>
     throw new ApiError(400, 'INVALID_QUERY', 'Snapshot does not accept query parameters');
   const ttl = snapshotTtl(c.env.MAP_SNAPSHOT_CACHE_TTL_SECONDS);
   const gzip = acceptsGzip(c.req.header('Accept-Encoding'));
-  url.searchParams.set('format', 'tuple-public-id-1');
+  url.searchParams.set('format', 'tuple-public-id-coordinates-1');
   url.searchParams.set('encoding', gzip ? 'gzip' : 'identity');
   url.searchParams.set('ttl', String(ttl));
   const key = new Request(url);

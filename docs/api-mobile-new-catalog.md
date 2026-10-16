@@ -33,7 +33,7 @@ SQLite 只读打开电台业务库，统计另写 `.local/metrics.sqlite`，不�
 | `GET /api/tags` | `q`、`limit`、`offset`，标签搜索与分页 |
 | `GET /api/countries` | `limit`，国家及关联数量 |
 | `GET /api/languages` | `limit`，语种及关联数量 |
-| `GET /api/map/snapshot` | 全量四字段元组，gzip + ETag，TTL 可配置 |
+| `GET /api/map/snapshot` | 全量三字段元组（不含名称），gzip + ETag，TTL 可配置 |
 | `GET /api/map/stations` | `limit` 最大 5000、可选 `after` 字符串游标 |
 | `POST /api/metrics/visit` | 保留匿名 PV/UV 上报字段，不收集新增用户资料 |
 

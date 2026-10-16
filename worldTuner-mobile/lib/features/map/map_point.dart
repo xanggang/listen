@@ -16,7 +16,7 @@ class MapPoint {
   final double latitude;
   final double longitude;
 
-  // 在后台 isolate 解码快照，严格校验 7 位 public_id、计数与坐标顺序。
+  // 解码无名称的三字段快照，严格校验 public_id、计数及经度/纬度顺序。
   static List<MapPoint> parseSnapshot(String body) {
     final payload = jsonDecode(body);
     if (payload is! Map<String, dynamic> ||
@@ -32,17 +32,16 @@ class MapPoint {
     final seen = <String>{};
     for (final row in rows) {
       if (row is! List ||
-          row.length != 4 ||
+          row.length != 3 ||
           row[0] is! String ||
           !RegExp(r'^[0-9A-Za-z]{7}$').hasMatch(row[0] as String) ||
-          row[1] is! String ||
-          row[2] is! num ||
-          row[3] is! num) {
+          row[1] is! num ||
+          row[2] is! num) {
         throw const FormatException('Invalid map tuple');
       }
       final id = row[0] as String;
-      final longitude = (row[2] as num).toDouble();
-      final latitude = (row[3] as num).toDouble();
+      final longitude = (row[1] as num).toDouble();
+      final latitude = (row[2] as num).toDouble();
       if (!seen.add(id) ||
           !longitude.isFinite ||
           !latitude.isFinite ||
@@ -51,12 +50,7 @@ class MapPoint {
         throw const FormatException('Invalid map coordinates or duplicate ID');
       }
       points.add(
-        MapPoint(
-          id: id,
-          name: row[1] as String,
-          latitude: latitude,
-          longitude: longitude,
-        ),
+        MapPoint(id: id, name: '', latitude: latitude, longitude: longitude),
       );
     }
     return points;

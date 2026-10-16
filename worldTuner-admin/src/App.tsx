@@ -1,33 +1,112 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState } from 'react';
+import {
+  App as AntApp,
+  Avatar,
+  Breadcrumb,
+  Button,
+  Card,
+  ConfigProvider,
+  Drawer,
+  Flex,
+  Grid,
+  Layout,
+  Menu,
+  Popconfirm,
+  Space,
+  Spin,
+  Tag,
+  Tooltip,
+  Typography,
+  theme,
+} from 'antd';
+import zhCN from 'antd/locale/zh_CN';
+import {
+  BarChartOutlined,
+  DashboardOutlined,
+  DatabaseOutlined,
+  FileSearchOutlined,
+  GlobalOutlined,
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  MoonOutlined,
+  SunOutlined,
+  UnorderedListOutlined,
+  WarningOutlined,
+} from '@ant-design/icons';
 import type { Session } from './lib/contracts';
-import { loadSession, setLocalToken, errorMessage } from './lib/api';
+import { loadSession, errorMessage } from './lib/api';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { StationsPage } from './pages/StationsPage';
 import { CatalogPage } from './pages/CatalogPage';
 import { ReportsPage, AuditPage, LogsPage } from './pages/OperationsPages';
+import { Notice } from './components/common';
 
 const navigation = [
-  ['overview', '工作台', '◉'],
-  ['stations', '电台管理', '◈'],
-  ['catalog', '分类与译名', '▦'],
-  ['analytics', '访问分析', '▥'],
-  ['reports', '错误报告', '△'],
-  ['audit', '操作审计', '≡'],
-  ['logs', '运行日志', '⌘'],
-] as const;
-type PageName = (typeof navigation)[number][0];
+  { key: 'overview', label: '工作台', icon: <DashboardOutlined /> },
+  { key: 'stations', label: '电台管理', icon: <GlobalOutlined /> },
+  { key: 'catalog', label: '分类与译名', icon: <DatabaseOutlined /> },
+  { key: 'analytics', label: '访问分析', icon: <BarChartOutlined /> },
+  { key: 'reports', label: '错误报告', icon: <WarningOutlined /> },
+  { key: 'audit', label: '操作审计', icon: <FileSearchOutlined /> },
+  { key: 'logs', label: '运行日志', icon: <UnorderedListOutlined /> },
+];
 
 /**
- * 独立管理应用，只调用同源管理 Worker；生产身份交给 Access，本地密钥仅存在内存。
+ * 只接受已注册的 hash 页面，支持刷新、书签和浏览器前进后退。
+ */
+function currentPage() {
+  const key = location.hash.slice(1);
+  // 未知地址安全回退到工作台。
+  return navigation.some((item) => item.key === key) ? key : 'overview';
+}
+
+/**
+ * 管理应用统一配置中文和亮暗主题，认证信息仅保留在内存。
  */
 export function App() {
+  const [dark, setDark] = useState(false);
+  return (
+    <ConfigProvider
+      locale={zhCN}
+      theme={{
+        algorithm: dark ? theme.darkAlgorithm : theme.defaultAlgorithm,
+        token: {
+          colorPrimary: '#1677ff',
+          borderRadius: 6,
+          fontFamily:
+            '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif',
+        },
+      }}
+    >
+      <AntApp>
+        <AdminWorkspace dark={dark} onThemeChange={setDark} />
+      </AntApp>
+    </ConfigProvider>
+  );
+}
+
+/**
+ * 组装响应式导航和权限视图；本地自动连接，生产提供 Access 会话退出入口。
+ */
+function AdminWorkspace({
+  dark,
+  onThemeChange,
+}: {
+  dark: boolean;
+  onThemeChange: (dark: boolean) => void;
+}) {
   const [session, setSession] = useState<Session>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [page, setPage] = useState<PageName>('overview');
-  const [dark, setDark] = useState(false);
+  const [page, setPage] = useState(currentPage);
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const screens = Grid.useBreakpoint();
+  const { token } = theme.useToken();
+  const desktop = Boolean(screens.lg);
   /**
-   * 页面首次进入或本地登录后重新验证身份，不从缓存恢复管理员权限。
+   * 每次连接从服务端读取当前管理员身份和权限；本地无需输入认证凭据。
    */
   async function connect() {
     setLoading(true);
@@ -42,165 +121,220 @@ export function App() {
     }
   }
   useEffect(
-    // 首次加载执行会话验证；没有向浏览器注入生产静态密钥。
+    // 初次进入验证会话，生产认证由 Access 完成。
     () => {
       void connect();
     },
     [],
   );
   useEffect(
-    // 用根节点 data 属性切换主题，不触发内联样式 CSP 例外。
+    // 跟随浏览器历史切换页面，同时关闭移动端导航。
     () => {
-      document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      // hash 只用于本地导航，不拼入 API 请求。
+      function syncPage() {
+        setPage(currentPage());
+        setMobileOpen(false);
+      }
+      window.addEventListener('hashchange', syncPage);
+      return () => window.removeEventListener('hashchange', syncPage);
     },
-    [dark],
+    [],
   );
   /**
-   * 开发环境表单仅在 loopback 页面出现，生产页面始终使用 Access 认证。
+   * 结束生产 Access 会话；本地自动连接模式不显示退出入口。
    */
-  function localLogin(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setLocalToken(String(new FormData(event.currentTarget).get('token') ?? ''));
-    void connect();
+  function logout() {
+    if (session?.authMode === 'access')
+      location.assign('/cdn-cgi/access/logout');
   }
+  const title =
+    navigation.find(
+      // 当前页面标题来自固定菜单，不接受任意 hash 文案。
+      (item) => item.key === page,
+    )?.label ?? '工作台';
+  const menu = (
+    <Menu
+      mode="inline"
+      selectedKeys={[page]}
+      items={navigation}
+      onClick={
+        // 使用 hash 保留浏览器历史，重复选择也关闭移动导航。
+        ({ key }) => {
+          location.hash = key;
+          setMobileOpen(false);
+        }
+      }
+    />
+  );
   if (!session)
     return (
-      <main className="login">
-        <section className="login-card">
-          <img src="/worldtuner-logo.svg" alt="" width="48" height="48" />
-          <div className="eyebrow">WORLDTUNER ADMIN</div>
-          <h1>管理中心</h1>
-          <p>仅限已授权管理员访问</p>
+      <div className="login-page" style={{ background: token.colorBgLayout }}>
+        <Card className="login-card">
+          <Flex vertical align="center" gap={12} className="login-brand">
+            <img src="/worldtuner-logo.svg" alt="" width="48" height="48" />
+            <Typography.Title level={3}>WorldTuner 管理中心</Typography.Title>
+            <Typography.Text type="secondary">连接管理工作空间</Typography.Text>
+          </Flex>
           {loading ? (
-            <div role="status">正在验证身份…</div>
+            <div className="login-loading">
+              <Space orientation="vertical">
+                <Spin />
+                <Typography.Text type="secondary">
+                  正在连接管理服务…
+                </Typography.Text>
+              </Space>
+            </div>
           ) : (
             <>
-              <p className="error" role="alert">
-                {error}
-              </p>
+              <Notice message={error} type="error" />
               {['localhost', '127.0.0.1', '[::1]'].includes(
                 location.hostname,
               ) ? (
-                <form onSubmit={localLogin}>
-                  <label>
-                    本地开发密钥
-                    <input
-                      name="token"
-                      type="password"
-                      required
-                      minLength={32}
-                      autoComplete="off"
-                      placeholder="管理 API 的 .env.sqlite 中的 ADMIN_LOCAL_TOKEN"
-                    />
-                  </label>
-                  <button className="primary" type="submit">
-                    连接本地管理服务
-                  </button>
-                </form>
+                <Space orientation="vertical">
+                  <Typography.Paragraph>
+                    本地开发无需登录，请确认管理 API 已启动后重新连接。
+                  </Typography.Paragraph>
+                  <Button type="primary" onClick={connect}>
+                    重新连接
+                  </Button>
+                </Space>
               ) : (
-                <>
-                  <p>
-                    请通过配置了 Cloudflare Access
-                    的管理域名登录。无权限时联系管理员授权。
-                  </p>
-                  <button
-                    onClick={
-                      // 身份供应商完成认证后重新载入服务器会话。
-                      () => void connect()
-                    }
-                  >
+                <Space orientation="vertical">
+                  <Typography.Paragraph>
+                    请通过管理域名的 Cloudflare Access 完成身份验证。
+                  </Typography.Paragraph>
+                  <Button type="primary" onClick={connect}>
                     重新验证
-                  </button>
-                </>
+                  </Button>
+                </Space>
               )}
             </>
           )}
-        </section>
-      </main>
+        </Card>
+      </div>
     );
   const writable = session.role === 'owner';
   return (
-    <div className="app-shell">
-      <aside className="sidebar">
-        <a className="brand" href="#">
-          <img src="/worldtuner-logo.svg" alt="" width="38" height="38" />
-          <div>
-            <strong>WORLDTUNER</strong>
-            <small>管理中心</small>
-          </div>
-        </a>
-        <div className="nav-label">工作空间</div>
-        <nav aria-label="管理功能">
-          {navigation.map(
-            // 页面之间保留独立模块，切换时重新加载对应资源。
-            ([id, label, icon]) => (
-              <button
-                key={id}
-                aria-current={page === id ? 'page' : undefined}
-                className={page === id ? 'active' : ''}
-                onClick={
-                  // 只改变当前管理视图，不修改客户端路由或 API 配置。
-                  () => setPage(id)
-                }
-              >
-                <span aria-hidden="true">{icon}</span>
-                {label}
-              </button>
-            ),
+    <Layout className="admin-layout">
+      {desktop && (
+        <Layout.Sider
+          width={224}
+          collapsed={collapsed}
+          theme={dark ? 'dark' : 'light'}
+          className="admin-sider"
+          style={{ borderInlineEnd: `1px solid ${token.colorBorderSecondary}` }}
+        >
+          <a className="brand" href="#overview">
+            <img src="/worldtuner-logo.svg" alt="" width="32" height="32" />
+            {!collapsed && (
+              <strong>
+                WorldTuner <span>ADMIN</span>
+              </strong>
+            )}
+          </a>
+          {menu}
+          {!collapsed && (
+            <div className="sider-caption">
+              <Typography.Text type="secondary">
+                电台内容与运营管理
+              </Typography.Text>
+            </div>
           )}
-        </nav>
-        <div className="sidebar-bottom">
-          <span className="avatar">
-            {session.email.slice(0, 1).toUpperCase()}
-          </span>
-          <div>
-            <strong>{session.email}</strong>
-            <small>{writable ? '所有者' : '只读管理员'}</small>
-          </div>
-        </div>
-      </aside>
-      <div className="workspace">
-        <header className="topbar">
-          <span>WorldTuner / 管理工作空间</span>
-          <div>
-            <span className="badge positive">
+        </Layout.Sider>
+      )}
+      <Drawer
+        title="WorldTuner"
+        placement="left"
+        open={!desktop && mobileOpen}
+        size={256}
+        onClose={
+          // 移动端抽屉关闭不改变当前业务页面。
+          () => setMobileOpen(false)
+        }
+      >
+        {menu}
+      </Drawer>
+      <Layout>
+        <Layout.Header
+          className="admin-header"
+          style={{
+            background: token.colorBgContainer,
+            borderBottom: `1px solid ${token.colorBorderSecondary}`,
+          }}
+        >
+          <Flex align="center" gap={16}>
+            <Button
+              type="text"
+              aria-label={desktop ? '折叠导航' : '打开导航'}
+              icon={
+                collapsed || !desktop ? (
+                  <MenuUnfoldOutlined />
+                ) : (
+                  <MenuFoldOutlined />
+                )
+              }
+              onClick={
+                // 大屏折叠侧栏，窄屏打开覆盖导航。
+                () => (desktop ? setCollapsed(!collapsed) : setMobileOpen(true))
+              }
+            />
+            <Breadcrumb items={[{ title: '管理中心' }, { title }]} />
+          </Flex>
+          <Space size="middle">
+            <Tag color={session.authMode === 'local' ? 'orange' : 'success'}>
               {session.authMode === 'local' ? '本地环境' : 'Access 已验证'}
-            </span>
-            <button
-              aria-label="切换深浅色主题"
-              onClick={
-                // 主题只影响本管理页面，不改变业务数据或客户端设置。
-                () => setDark(!dark)
-              }
-            >
-              {dark ? '日间模式' : '夜间模式'}
-            </button>
-            <button
-              onClick={
-                // 退出清除内存凭据；生产通过 Access 的标准退出入口结束会话。
-                () => {
-                  setLocalToken('');
-                  setSession(undefined);
-                  if (session.authMode === 'access')
-                    location.assign('/cdn-cgi/access/logout');
+            </Tag>
+            <Tooltip title={dark ? '切换浅色主题' : '切换深色主题'}>
+              <Button
+                type="text"
+                aria-label="切换深浅色主题"
+                icon={dark ? <SunOutlined /> : <MoonOutlined />}
+                onClick={
+                  // 主题只影响管理界面，通过 ConfigProvider 同步浮层。
+                  () => onThemeChange(!dark)
                 }
-              }
+              />
+            </Tooltip>
+            <Tooltip
+              title={`${session.email} · ${writable ? '所有者' : '只读管理员'}`}
             >
-              退出
-            </button>
-          </div>
-        </header>
-        <main className="content">
+              <Avatar className="account-avatar">
+                {session.email.slice(0, 1).toUpperCase()}
+              </Avatar>
+            </Tooltip>
+            {session.authMode === 'access' && (
+              <Popconfirm
+                title="退出管理中心？"
+                description="退出后需要重新验证身份。"
+                onConfirm={logout}
+                okText="退出"
+                cancelText="取消"
+              >
+                <Button
+                  type="text"
+                  aria-label="退出登录"
+                  icon={<LogoutOutlined />}
+                />
+              </Popconfirm>
+            )}
+          </Space>
+        </Layout.Header>
+        <Layout.Content className="admin-content">
+          {!writable && (
+            <Notice message="当前为只读权限，可查看数据；编辑操作需要所有者权限。" />
+          )}
           {page === 'overview' && <AnalyticsPage overview />}
-          {page === 'stations' && <StationsPage writable={writable} />}{' '}
-          {page === 'catalog' && <CatalogPage writable={writable} />}{' '}
+          {page === 'stations' && <StationsPage writable={writable} />}
+          {page === 'catalog' && <CatalogPage writable={writable} />}
           {page === 'analytics' && <AnalyticsPage />}
-          {page === 'reports' && <ReportsPage writable={writable} />}{' '}
+          {page === 'reports' && <ReportsPage writable={writable} />}
           {page === 'audit' && <AuditPage />}
           {page === 'logs' && <LogsPage />}
-          <footer>WORLDTUNER · 业务与运营分库 · 所有时间为 UTC</footer>
-        </main>
-      </div>
-    </div>
+        </Layout.Content>
+        <Layout.Footer className="admin-footer">
+          WorldTuner 管理中心 · 所有数据时间均为 UTC
+        </Layout.Footer>
+      </Layout>
+    </Layout>
   );
 }

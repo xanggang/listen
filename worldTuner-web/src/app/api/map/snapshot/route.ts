@@ -3,7 +3,7 @@ import { apiFetch } from '@/lib/listen-api';
 import { mapSnapshotProxyResponse } from '@/lib/map-snapshot-response';
 
 /**
- * 同源转发全量地图与条件请求，正文保持原始四字段元组。
+ * 同源转发全量地图与条件请求，正文保持 ID、经度、纬度三个字段，不补充名称。
  * 上游请求 identity 避免自动解压后的标头失配；出口按运行时协商压缩。
  * 只转发公开缓存头，错误不缓存，也不把 CORS 或客户端标识写入公共响应。
  */

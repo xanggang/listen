@@ -25,12 +25,10 @@ command -v pnpm
 pnpm install
 # 已存在时编辑，避免覆盖本机配置。
 test -f .env.sqlite || cp .env.sqlite.example .env.sqlite
-openssl rand -hex 32
-# 将生成值填入 .env.sqlite 的 ADMIN_LOCAL_TOKEN。
 pnpm dev:sqlite
 ```
 
-默认监听 `127.0.0.1:8788`。本地密钥只允许 local 模式与 loopback URL，生产不回退使用密钥。业务库需完成 public_id 与译名处理。
+默认监听 `127.0.0.1:8788`。local 模式仅允许 loopback URL，自动使用已启用的 local-owner 身份，无需配置或输入密钥；CSRF 签名密钥由进程自动生成，写入仍检查同源、角色及 CSRF。生产始终使用 Access。业务库需完成 public_id 与译名处理。
 
 为读取原客户端上报的 PV/UV，示例的 `METRICS_SQLITE_PATH` 指向客户端已有 `.local/metrics.sqlite`；这是可配置的数据库文件地址，不是源码依赖。也可以将两个 API 的该变量设为同一个绝对路径。不自动移动、复制或覆盖原数据库。不使用示例配置时，本项目默认统计文件为自己的 `.local/metrics.sqlite`。
 

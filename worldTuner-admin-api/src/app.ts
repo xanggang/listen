@@ -17,20 +17,22 @@ export const adminApp = new Hono<AdminEnv>();
 adminApp.use(
   '*',
   /**
-   * 管理端独立请求上下文及限流，所有响应禁止缓存；不记录 Cookie、Token 和原始 URL。
+   * 管理端独立请求上下文及限流，所有响应禁止缓存；允许组件库内联样式，脚本仍限制为同源。
    */
   async (c, next) => {
     c.set('requestId', crypto.randomUUID());
-    c.header('X-Request-Id', c.get('requestId'));
-    c.header('Cache-Control', 'no-store');
-    c.header('X-Content-Type-Options', 'nosniff');
-    c.header('Referrer-Policy', 'no-referrer');
-    c.header('X-Frame-Options', 'DENY');
-    if (c.env.DEPLOYMENT_ENV !== 'local')
-      c.header(
-        'Content-Security-Policy',
-        "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
-      );
+    const securityHeaders: Record<string, string> = {
+      'X-Request-Id': c.get('requestId'),
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'no-referrer',
+      'X-Frame-Options': 'DENY',
+    };
+    if (c.env.DEPLOYMENT_ENV !== 'local') {
+      securityHeaders['Content-Security-Policy'] =
+        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'";
+    }
+    for (const [name, value] of Object.entries(securityHeaders)) c.header(name, value);
     if (
       c.env.ADMIN_LIMITER &&
       !(await c.env.ADMIN_LIMITER.limit({ key: c.req.header('CF-Connecting-IP') ?? 'unknown' }))
@@ -38,6 +40,8 @@ adminApp.use(
     )
       throw new ApiError(429, 'RATE_LIMITED', 'Too many admin requests');
     await next();
+    // ASSETS 返回独立 Response，必须在返回后覆盖静态缓存头并附上本次 CSP。
+    for (const [name, value] of Object.entries(securityHeaders)) c.header(name, value);
     if (['PUT', 'POST', 'PATCH', 'DELETE'].includes(c.req.method) && c.res.ok) {
       try {
         await deliverAudit(c.env.DB, c.env.METRICS_DB);
@@ -63,7 +67,7 @@ adminApp.use(
 adminApp.use('*', authenticateAdmin);
 adminApp.get(
   '/admin/api/me',
-  // 返回当前角色及短期 CSRF token，不返回 Access JWT 或开发密钥。
+  // 返回当前角色及短期 CSRF token；本地自动建立会话，生产不返回 Access JWT。
   async (c) => {
     validateParams(new URL(c.req.url).searchParams, []);
     return c.json({
@@ -111,7 +115,7 @@ adminApp.get(
 );
 adminApp.get(
   '*',
-  // 页面与静态资源统一走上方鉴权；所有未知 API 返回 JSON 404，不能回退 HTML。
+  // 页面与静态资源统一鉴权；HTML 原样返回，未知 API 返回 JSON 404。
   async (c) => {
     if (c.req.path.startsWith('/admin/api') || c.req.path.startsWith('/api') || !c.env.ASSETS)
       throw new ApiError(404, 'NOT_FOUND', 'Endpoint not found');

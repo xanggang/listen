@@ -4,15 +4,13 @@ import {
   apiRequest,
   loadSession,
   save,
-  setLocalToken,
   AdminApiError,
 } from '../src/lib/api.ts';
-// 每个用例清除内存凭据及网络 mock，不将密钥写入文件或浏览器存储。
+// 每个用例恢复网络 mock；本地连接不配置或发送开发密钥。
 afterEach(() => {
-  setLocalToken('');
   mock.restoreAll();
 });
-// 管理请求始终同源，不能通过传入任意 URL 将本地认证头带到外部服务。
+// 管理请求始终同源，自动读取本地会话且不发送开发认证头。
 test('admin client rejects external URLs and requests preserve same-origin security', async () => {
   await assert.rejects(apiRequest('https://evil.invalid/admin/api/me'));
   mock.method(
@@ -23,16 +21,12 @@ test('admin client rejects external URLs and requests preserve same-origin secur
       assert.equal(path, '/admin/api/me');
       assert.equal(options.credentials, 'same-origin');
       assert.equal(options.cache, 'no-store');
-      assert.equal(
-        new Headers(options.headers).get('Authorization'),
-        'Bearer local-test-token',
-      );
+      assert.equal(new Headers(options.headers).get('Authorization'), null);
       return Response.json({
         data: { id: 'owner', role: 'owner', csrfToken: 'csrf-value' },
       });
     },
   );
-  setLocalToken('local-test-token');
   assert.equal((await loadSession()).role, 'owner');
 });
 // 每次写入前刷新会话与 CSRF，乐观锁正文原样传递，不自动重试保存。

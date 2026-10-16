@@ -7,6 +7,7 @@ import type { PlayableStation } from '@/types/playable-station';
 import { useLocale } from 'next-intl';
 import { useStationStore } from '@/app/store/useStationStore';
 import { useLibraryStore } from '@/app/store/useLibraryStore';
+import Link from 'next/link';
 
 interface LeaderboardItemProps {
   item: PlayableStation | Station;
@@ -14,7 +15,7 @@ interface LeaderboardItemProps {
 }
 
 /**
- * 统一绘制发现页和榜单页的电台行，播放动作使用全局播放器。
+ * 统一绘制电台行；地图链接仅传公开 ID，收藏与全局播放互不影响。
  */
 export default function LeaderboardItem({ item, rank }: LeaderboardItemProps) {
   const locale = useLocale();
@@ -71,6 +72,17 @@ export default function LeaderboardItem({ item, rank }: LeaderboardItemProps) {
             .join(' · ') || 'worldTuner'}
         </p>
       </div>
+      <Link
+        className="station-row__locate"
+        href={`/player?station=${encodeURIComponent(item.id)}`}
+        aria-label={locale === 'zh' ? `在地图上定位 ${item.name}` : `Show ${item.name} on map`}
+        title={locale === 'zh' ? '在地图上定位' : 'Show on map'}
+      >
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+          <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z" />
+          <circle cx="12" cy="10" r="2.5" />
+        </svg>
+      </Link>
       <button
         className="station-row__favorite"
         type="button"

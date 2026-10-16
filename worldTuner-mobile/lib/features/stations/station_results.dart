@@ -5,6 +5,7 @@ import '../../core/aether_widgets.dart';
 import '../../core/api_client.dart';
 import '../../core/app_text.dart';
 import '../player/player_controller.dart';
+import '../map/station_map_request.dart';
 import 'station.dart';
 import 'station_library.dart';
 
@@ -176,6 +177,7 @@ class _StationResultsState extends State<StationResults> {
 
 // 设计稿中的电台列表行，支持收藏、排名和直接播放。
 class StationTile extends StatelessWidget {
+  // 创建可复用电台行；地图、收藏和播放分别执行独立操作。
   const StationTile({
     super.key,
     required this.station,
@@ -250,6 +252,16 @@ class StationTile extends StatelessWidget {
                       style: TextStyle(fontSize: 11, color: palette.muted),
                     ),
                   ],
+                ),
+              ),
+              IconButton(
+                tooltip: text.get('showOnMap'),
+                // 通知主导航切换到现有地图，不创建新的播放器或地图实例。
+                onPressed: () => StationMapRequest(station).dispatch(context),
+                icon: Icon(
+                  Icons.location_on_outlined,
+                  size: 20,
+                  color: palette.muted,
                 ),
               ),
               ListenableBuilder(

@@ -21,7 +21,7 @@ void main() {
     await store.write(origin, snapshot);
     expect((await store.read(origin))?.body, snapshot.body);
     expect(await store.read(Uri.parse('https://other.test')), isNull);
-    final file = File('${directory.path}/worldtuner-map-public-id-1.json.gz');
+    final file = File('${directory.path}/worldtuner-map-coordinates-1.json.gz');
     expect((await file.readAsBytes()).take(2), [0x1f, 0x8b]);
     await file.writeAsString('corrupted');
     expect(await store.read(origin), isNull);

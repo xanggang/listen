@@ -41,4 +41,42 @@ void main() {
     expect(station.name, 'Demo');
     expect(station.streamUrl, 'https://example.com/resolved');
   });
+
+  // 三字段快照必须正确处理零坐标、大小写 ID，并拒绝旧格式及非法经纬度。
+  test('map snapshot uses coordinate-only tuples', () {
+    final body = jsonEncode({
+      'data': {
+        'count': 2,
+        'points': [
+          ['0aB12xY', 0, 0],
+          ['0Ab12Xy', -87.90647, 43.0389],
+        ],
+      },
+    });
+    final points = MapPoint.parseSnapshot(body);
+    expect(points.length, 2);
+    expect(points.first.longitude, 0);
+    expect(points.first.latitude, 0);
+    expect(points.last.id, '0Ab12Xy');
+    expect(points.last.longitude, -87.90647);
+    expect(points.last.latitude, 43.0389);
+    for (final row in [
+      ['0aB12xY', 'Old name', 120, 30],
+      ['0aB12xY', 181, 30],
+      ['0aB12xY', 120, 91],
+    ]) {
+      // 旧缓存和错误坐标不能被误解析为有效点位。
+      expect(
+        () => MapPoint.parseSnapshot(
+          jsonEncode({
+            'data': {
+              'count': 1,
+              'points': [row],
+            },
+          }),
+        ),
+        throwsFormatException,
+      );
+    }
+  });
 }
